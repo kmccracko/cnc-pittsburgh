@@ -1,13 +1,12 @@
 const Dotenv = require('dotenv-webpack'); // required for accessing .env from front-end. used in plugins.
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 
-console.log('mode is : ', process.env.NODE_ENV);
+// console.log('mode is : ', process.env.NODE_ENV);
 
 module.exports = {
-  mode: process.env.NODE_ENV,
-  entry: ['./client/index.ts'],
+  mode: 'development',
+  entry: ['./src/client/index.tsx'],
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
@@ -23,34 +22,32 @@ module.exports = {
       publicPath: '/',
       directory: path.resolve(__dirname, 'dist'),
     },
-    port: 8080,
+    port: 9090,
     historyApiFallback: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
     // compress: true,
     hot: true,
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
+      '*': {
+        target: 'http://localhost:3003',
         secure: false,
-        changeOrigin: false,
+        // changeOrigin: true,
       },
     },
   },
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: /\.(s(a|c)ss)$/,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: ['babel-loader', 'ts-loader'],
-          // options: {
-          //   presets: ['@babel/preset-env', '@babel/preset-react'],
-          // },
-        },
+        use: ['babel-loader', 'ts-loader'],
+        // options: {
+        //   presets: ['@babel/preset-env', '@babel/preset-react'],
+        // },
       },
       {
         test: /\.(png|svg|jpeg|jpg|jpeg|gif)$/,
@@ -69,7 +66,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './client/index.html',
+      template: './src/client/index.html',
     }),
     new Dotenv(),
   ],
