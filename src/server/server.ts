@@ -6,7 +6,6 @@ import express, {
   RequestHandler,
 } from 'express';
 const path = require('path');
-const cors = require('cors');
 
 // TYPES
 type ServerError = {};
@@ -47,10 +46,13 @@ app.use(
       return el.name;
     });
 
+    console.log(res.locals.data0.length)
     // filter full list where current name exists
     const missingSpecies = res.locals.data0.filter((el: Object) => {
-      return curResNames.indexOf(el.name) < 0;
+      return !curResNames.includes(el.name)
+      // return curResNames.indexOf(el.name) < 0;
     });
+    console.log(missingSpecies.length)
 
     // loop through full list, distribute each specie into taxa
     const taxaArrays = missingSpecies.reduce((obj: Object, specie: Object) => {
