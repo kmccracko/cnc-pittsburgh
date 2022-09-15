@@ -25,14 +25,15 @@ inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
 
 inat.getMissing = async (req: Request, res: Response, next: NextFunction) => {
   // get current names only
-  const curResNames = res.locals.current.map((el: Object) => {
-    return el.scientificName;
-  });
+  const curResNames = new Set([]);
+  for (const el of res.locals.current) {
+    curResNames.add(el.scientificName);
+  }
 
   console.log(res.locals.baseline.length);
   // filter full list where current name exists
   const missingSpecies = res.locals.baseline.filter((el: Object) => {
-    return !curResNames.includes(el.scientificName);
+    return !curResNames.has(el.scientificName);
   });
   console.log(missingSpecies.length);
 
