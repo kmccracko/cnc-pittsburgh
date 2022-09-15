@@ -14,21 +14,24 @@ body {
 
 #cards-container {
   display: grid;
-  width: 1100px;
+  // width: 1100px;
   grid-template-columns: repeat(5, 1fr);
-  column-gap: 0px;
+  column-gap: 10px;
+  width: min-content;
 }
 .card {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  width: 210px;
 
   .card-img {
+    width: 100%;
+    height: 210px;
     position: relative;
-    width: 200px;
-    height: 200px;
     img {
-      width: 200px;
-      height: 200px;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
     .count {
@@ -38,13 +41,31 @@ body {
       padding: 5px 0px 5px 3px;
       color: white;
       background-color: rgba(0, 0, 0, 0.5);
+      a {
+        all: unset;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 
   .summary-label {
-    height: 50px;
+    // height: 50px;
+    align-self: flex-start;
+    padding: 10px 5px 25px 5px;
     .common-name {
       font-weight: 700;
+      text-transform: capitalize;
+      a {
+        all: unset;
+        cursor: pointer;
+      }
+    }
+    .scientific-name {
+      font-weight: 400;
+      font-style: italic;
       text-transform: capitalize;
     }
   }
@@ -52,49 +73,42 @@ body {
 
 @media only screen and (max-width: 1200px) {
   #cards-container {
-    width: 880px;
+    // width: 900px;
     grid-template-columns: repeat(4, 1fr);
   }
-  .card {
-    .card-img {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      img {
-        width: 200px;
-        height: 200px;
-        object-fit: cover;
-      }
-    }
-  }
 }
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1000px) {
   #cards-container {
-    width: 570px;
+    // width: 570px;
     grid-template-columns: repeat(3, 1fr);
-  }
-  .card {
-    .card-img {
-      width: 175px;
-      height: 175px;
-      img {
-        width: 175px;
-        height: 175px;
-      }
-    }
   }
 }
 
+@media only screen and (max-width: 750px) {
+  .card {
+    width: 175px;
+    .card-img {
+      height: 175px;
+    }
+  }
+}
 @media only screen and (max-width: 600px) {
   #cards-container {
-    width: 380px;
+    // width: 570px;
     grid-template-columns: repeat(2, 1fr);
   }
-  // .card {
-  //   img {
-  //     width: 175px;
-  //     height: 175px;
-  //     object-fit: cover;
-  //   }
-  // }
 }
+
+// @media only screen and (max-width: 600px) {
+//   #cards-container {
+//     width: 380px;
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+//   // .card {
+//   //   img {
+//   //     width: 175px;
+//   //     height: 175px;
+//   //     object-fit: cover;
+//   //   }
+//   // }
+// }

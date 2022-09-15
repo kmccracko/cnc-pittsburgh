@@ -28,7 +28,9 @@ const makeQuery = async (type: string) => {
       ...result.data.results.map((el: Object) => {
         return {
           name: el.taxon.preferred_common_name,
+          scientificName: el.taxon.name,
           count: el.count,
+          taxaId: el.taxon.id,
           pictureUrl: el.taxon.default_photo
             ? el.taxon.default_photo.medium_url
             : null,
@@ -66,7 +68,7 @@ const checkCache = async (key: string) => {
     console.log(key, 'not in cache. about to create a key');
 
     const newData = await makeQuery(key);
-    const lifeTime = key === 'current' ? 60 * 3 : 0;
+    const lifeTime = key === 'current' ? 60 * 30 : 0;
     myCache.set(key, newData, lifeTime); // 3 mins
     returnVal = newData;
   }
@@ -78,7 +80,7 @@ myCache.on('expired', (key: string, value: any) => {
   // define new dataset
   const newData = makeQuery(key);
   // set cache for 3mins
-  const lifeTime = key === 'current' ? 60 * 3 : 0;
+  const lifeTime = key === 'current' ? 60 * 30 : 0;
   myCache.set(key, newData, lifeTime); // 3 mins
 });
 

@@ -26,20 +26,20 @@ inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
 inat.getMissing = async (req: Request, res: Response, next: NextFunction) => {
   // get current names only
   const curResNames = res.locals.current.map((el: Object) => {
-    return el.name;
+    return el.scientificName;
   });
 
   console.log(res.locals.baseline.length);
   // filter full list where current name exists
   const missingSpecies = res.locals.baseline.filter((el: Object) => {
-    return !curResNames.includes(el.name);
+    return !curResNames.includes(el.scientificName);
   });
   console.log(missingSpecies.length);
 
   // loop through full list, distribute each specie into taxa
-  const taxaArrays = missingSpecies.reduce((obj: Object, specie: Object) => {
-    if (obj[specie.taxon]) obj[specie.taxon].push(specie);
-    else obj[specie.taxon] = [specie];
+  const taxaArrays = missingSpecies.reduce((obj: Object, cur: Object) => {
+    if (obj[cur.taxon]) obj[cur.taxon].push(cur);
+    else obj[cur.taxon] = [cur];
     return obj;
   }, {});
 

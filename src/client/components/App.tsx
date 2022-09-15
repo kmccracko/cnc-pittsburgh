@@ -10,7 +10,6 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
 } from '@mui/material';
 
 type TallCards = Object[];
@@ -76,37 +75,19 @@ const App = () => {
   }, [activeFilters]);
 
   function handleScroll() {
-    // console.log(
-    //   document.documentElement.scrollHeight,
-    //   document.documentElement.scrollTop,
-    //   document.documentElement.clientHeight
-    // );
-    // const isAtBottom =
-    //   document.documentElement.scrollHeight -
-    //     100 -
-    //     document.documentElement.scrollTop <=
-    //   document.documentElement.clientHeight;
-
-    // if (isAtBottom) {
-    // Load next posts
-    // if (viewArr.length !== activeArr.length) {
-    console.log(viewArr.length, activeArr.length);
     setViewArr([
       ...viewArr,
       ...activeArr.slice(viewArr.length, viewArr.length + 25),
     ]);
-    // }
-    // }
   }
-
-  // window.removeEventListener('scroll', handleScroll);
-  // window.addEventListener('scroll', handleScroll);
 
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
     return (
       <BirdCard
-        key={el.name}
+        key={el.taxaId}
+        taxaId={el.taxaId}
         name={el.name}
+        scientificName={el.scientificName}
         count={el.count}
         pictureUrl={el.pictureUrl}
       />
