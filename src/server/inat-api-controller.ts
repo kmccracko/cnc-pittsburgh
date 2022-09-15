@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from 'axios';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
+const checkCache = require('./cacher');
 
 type controller = {
   [key: string]: Function;
@@ -11,83 +11,40 @@ type Object = {
 
 const inat: controller = {};
 
-// add funcs
-
-inat.getObs0 = async (req: Request, res: Response, next: NextFunction) => {
-  const getFullSpecies: Function = async (
-    page = 1,
-    fullResult: Object[] = []
-  ) => {
-    const result = await axios.get(
-      `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=4%2C5&per_page=1000&page=${page}`
-    );
-
-    console.log('total results: ', result.data.total_results)
-
-    // show progress
-    console.log('page: ', page);
-
-    // update array
-    fullResult.push(
-      ...result.data.results.map((el: Object) => {
-        return {
-          name: el.taxon.preferred_common_name,
-          count: el.count,
-          pictureUrl: el.taxon.default_photo
-            ? el.taxon.default_photo.medium_url
-            : null,
-          taxon: el.taxon.iconic_taxon_name,
-        };
-      })
-    );
-    console.log('full length: ', fullResult.length);
-
-    // recurse if there's more, else return array
-    if (result.data.total_results > result.data.per_page * page) {
-      return getFullSpecies(page + 1, fullResult);
-    } else {
-    return fullResult;
-    }
-  };
-
-  const summary = await getFullSpecies();
-
-  res.locals.data0 = summary;
+inat.getCurrent = async (req: Request, res: Response, next: NextFunction) => {
+  // check cache or update cache, then return value
+  res.locals.current = await checkCache('current');
   return next();
 };
- 
-inat.getObs1 = async (req: Request, res: Response, next: NextFunction) => {
-  const getCurrentSpecies = async (page = 1, currentResult: Object[] = []): Promise<Object[]> => {
-    const result = await axios.get(
-      `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=2022-04-28&d2=2022-05-02&per_page=500&page=${page}`
-    );
 
-    console.log('total results: ', result.data.total_results)
+inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
+  // check cache or update cache, then return value
+  res.locals.baseline = await checkCache('baseline');
+  return next();
+};
 
-    // update array
-    currentResult.push(
-      ...result.data.results.map((el: Object) => {
-        return {
-          name: el.taxon.preferred_common_name,
-          count: el.count,
-        };
-      })
-    );
+inat.getMissing = async (req: Request, res: Response, next: NextFunction) => {
+  // get current names only
+  const curResNames = res.locals.current.map((el: Object) => {
+    return el.name;
+  });
 
-    console.log('cur length: ', currentResult.length);
+  console.log(res.locals.baseline.length);
+  // filter full list where current name exists
+  const missingSpecies = res.locals.baseline.filter((el: Object) => {
+    return !curResNames.includes(el.name);
+  });
+  console.log(missingSpecies.length);
 
+  // loop through full list, distribute each specie into taxa
+  const taxaArrays = missingSpecies.reduce((obj: Object, specie: Object) => {
+    if (obj[specie.taxon]) obj[specie.taxon].push(specie);
+    else obj[specie.taxon] = [specie];
+    return obj;
+  }, {});
 
-    // recurse if there's more, else return array
-    if (result.data.total_results > result.data.per_page * page) {
-      return getCurrentSpecies(page + 1, currentResult);
-    } else {
-    return currentResult;
-    }
-  };
-  
-  
-  const summary = await getCurrentSpecies();
-  res.locals.data1 = summary;
+  res.locals.taxaArrays = taxaArrays;
+  res.locals.fullArray = missingSpecies;
   return next();
 };
 

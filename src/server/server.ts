@@ -38,31 +38,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   '/getObs',
-  inatController.getObs0,
-  inatController.getObs1,
+  inatController.getBaseline,
+  inatController.getCurrent,
+  inatController.getMissing,
   (req: Request, res: Response) => {
-    // get current names only
-    const curResNames = res.locals.data1.map((el: Object) => {
-      return el.name;
+    console.log(Object.keys(res.locals));
+    return res.status(200).json({
+      taxaArrays: res.locals.taxaArrays,
+      fullArray: res.locals.fullArray,
     });
-
-    console.log(res.locals.data0.length)
-    // filter full list where current name exists
-    const missingSpecies = res.locals.data0.filter((el: Object) => {
-      return !curResNames.includes(el.name)
-      // return curResNames.indexOf(el.name) < 0;
-    });
-    console.log(missingSpecies.length)
-
-    // loop through full list, distribute each specie into taxa
-    const taxaArrays = missingSpecies.reduce((obj: Object, specie: Object) => {
-      if (obj[specie.taxon]) obj[specie.taxon].push(specie);
-      else obj[specie.taxon] = [specie];
-      return obj;
-    }, {});
-
-    // return "missing only" list
-    return res.status(200).json({ taxaArrays, fullArray: missingSpecies });
   }
 );
 
