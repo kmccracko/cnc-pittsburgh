@@ -23,8 +23,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-app.use(express.static(path.resolve(__dirname, '../client')));
-app.use('/dist', express.static(path.resolve(__dirname, '../../dist')));
+// app.use(express.static(path.resolve(__dirname, '../client')));
+// app.use('/dist', express.static(path.resolve(__dirname, '../../dist')));
+app.use(express.static('dist'));
 
 //use cors
 // app.use(cors());
@@ -48,8 +49,7 @@ app.use(
 
 app.get('/', (req: Request, res: Response) => {
   console.log('trying to send at /');
-  return res.sendStatus(200);
-  // res.status(201).sendFile(path.resolve(__dirname, '../dist/index.html'));
+  res.status(200).sendFile(path.resolve(__dirname, '../../dist/index.html'));
 });
 
 //404 error
