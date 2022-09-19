@@ -1,10 +1,5 @@
 // Require Modules
-import express, {
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 const path = require('path');
 
 // TYPES
@@ -29,6 +24,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(express.static(path.resolve(__dirname, '../client')));
+app.use('/dist', express.static(path.resolve(__dirname, '../../dist')));
 
 //use cors
 // app.use(cors());
