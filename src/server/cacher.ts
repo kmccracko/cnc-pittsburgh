@@ -76,7 +76,11 @@ const checkCache = async (key: string) => {
 };
 
 myCache.on('expired', (key: string, value: any) => {
-  console.log(key, ' expired! about to replace it?');
+  console.log(
+    key,
+    ' expired! about to replace it - ',
+    new Date().toLocaleString()
+  );
   // define new dataset
   const newData = makeQuery(key);
   // set cache for 3mins
