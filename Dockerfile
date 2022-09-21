@@ -12,3 +12,9 @@ RUN npm run build
 EXPOSE 3003
 # give it a file to start on
 ENTRYPOINT ["ts-node", "./src/server/server.ts"]
+#
+# docker build -t [org]/prod .
+# docker run -d --name CNC-PGH-PROD -p 3002:3003 [org]/prod
+#
+# if the build hangs after npm run build completes, ensure that
+# BundleAnalyzerPlugin is commented out in webpack

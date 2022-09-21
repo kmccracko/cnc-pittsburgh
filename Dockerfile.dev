@@ -1,0 +1,15 @@
+# provide node version
+FROM node:16.13
+# install webpack
+RUN npm i webpack -g
+# set current location
+WORKDIR /usr/src/app
+# copy package json and package lock json
+COPY package*.json .
+# install all dependencies
+RUN npm i
+# set container port?
+EXPOSE 3003
+#
+# docker build -t [org]/dev .
+# docker run -d --name CNC-PGH-DEV -p 9090:9090 [org]/prod
