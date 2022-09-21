@@ -125,27 +125,33 @@ const App = () => {
   return (
     <HashRouter>
       <div id='Main'>
-        <form id='filters-container'>
-          {Object.entries(activeFilters).map((el) => {
-            return (
-              <div className='filter-item'>
-                <input
-                  type='checkbox'
-                  name={el[0]}
-                  id={el[0]}
-                  checked={el[1]}
-                  onChange={() => {
-                    setActiveFilters({
-                      ...activeFilters,
-                      [el[0]]: !el[1],
-                    });
-                  }}
-                />
-                <label htmlFor={el[0]}>{el[0]}</label>
-              </div>
-            );
-          })}
-        </form>
+        <div id='navbar'>
+          <span id='pgh'>Pittsburgh</span>
+          <span id='cnc'>CNC</span>
+        </div>
+        <div id='filters-band'>
+          <form id='filters-container'>
+            {Object.entries(activeFilters).map((el) => {
+              return (
+                <div className='filter-item'>
+                  <input
+                    type='checkbox'
+                    name={el[0]}
+                    id={el[0]}
+                    checked={el[1]}
+                    onChange={() => {
+                      setActiveFilters({
+                        ...activeFilters,
+                        [el[0]]: !el[1],
+                      });
+                    }}
+                  />
+                  <label htmlFor={el[0]}>{el[0]}</label>
+                </div>
+              );
+            })}
+          </form>
+        </div>
         <InfiniteScroll
           pageStart={0}
           loadMore={handleScroll}
