@@ -17,21 +17,43 @@ type Object = {
   [key: string]: any;
 };
 
+const taxaTranslation: Object = {
+  Chromista: 'Chromista',
+  Insecta: 'Insects',
+  Actinopterygii: 'Fish',
+  Amphibia: 'Amphibians',
+  Mammalia: 'Mammals',
+  Animalia: 'Other Animals',
+  Mollusca: 'Molluscs',
+  Plantae: 'Plants',
+  Protozoa: 'Protozoans',
+  Fungi: 'Fungi',
+  Aves: 'Birds',
+  Arachnida: 'Arachnids',
+  Reptilia: 'Reptiles',
+  null: 'Other',
+
+  Insects: 'Insecta',
+  Fish: 'Actinopterygii',
+  Amphibians: 'Amphibia',
+  Mammals: 'Mammalia',
+  'Other Animals': 'Animalia',
+  Molluscs: 'Mollusca',
+  Plants: 'Plantae',
+  Protozoans: 'Protozoa',
+  Birds: 'Aves',
+  Arachnids: 'Arachnida',
+  Reptiles: 'Reptilia',
+  Other: 'null',
+};
+
 const App = () => {
   // set vars
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
-  const [activeFilters, setActiveFilters] = useState<Object>({
-    Plantae: false,
-    Fungi: false,
-    Aves: false,
-    Mammalia: false,
-    Reptilia: false,
-    Amphibia: false,
-    Arachnida: false,
-  });
+  const [activeFilters, setActiveFilters] = useState<Object>({});
 
   // make big fetch
   useEffect(() => {
@@ -42,6 +64,11 @@ const App = () => {
       setFullArr(res.data.fullArray);
       setActiveArr(res.data.fullArray);
       setViewArr(res.data.fullArray.slice(0, 25));
+      const filters: Object = {};
+      for (const key in res.data.taxaArrays) {
+        filters[taxaTranslation[key]] = false;
+      }
+      setActiveFilters(filters);
     });
   }, []);
 
@@ -59,14 +86,13 @@ const App = () => {
     }
     // if at least one active filter, merge them all
     else {
-      for (const taxa in activeFilters) {
-        if (Object.prototype.hasOwnProperty.call(activeFilters, taxa)) {
-          const include = activeFilters[taxa] && taxaArrays[taxa];
-          if (include) newView.push(...taxaArrays[taxa]);
-          newView.sort((a, b) => {
-            return b.count - a.count;
-          });
-        }
+      for (const shownTaxa in activeFilters) {
+        const actualTaxa = taxaTranslation[shownTaxa];
+        const include = activeFilters[shownTaxa] && taxaArrays[actualTaxa];
+        if (include) newView.push(...taxaArrays[actualTaxa]);
+        newView.sort((a, b) => {
+          return b.count - a.count;
+        });
       }
     }
     setActiveArr(newView);
