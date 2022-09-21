@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import axios from 'axios';
 import BirdCard from './BirdCard';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import '../index.scss';
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-} from '@mui/material';
+
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 
 type TallCards = Object[];
 type TNumArr = Number[];
@@ -84,12 +83,12 @@ const App = () => {
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
     return (
       <BirdCard
-        key={el.taxaId}
-        taxaId={el.taxaId}
+        key={el.taxaid}
+        taxaId={el.taxaid}
         name={el.name}
-        scientificName={el.scientificName}
+        scientificName={el.scientificname}
         count={el.count}
-        pictureUrl={el.pictureUrl}
+        pictureUrl={el.pictureurl}
       />
     );
   });

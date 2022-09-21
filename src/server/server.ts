@@ -12,6 +12,7 @@ type Object = {
 require('dotenv').config();
 // Import Controllers
 const inatController = require('./inat-api-controller');
+const test = require('../db/db-init.ts');
 // connect to DB
 //create app instance and other const variables
 const app = express();
@@ -32,6 +33,12 @@ app.use(express.static('dist'));
 //handle parsing request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/fillBaseline', (req: Request, res: Response) => {
+  console.log('test from server');
+  test();
+  return res.sendStatus(201);
+});
 
 app.use(
   '/getObs',

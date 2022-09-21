@@ -5,6 +5,7 @@ type Object = {
 };
 
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 60 * 30 });
+const db = require('../db/db-connect');
 
 // queries
 const queries: Object = {
@@ -28,10 +29,10 @@ const makeQuery = async (type: string) => {
       ...result.data.results.map((el: Object) => {
         return {
           name: el.taxon.preferred_common_name,
-          scientificName: el.taxon.name,
+          scientificname: el.taxon.name,
           count: el.count,
-          taxaId: el.taxon.id,
-          pictureUrl: el.taxon.default_photo
+          taxaid: el.taxon.id,
+          pictureurl: el.taxon.default_photo
             ? el.taxon.default_photo.medium_url
             : null,
           taxon: el.taxon.iconic_taxon_name,
@@ -67,10 +68,21 @@ const checkCache = async (key: string) => {
   else {
     console.log(key, 'not in cache. about to create a key');
 
-    const newData = await makeQuery(key);
-    const lifeTime = key === 'current' ? 60 * 30 : 0;
+    let newData;
+    let lifeTime;
+
+    if (key === 'baseline') {
+      newData = await db.query('select * from baseline;');
+      newData = newData.rows;
+      lifeTime = undefined;
+      returnVal = newData;
+    }
+    if (key === 'current') {
+      newData = await makeQuery(key);
+      lifeTime = 60 * 30;
+      returnVal = newData;
+    }
     myCache.set(key, newData, lifeTime); // 3 mins
-    returnVal = newData;
   }
   return returnVal;
 };
@@ -88,4 +100,4 @@ myCache.on('expired', (key: string, value: any) => {
   myCache.set(key, newData, lifeTime); // 3 mins
 });
 
-module.exports = checkCache;
+module.exports = { checkCache, makeQuery };
