@@ -3,7 +3,7 @@ const db = require('./db-connect.ts');
 // require makeQuery
 const { makeQuery } = require('../server/cacher');
 
-const initFunc = async () => {
+const initializeDB = async () => {
   // make query
   const result = await makeQuery('baseline');
 
@@ -38,17 +38,19 @@ const initFunc = async () => {
   ;`;
 
   // drop table
-  console.log('about to drop table');
-  await db.query(dropTable);
+  await db.query(dropTable).catch((err: Error) => {
+    console.log('faled during table drop');
+  });
 
   // rebuild table
-  console.log('about to build table');
-  await db.query(createTable);
+  await db.query(createTable).catch((err: Error) => {
+    console.log('faled during table create');
+  });
 
   // loop through results and update table
-  console.log('about to fill table');
-  console.log(fillTable);
-  await db.query(fillTable);
+  await db.query(fillTable).catch((err: Error) => {
+    console.log('faled during table fill');
+  });
 };
 
 const testFunc = async () => {
@@ -57,7 +59,7 @@ const testFunc = async () => {
   console.log(result);
 };
 
-module.exports = initFunc;
+module.exports = { initializeDB, testFunc };
 
 // testFunc();
 // initFunc();

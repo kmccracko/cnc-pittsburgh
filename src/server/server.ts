@@ -12,33 +12,30 @@ type Object = {
 require('dotenv').config();
 // Import Controllers
 const inatController = require('./inat-api-controller');
-const test = require('../db/db-init.ts');
-// connect to DB
 //create app instance and other const variables
 const app = express();
 
 // run this for all requests, for cleaner log-reading
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`${'-'.repeat(60)} a request has come in! ${'-'.repeat(60)}`);
-  console.log(`${'-'.repeat(60)} source: ${req.url}`);
+  console.log(`${'-'.repeat(20)} a request has come in! ${'-'.repeat(20)}`);
+  console.log(`${'-'.repeat(20)} source: ${req.url}`);
   next();
 });
 
-// app.use(express.static(path.resolve(__dirname, '../client')));
-// app.use('/dist', express.static(path.resolve(__dirname, '../../dist')));
 app.use(express.static('dist'));
 
-//use cors
-// app.use(cors());
 //handle parsing request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/fillBaseline', (req: Request, res: Response) => {
+/* for use only when updating baseline data
+const {initializeDB} = require('../db/db-init.ts');
+app.use('/db/fillBaseline', (req: Request, res: Response) => {
   console.log('test from server');
-  test();
+  initializeDB();
   return res.sendStatus(201);
 });
+*/
 
 app.use(
   '/getObs',
@@ -55,13 +52,12 @@ app.use(
 );
 
 app.get('/', (req: Request, res: Response) => {
-  console.log('trying to send at /');
   res.status(200).sendFile(path.resolve(__dirname, '../../dist/index.html'));
 });
 
 //404 error
 app.use('*', (req: Request, res: Response) => {
-  console.log('trying to send back app from 404 route');
+  console.log('sending back from 404 route');
   return res.sendStatus(404);
   // res.status(206).sendFile(path.resolve(__dirname, '../dist/index.html'));
 });
