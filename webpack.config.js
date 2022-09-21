@@ -1,11 +1,13 @@
 const Dotenv = require('dotenv-webpack'); // required for accessing .env from front-end. used in plugins.
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // console.log('mode is : ', process.env.NODE_ENV);
 
 module.exports = {
-  mode: 'development',
+  mode: process.env.NODE_ENV,
   entry: ['./src/client/index.tsx'],
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -69,5 +71,6 @@ module.exports = {
       template: './src/client/index.html',
     }),
     new Dotenv(),
+    // new BundleAnalyzerPlugin(),
   ],
 };

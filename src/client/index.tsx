@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './components/App';
 
 console.log('hello');
@@ -8,7 +8,7 @@ console.log('hello');
 
 // theme = responsiveFontSizes(theme);
 
-const root = ReactDOM.createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById('root')!);
 
 root.render(
   // <ThemeProvider theme={theme}>
