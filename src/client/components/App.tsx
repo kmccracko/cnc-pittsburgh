@@ -10,6 +10,13 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  formGroup: {
+    justifyContent: 'center',
+  },
+}));
 
 type TallCards = Object[];
 type TNumArr = Number[];
@@ -17,37 +24,33 @@ type Object = {
   [key: string]: any;
 };
 
-const taxaTranslation: Object = {
-  Chromista: 'Chromista',
-  Insecta: 'Insects',
-  Actinopterygii: 'Fish',
-  Amphibia: 'Amphibians',
-  Mammalia: 'Mammals',
-  Animalia: 'Other Animals',
-  Mollusca: 'Molluscs',
-  Plantae: 'Plants',
-  Protozoa: 'Protozoans',
-  Fungi: 'Fungi',
-  Aves: 'Birds',
-  Arachnida: 'Arachnids',
-  Reptilia: 'Reptiles',
-  null: 'Other',
-
-  Insects: 'Insecta',
-  Fish: 'Actinopterygii',
-  Amphibians: 'Amphibia',
-  Mammals: 'Mammalia',
-  'Other Animals': 'Animalia',
-  Molluscs: 'Mollusca',
-  Plants: 'Plantae',
-  Protozoans: 'Protozoa',
-  Birds: 'Aves',
-  Arachnids: 'Arachnida',
-  Reptiles: 'Reptilia',
-  Other: 'null',
+let taxaTranslation: Object = {
+  Chromista: 'Chromista 🌿',
+  Insecta: 'Insects 🦋',
+  Actinopterygii: 'Fish 🐠',
+  Amphibia: 'Amphibians 🐸',
+  Mammalia: 'Mammals 🦌',
+  Animalia: 'Other Animals 🐛',
+  Mollusca: 'Molluscs 🐌',
+  Plantae: 'Plants 🌻',
+  Protozoa: 'Protozoans 🦠',
+  Fungi: 'Fungi 🍄',
+  Aves: 'Birds 🦆',
+  Arachnida: 'Arachnids 🕷',
+  Reptilia: 'Reptiles 🐍',
+  null: 'Other ❔',
 };
+const objEntries = Object.entries(taxaTranslation);
+taxaTranslation = Object.fromEntries([
+  ...objEntries,
+  ...objEntries.map((e) => [...e].reverse()),
+]);
+
+console.log(taxaTranslation);
 
 const App = () => {
+  // get styles
+  const classes = useStyles();
   // set vars
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [activeArr, setActiveArr] = useState<TallCards>([]);
@@ -121,11 +124,10 @@ const App = () => {
 
   return (
     <HashRouter>
-      <div className='Main'>
-        Unga bunga
+      <div id='Main'>
         <div id='filters-container'>
           <FormControl component='fieldset' variant='standard'>
-            <FormGroup row>
+            <FormGroup className={classes.formGroup} row>
               {Object.entries(activeFilters).map((el) => {
                 return (
                   <FormControlLabel
