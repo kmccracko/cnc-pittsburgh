@@ -6,17 +6,17 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 import '../index.scss';
 
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import { makeStyles } from '@material-ui/core/styles';
+// import Checkbox from '@mui/material/Checkbox';
+// import FormControl from '@mui/material/FormControl';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormGroup from '@mui/material/FormGroup';
+// import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-  formGroup: {
-    justifyContent: 'center',
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   formGroup: {
+//     justifyContent: 'center',
+//   },
+// }));
 
 type TallCards = Object[];
 type TNumArr = Number[];
@@ -50,7 +50,7 @@ console.log(taxaTranslation);
 
 const App = () => {
   // get styles
-  const classes = useStyles();
+  // const classes = useStyles();
   // set vars
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [activeArr, setActiveArr] = useState<TallCards>([]);
@@ -125,32 +125,27 @@ const App = () => {
   return (
     <HashRouter>
       <div id='Main'>
-        <div id='filters-container'>
-          <FormControl component='fieldset' variant='standard'>
-            <FormGroup className={classes.formGroup} row>
-              {Object.entries(activeFilters).map((el) => {
-                return (
-                  <FormControlLabel
-                    labelPlacement='top'
-                    control={
-                      <Checkbox
-                        checked={el[1]}
-                        onChange={() => {
-                          setActiveFilters({
-                            ...activeFilters,
-                            [el[0]]: !el[1],
-                          });
-                        }}
-                        name={el[0]}
-                      />
-                    }
-                    label={el[0]}
-                  />
-                );
-              })}
-            </FormGroup>
-          </FormControl>
-        </div>
+        <form id='filters-container'>
+          {Object.entries(activeFilters).map((el) => {
+            return (
+              <div className='filter-item'>
+                <input
+                  type='checkbox'
+                  name={el[0]}
+                  id={el[0]}
+                  checked={el[1]}
+                  onChange={() => {
+                    setActiveFilters({
+                      ...activeFilters,
+                      [el[0]]: !el[1],
+                    });
+                  }}
+                />
+                <label htmlFor={el[0]}>{el[0]}</label>
+              </div>
+            );
+          })}
+        </form>
         <InfiniteScroll
           pageStart={0}
           loadMore={handleScroll}
