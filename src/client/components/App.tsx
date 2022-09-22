@@ -8,6 +8,12 @@ import InfiniteScroll from 'react-infinite-scroller';
 import '../index.scss';
 import Navbar from './Navbar';
 
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import useMediaQuery from '@mui/material/useMediaQuery';
 // import Checkbox from '@mui/material/Checkbox';
 // import FormControl from '@mui/material/FormControl';
 // import FormControlLabel from '@mui/material/FormControlLabel';
@@ -126,11 +132,6 @@ const App = () => {
     );
   });
 
-  let loadingGif;
-  if (isLoading) {
-    loadingGif = <LoadingGif />;
-  }
-
   const infiniteScroll = (
     <InfiniteScroll
       pageStart={0}
@@ -146,52 +147,139 @@ const App = () => {
     </InfiniteScroll>
   );
 
+  const matches = useMediaQuery('(min-width:601px)');
+  let filterContainer;
+  if (matches) {
+    filterContainer = (
+      <div id='filters-band' className='hotdog'>
+        <button
+          id='clear-filters-button'
+          className={`filterButton ${
+            activeArr.length !== fullArr.length ? 'active' : 'inactive'
+          }`}
+          onClick={() => {
+            const filtersClone = { ...activeFilters };
+            for (let key in filtersClone) filtersClone[key] = false;
+            setActiveFilters(filtersClone);
+          }}
+        >
+          Clear all filters
+        </button>
+        <form id='filters-container'>
+          {Object.entries(activeFilters).map((el) => {
+            return (
+              <div className='filter-item'>
+                <input
+                  type='checkbox'
+                  name={el[0]}
+                  id={el[0]}
+                  checked={el[1]}
+                  onChange={() => {
+                    setActiveFilters({
+                      ...activeFilters,
+                      [el[0]]: !el[1],
+                    });
+                  }}
+                />
+                <label className='filterButton' htmlFor={el[0]}>
+                  {el[0]}
+                </label>
+              </div>
+            );
+          })}
+        </form>
+      </div>
+    );
+  } else {
+    filterContainer = (
+      <div id='filters-band' className='hamburger'>
+        <Accordion
+          disableGutters
+          sx={{
+            color: 'white',
+            backgroundColor: 'rgb(0,0,0,0)',
+            margin: '35px 0px',
+            '&.Mui-expanded:first-of-type': {
+              margin: '35px 0px',
+            },
+            '&.Mui-expanded:last-of-type': {
+              margin: '35px 0px',
+            },
+          }}
+        >
+          <AccordionSummary
+            sx={{
+              backgroundColor: 'rgb(35,35,35)',
+            }}
+            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+            aria-controls='panel1a-content'
+            id='panel1a-header'
+          >
+            <Typography>Filter options</Typography>
+          </AccordionSummary>
+          <AccordionDetails
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              backgroundColor: 'rgb(0,0,0,0)',
+              border: '2px solid rgb(50,50,50)',
+              padding: '6px 5px',
+            }}
+          >
+            <button
+              id='clear-filters-button'
+              className={`filterButton ${
+                activeArr.length !== fullArr.length ? 'active' : 'inactive'
+              }`}
+              onClick={() => {
+                const filtersClone = { ...activeFilters };
+                for (let key in filtersClone) filtersClone[key] = false;
+                setActiveFilters(filtersClone);
+              }}
+            >
+              Clear all filters
+            </button>
+            <form id='filters-container'>
+              {Object.entries(activeFilters).map((el) => {
+                return (
+                  <div className='filter-item'>
+                    <input
+                      type='checkbox'
+                      name={el[0]}
+                      id={el[0]}
+                      checked={el[1]}
+                      onChange={() => {
+                        setActiveFilters({
+                          ...activeFilters,
+                          [el[0]]: !el[1],
+                        });
+                      }}
+                    />
+                    <label className='filterButton' htmlFor={el[0]}>
+                      {el[0]}
+                    </label>
+                  </div>
+                );
+              })}
+            </form>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
+  }
+
   return (
     <HashRouter>
       <div id='Main'>
         <Navbar />
-        <div id='filters-band'>
-          <button
-            id='clear-filters-button'
-            className={
-              activeArr.length !== fullArr.length ? 'active' : 'inactive'
-            }
-            onClick={() => {
-              const filtersClone = { ...activeFilters };
-              for (let key in filtersClone) filtersClone[key] = false;
-              setActiveFilters(filtersClone);
-            }}
-          >
-            Clear all filters
-          </button>
-          <form id='filters-container'>
-            {Object.entries(activeFilters).map((el) => {
-              return (
-                <div className='filter-item'>
-                  <input
-                    type='checkbox'
-                    name={el[0]}
-                    id={el[0]}
-                    checked={el[1]}
-                    onChange={() => {
-                      setActiveFilters({
-                        ...activeFilters,
-                        [el[0]]: !el[1],
-                      });
-                    }}
-                  />
-                  <label htmlFor={el[0]}>{el[0]}</label>
-                </div>
-              );
-            })}
-          </form>
-        </div>
+        {filterContainer}
         <div id='result-summary'>
           Displaying{' '}
           {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
           unobserved species
         </div>
-        {isLoading ? loadingGif : infiniteScroll}
+        {isLoading ? <LoadingGif /> : infiniteScroll}
       </div>
     </HashRouter>
   );
