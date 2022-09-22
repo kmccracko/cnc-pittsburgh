@@ -152,19 +152,6 @@ const App = () => {
   if (matches) {
     filterContainer = (
       <div id='filters-band' className='hotdog'>
-        <button
-          id='clear-filters-button'
-          className={`filterButton ${
-            activeArr.length !== fullArr.length ? 'active' : 'inactive'
-          }`}
-          onClick={() => {
-            const filtersClone = { ...activeFilters };
-            for (let key in filtersClone) filtersClone[key] = false;
-            setActiveFilters(filtersClone);
-          }}
-        >
-          Clear all filters
-        </button>
         <form id='filters-container'>
           {Object.entries(activeFilters).map((el) => {
             return (
@@ -188,6 +175,19 @@ const App = () => {
             );
           })}
         </form>
+        <button
+          id='clear-filters-button'
+          className={`filterButton ${
+            activeArr.length !== fullArr.length ? 'active' : 'inactive'
+          }`}
+          onClick={() => {
+            const filtersClone = { ...activeFilters };
+            for (let key in filtersClone) filtersClone[key] = false;
+            setActiveFilters(filtersClone);
+          }}
+        >
+          Clear all filters
+        </button>
       </div>
     );
   } else {
@@ -227,19 +227,6 @@ const App = () => {
               padding: '6px 5px',
             }}
           >
-            <button
-              id='clear-filters-button'
-              className={`filterButton ${
-                activeArr.length !== fullArr.length ? 'active' : 'inactive'
-              }`}
-              onClick={() => {
-                const filtersClone = { ...activeFilters };
-                for (let key in filtersClone) filtersClone[key] = false;
-                setActiveFilters(filtersClone);
-              }}
-            >
-              Clear all filters
-            </button>
             <form id='filters-container'>
               {Object.entries(activeFilters).map((el) => {
                 return (
@@ -263,6 +250,19 @@ const App = () => {
                 );
               })}
             </form>
+            <button
+              id='clear-filters-button'
+              className={`filterButton ${
+                activeArr.length !== fullArr.length ? 'active' : 'inactive'
+              }`}
+              onClick={() => {
+                const filtersClone = { ...activeFilters };
+                for (let key in filtersClone) filtersClone[key] = false;
+                setActiveFilters(filtersClone);
+              }}
+            >
+              Clear all filters
+            </button>
           </AccordionDetails>
         </Accordion>
       </div>
