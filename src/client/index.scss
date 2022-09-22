@@ -70,8 +70,12 @@ body {
   align-items: center;
   background-color: rgb(18, 18, 18);
   margin-bottom: 15px;
+  &.hotdog {
+    padding: 15px 0px;
+  }
   #clear-filters-button {
     background-color: transparent;
+    margin: 10px 0px;
     padding: 10px 0px;
     width: 250px;
     height: 35px;
@@ -90,7 +94,7 @@ body {
     grid-template-columns: repeat(7, 150px);
     row-gap: 15px;
     column-gap: 10px;
-    padding: 20px;
+    padding: 10px;
   }
 }
 
@@ -196,7 +200,7 @@ body {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1020px) {
   #filters-band {
     #filters-container {
       grid-template-columns: repeat(4, 150px);
@@ -227,7 +231,7 @@ body {
   }
 }
 
-@media only screen and (max-width: 510px) {
+@media only screen and (max-width: 560px) {
   #filters-band {
     #filters-container {
       grid-template-columns: repeat(2, 150px);
@@ -235,11 +239,47 @@ body {
   }
 }
 
-@media only screen and (max-width: 390px) {
+@media only screen and (max-width: 380px) {
+  #cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .card {
     width: 150px;
     .card-img {
       height: 150px;
+    }
+  }
+}
+
+@media only screen and (max-width: 340px) {
+  #filters-band {
+    #filters-container {
+      grid-template-columns: repeat(1, 150px);
+    }
+  }
+  #cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    //   grid-template-columns: repeat(1, 1fr);
+    // }
+    .card {
+      width: 130px;
+      .card-img {
+        height: 130px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 325px) {
+  #cards-container {
+    grid-template-columns: repeat(1, 1fr);
+    //   grid-template-columns: repeat(1, 1fr);
+    // }
+    .card {
+      width: 190px;
+      .card-img {
+        height: 190px;
+      }
     }
   }
 }
@@ -287,4 +327,17 @@ body {
 
 //     color: black;
 //   }
+// }
+
+.filterButton {
+  &:hover {
+    background-color: rgb(255, 255, 255, 0.1) !important;
+  }
+  &:active {
+    transform: scale(1.05, 1.05);
+  }
+}
+
+// * {
+//   border: 1px solid rgb(110, 0, 0) !important;
 // }
