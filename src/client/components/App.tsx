@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter } from 'react-router-dom';
 import axios from 'axios';
 import BirdCard from './BirdCard';
+import LoadingGif from './LoadingGif';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import '../index.scss';
+import Navbar from './Navbar';
 
 // import Checkbox from '@mui/material/Checkbox';
 // import FormControl from '@mui/material/FormControl';
@@ -57,6 +59,7 @@ const App = () => {
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
   const [activeFilters, setActiveFilters] = useState<Object>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // make big fetch
   useEffect(() => {
@@ -72,6 +75,7 @@ const App = () => {
         filters[taxaTranslation[key]] = false;
       }
       setActiveFilters(filters);
+      setIsLoading(false);
     });
   }, []);
 
@@ -122,13 +126,30 @@ const App = () => {
     );
   });
 
+  let loadingGif;
+  if (isLoading) {
+    loadingGif = <LoadingGif />;
+  }
+
+  const infiniteScroll = (
+    <InfiniteScroll
+      pageStart={0}
+      loadMore={handleScroll}
+      hasMore={viewArr.length !== activeArr.length}
+      loader={
+        <div className='loader' key={0}>
+          Loading ...
+        </div>
+      }
+    >
+      <div id='cards-container'>{allCardElements}</div>
+    </InfiniteScroll>
+  );
+
   return (
     <HashRouter>
       <div id='Main'>
-        <div id='navbar'>
-          <span id='pgh'>Pittsburgh</span>
-          <span id='cnc'>CNC</span>
-        </div>
+        <Navbar />
         <div id='filters-band'>
           <form id='filters-container'>
             {Object.entries(activeFilters).map((el) => {
@@ -152,18 +173,12 @@ const App = () => {
             })}
           </form>
         </div>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={handleScroll}
-          hasMore={viewArr.length !== activeArr.length}
-          loader={
-            <div className='loader' key={0}>
-              Loading ...
-            </div>
-          }
-        >
-          <div id='cards-container'>{allCardElements}</div>
-        </InfiniteScroll>
+        <div id='result-summary'>
+          Displaying{' '}
+          {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+          unobserved species
+        </div>
+        {isLoading ? loadingGif : infiniteScroll}
       </div>
     </HashRouter>
   );
