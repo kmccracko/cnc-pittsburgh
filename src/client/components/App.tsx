@@ -151,6 +151,19 @@ const App = () => {
       <div id='Main'>
         <Navbar />
         <div id='filters-band'>
+          <button
+            id='clear-filters-button'
+            className={
+              activeArr.length !== fullArr.length ? 'active' : 'inactive'
+            }
+            onClick={() => {
+              const filtersClone = { ...activeFilters };
+              for (let key in filtersClone) filtersClone[key] = false;
+              setActiveFilters(filtersClone);
+            }}
+          >
+            Clear all filters
+          </button>
           <form id='filters-container'>
             {Object.entries(activeFilters).map((el) => {
               return (
