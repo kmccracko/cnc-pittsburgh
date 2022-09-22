@@ -66,9 +66,25 @@ body {
 #filters-band {
   width: 100vw;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   background-color: rgb(18, 18, 18);
   margin-bottom: 15px;
+  #clear-filters-button {
+    background-color: transparent;
+    padding: 10px 0px;
+    width: 250px;
+    height: 35px;
+    text-align: center;
+    border-radius: 7px;
+    cursor: pointer;
+    color: gray;
+    border: 1px solid gray;
+    &.active {
+      color: rgb(235, 167, 167);
+      border: 1px solid rgb(235, 167, 167);
+    }
+  }
   #filters-container {
     display: grid;
     grid-template-columns: repeat(7, 150px);
