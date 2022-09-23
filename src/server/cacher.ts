@@ -1,73 +1,32 @@
 const NodeCache = require('node-cache');
-import axios, { AxiosResponse } from 'axios';
-type Object = {
-  [key: string]: any;
-};
+
+import { Object } from '../types';
 
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 60 * 30 });
 const db = require('../db/db-connect');
-
-// queries
-const queries: Object = {
-  baseline: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=4%2C5&per_page=1000`,
-  current: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=2022-04-28&d2=2022-05-02&per_page=500`,
-};
-
-// make query function
-const makeQuery = async (type: string) => {
-  console.log('entered makequery');
-  const getNextPage: Function = async (page = 1, fullResult: Object[] = []) => {
-    // make query
-    const result = await axios.get(`${queries[type]}&page=${page}`);
-
-    // show progress
-    console.log('total results: ', result.data.total_results);
-    console.log('page: ', page);
-
-    // update array
-    fullResult.push(
-      ...result.data.results.map((el: Object) => {
-        return {
-          name: el.taxon.preferred_common_name,
-          scientificname: el.taxon.name,
-          count: el.count,
-          taxaid: el.taxon.id,
-          pictureurl: el.taxon.default_photo
-            ? el.taxon.default_photo.medium_url
-            : null,
-          taxon: el.taxon.iconic_taxon_name,
-        };
-      })
-    );
-    console.log('full length: ', fullResult.length);
-
-    // recurse if there's more, else return array
-    if (result.data.total_results > result.data.per_page * page) {
-      return getNextPage(page + 1, fullResult);
-    } else {
-      return fullResult;
-    }
-  };
-  const parsedResults = await getNextPage();
-  return parsedResults;
-};
+const { reinitializeCurrent } = require('../db/db-init');
+const makeQuery = require('../lib/makeQuery');
 
 // check cache function
 const checkCache = async (key: string) => {
-  console.log(myCache.keys());
+  console.log(
+    ' accessing cache, looking for',
+    key,
+    ' - ',
+    new Date().toLocaleString()
+  );
+  console.log('cache contains - ', myCache.keys());
   // check for string in cache
   const keyVal = myCache.get(key);
   let returnVal;
   // if in cache, return value
   if (keyVal) {
     console.log(key, 'already in cache!');
-
     returnVal = keyVal;
   }
   // if not in cache, set value and return that
   else {
     console.log(key, 'not in cache. about to create a key');
-
     let newData;
     let lifeTime;
 
@@ -75,14 +34,63 @@ const checkCache = async (key: string) => {
       newData = await db.query('select * from baseline;');
       newData = newData.rows;
       lifeTime = undefined;
-      returnVal = newData;
     }
     if (key === 'current') {
-      newData = await makeQuery(key);
-      lifeTime = 60 * 30;
-      returnVal = newData;
+      lifeTime = 60 * 10;
+      // send query to DB to get last pull time
+      let oldLastPull = await db.query(
+        `select value from info where label = 'last pull';`
+      );
+      oldLastPull = oldLastPull.rows[0].value;
+      // send query to DB to get everything in Current, reduce result to {id:obj, id:obj}
+      let allCurrent = await db.query(`select * from current;`);
+      allCurrent = allCurrent.rows;
+
+      const allCurrentObj: Object = {};
+      for (let el of allCurrent) allCurrentObj[el.taxaid] = el;
+
+      // save current timestamp in a variable
+      const newLastPull = new Date().toISOString();
+
+      // send query to DB to update last pull time to "current" we just saved
+      await db.query(`update info set value = $1 where label = 'last pull'`, [
+        newLastPull,
+      ]);
+
+      // make query to INAT API for everything SINCE last pull UNTIL "current" time
+      // unless oldCurrent is empty, in which case make full current query
+      console.log('about to pull from ', oldLastPull, ' to ', newLastPull);
+      console.log('current length BEFORE API request: ', allCurrent.length);
+      const newCurrent = allCurrent.length
+        ? await makeQuery(key, oldLastPull, newLastPull)
+        : await makeQuery(key);
+
+      // iterate through result, add/update everything to the current object
+      for (let el of newCurrent) {
+        if (allCurrentObj.hasOwnProperty(el.taxaid)) {
+          console.log(
+            el.scientificname,
+            'already in current.',
+            allCurrentObj[el.taxaid].count,
+            '-',
+            allCurrentObj[el.taxaid].count + el.count
+          );
+          allCurrentObj[el.taxaid].count += el.count;
+        } else {
+          console.log(el.scientificname, 'is new to current!');
+          allCurrentObj[el.taxaid] = el;
+        }
+      }
+
+      // reduce result to [obj, obj]
+      newData = Object.values(allCurrentObj);
+      console.log('current length AFTER api request: ', newData.length);
+
+      // update DB with new current data, only if there's new data
+      if (newCurrent.length) await reinitializeCurrent(newData);
     }
     myCache.set(key, newData, lifeTime); // 3 mins
+    returnVal = newData;
   }
   return returnVal;
 };
@@ -90,14 +98,9 @@ const checkCache = async (key: string) => {
 myCache.on('expired', (key: string, value: any) => {
   console.log(
     key,
-    ' expired! about to replace it - ',
+    ' expired! key should die now - ',
     new Date().toLocaleString()
   );
-  // define new dataset
-  const newData = makeQuery(key);
-  // set cache for 3mins
-  const lifeTime = key === 'current' ? 60 * 30 : 0;
-  myCache.set(key, newData, lifeTime); // 3 mins
 });
 
-module.exports = { checkCache, makeQuery };
+module.exports = checkCache;

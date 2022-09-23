@@ -1,7 +1,7 @@
 // require db
 const db = require('./db-connect.ts');
 // require makeQuery
-const { makeQuery } = require('../server/cacher');
+const makeQuery = require('../lib/makeQuery');
 
 const initializeDB = async () => {
   // make query
@@ -23,7 +23,7 @@ const initializeDB = async () => {
   `;
 
   const fillTable = `
-  INSERT INTO baseline (name, scientificname, count, taxaid, pictureurl, taxon)
+  INSERT INTO baseline (taxaid, count, name, scientificname, pictureurl, taxon)
   VALUES 
   ${JSON.stringify(
     result.map((obj: any) => {
@@ -51,6 +51,43 @@ const initializeDB = async () => {
   await db.query(fillTable).catch((err: Error) => {
     console.log('faled during table fill');
   });
+
+  console.log('COMPLETED current db update');
+};
+
+const reinitializeCurrent = async (currentArr: any) => {
+  // set up queries
+  const clearTable = `
+  DELETE FROM current where taxaid is not null;`;
+
+  const fillTable = `
+  INSERT INTO current (taxaid, count, name, scientificname, pictureurl, taxon)
+  VALUES 
+  ${JSON.stringify(
+    currentArr.map((obj: any) => {
+      return Object.values(obj);
+    })
+  )
+    .replaceAll("'", "''")
+    .replaceAll('"', "'")
+    .replaceAll('[', '(')
+    .replaceAll(']', ')')
+    .slice(1, -1)}
+  ;`;
+
+  // clear table
+  await db.query(clearTable).catch((err: Error) => {
+    console.log('FAILED during table delete');
+    console.log(err);
+  });
+
+  // loop through results and update table
+  await db.query(fillTable).catch((err: Error) => {
+    console.log('FAILED during table fill');
+    console.log(err);
+  });
+
+  console.log('COMPLETED current db update');
 };
 
 const testFunc = async () => {
@@ -59,7 +96,4 @@ const testFunc = async () => {
   console.log(result);
 };
 
-module.exports = { initializeDB, testFunc };
-
-// testFunc();
-// initFunc();
+module.exports = { initializeDB, testFunc, reinitializeCurrent };
