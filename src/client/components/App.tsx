@@ -8,6 +8,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import '../index.scss';
 import Navbar from './Navbar';
 
+import { Object } from '../../types';
+
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -28,9 +30,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 type TallCards = Object[];
 type TNumArr = Number[];
-type Object = {
-  [key: string]: any;
-};
 
 let taxaTranslation: Object = {
   Chromista: 'Chromista 🌿',

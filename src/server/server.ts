@@ -4,13 +4,11 @@ const path = require('path');
 
 // TYPES
 type ServerError = {};
-type Object = {
-  [key: string]: any;
-};
 
 // const cookieParser = require('cookie-parser');
 require('dotenv').config();
 // Import Controllers
+const { initializeDB } = require('../db/db-init.ts');
 const inatController = require('./inat-api-controller');
 //create app instance and other const variables
 const app = express();
@@ -28,14 +26,14 @@ app.use(express.static('dist'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* for use only when updating baseline data
-const {initializeDB} = require('../db/db-init.ts');
-app.use('/db/fillBaseline', (req: Request, res: Response) => {
+//for use only when updating baseline data
+// /*z
+app.use('/db/fillBaseline', async (req: Request, res: Response) => {
   console.log('test from server');
-  initializeDB();
+  await initializeDB();
   return res.sendStatus(201);
 });
-*/
+// */
 
 app.use(
   '/getObs',

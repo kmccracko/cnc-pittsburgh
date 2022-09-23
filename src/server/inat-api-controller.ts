@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-const { checkCache } = require('./cacher');
+import { Object } from '../types';
+const checkCache = require('./cacher');
 
 type controller = {
   [key: string]: RequestHandler;
-};
-
-type Object = {
-  [key: string]: any;
 };
 
 const inat: controller = {};
