@@ -334,8 +334,9 @@ body {
     background-color: rgb(255, 255, 255, 0.1) !important;
   }
   &:active {
-    transform: scale(1.05, 1.05);
+    transform: scale(0.95, 0.95);
   }
+  transition: background-color 300ms, transform 50ms;
 }
 
 // * {
