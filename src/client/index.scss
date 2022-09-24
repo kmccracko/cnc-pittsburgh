@@ -1,11 +1,11 @@
 body {
   background-color: rgb(31, 31, 35);
-  display: flex;
   justify-content: center;
   color: rgb(203, 203, 203);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
+  margin: 0px;
 }
 
 #root {
@@ -19,6 +19,35 @@ body {
   align-items: center;
 }
 
+#about {
+  width: 85%;
+  max-width: 900px;
+  h1 {
+    text-align: center;
+    margin: 40px;
+  }
+  h2 {
+    color: rgb(222, 203, 116);
+  }
+  p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  a {
+    color: rgb(230, 224, 152);
+    :visited {
+      color: rgb(194, 189, 127);
+    }
+  }
+  li {
+    font-size: 1.1rem;
+    margin: 5px 0px;
+  }
+  .spacer {
+    height: 30px;
+  }
+}
+
 #navbar {
   width: 100%;
   display: flex;
@@ -26,26 +55,35 @@ body {
   background-color: black;
   align-items: center;
   height: 70px;
-  #nav-left {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: x-large;
-    font-weight: 400;
+  #home-link {
+    all: unset;
     padding-left: 4%;
-    #pgh {
-      padding-right: 7px;
-      color: rgb(230, 214, 0);
+    :hover {
+      transform: scale(1.1);
     }
-    #cnc {
-      padding: 0px 7px 0px 7px;
-      font-weight: 600;
-      background-color: rgb(230, 214, 0);
-      height: 100%;
-      display: inline-flex;
+    #nav-left {
+      cursor: pointer;
+      transition: transform 300ms;
+      display: flex;
       align-items: center;
+      justify-content: flex-start;
+      font-size: x-large;
+      font-weight: 400;
+      // padding-left: 4%;
+      #pgh {
+        padding-right: 7px;
+        color: rgb(230, 214, 0);
+      }
+      #cnc {
+        padding: 0px 7px 0px 7px;
+        font-weight: 600;
+        background-color: rgb(230, 214, 0);
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
 
-      color: black;
+        color: black;
+      }
     }
   }
   #nav-right {
@@ -336,7 +374,7 @@ body {
   &:active {
     transform: scale(0.95, 0.95);
   }
-  transition: background-color 300ms, transform 50ms;
+  transition: background-color 300ms, transform 30ms;
 }
 
 // * {
