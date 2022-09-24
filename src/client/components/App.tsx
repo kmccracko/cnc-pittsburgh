@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import '../index.scss';
@@ -19,7 +19,7 @@ const App = () => {
   // set vars
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
-  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // make big fetch
   useEffect(() => {
@@ -27,7 +27,7 @@ const App = () => {
     axios.get('/getObs').then((res) => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
-      // setIsLoading(false);
+      setIsLoading(false);
     });
   }, []);
 
@@ -37,8 +37,13 @@ const App = () => {
       <Routes>
         <Route
           path='/'
-          element={<Feed fullArray={fullArr} taxaArrays={taxaArrays} />}
-          // element={<div>HELLO!</div>}
+          element={
+            <Feed
+              fullArray={fullArr}
+              taxaArrays={taxaArrays}
+              isLoading={isLoading}
+            />
+          }
         />
         <Route path='/about' element={<About />} />
       </Routes>

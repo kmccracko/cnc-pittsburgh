@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import BirdCard from './BirdCard';
-import LoadingGif from './LoadingGif';
 import '../index.scss';
-import Navbar from './Navbar';
+import LoadingGif from './LoadingGif';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -44,6 +43,7 @@ taxaTranslation = Object.fromEntries([
 interface IfeedProps {
   fullArray: any[];
   taxaArrays: Object;
+  isLoading: boolean;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -52,7 +52,6 @@ const Feed = (props: IfeedProps) => {
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [activeFilters, setActiveFilters] = useState<Object>({});
-  //   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // make big fetch
   useEffect(() => {
@@ -63,7 +62,6 @@ const Feed = (props: IfeedProps) => {
       filters[taxaTranslation[key]] = false;
     }
     setActiveFilters(filters);
-    // setIsLoading(false);
   }, [props.fullArray]);
 
   // on change of viewArr
@@ -261,8 +259,7 @@ const Feed = (props: IfeedProps) => {
         {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
         unobserved species
       </div>
-      {infiniteScroll}
-      {/* {isLoading ? <LoadingGif /> : infiniteScroll} */}
+      {props.isLoading ? <LoadingGif /> : infiniteScroll}
     </div>
   );
 };
