@@ -1,24 +1,25 @@
 import React from 'react';
-
-// import puckman from '../assets/puckman.gif';
-// import * as puckman from '../assets/puckman.gif';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
     <div id='navbar'>
-      <div id='nav-left'>
-        <span id='pgh'>Pittsburgh</span>
-        <span id='cnc'>CNC</span>
-      </div>
+      <Link to='/' id='home-link'>
+        <div id='nav-left'>
+          <span id='pgh'>Pittsburgh</span>
+          <span id='cnc'>CNC</span>
+        </div>
+      </Link>
       <div id='nav-right'>
-        <a href=''>About</a>
+        <Link to='/about'>
+          <a href='/about'>About</a>
+        </Link>
         <a
           href='https://carnegiemnh.org/explore/city-nature-challenge/'
           target='_blank'
         >
           CNC
         </a>
-        {/* <a href=''>Taxonomy</a> */}
       </div>
     </div>
   );

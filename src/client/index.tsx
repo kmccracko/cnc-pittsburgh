@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
 import App from './components/App';
 
 console.log('hello');
@@ -13,7 +14,9 @@ const root = createRoot(document.getElementById('root')!);
 root.render(
   // <ThemeProvider theme={theme}>
   // <React.StrictMode>
-  <App />
+  <HashRouter>
+    <App />
+  </HashRouter>
   // </React.StrictMode>
   // </ThemeProvider>
 );
