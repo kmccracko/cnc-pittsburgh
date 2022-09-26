@@ -6,6 +6,7 @@ import '../index.scss';
 import Navbar from './Navbar';
 import Feed from './Feed';
 import About from './About';
+import Countdown from './Countdown';
 
 type TallCards = Object[];
 type TNumArr = Number[];
@@ -20,15 +21,38 @@ const App = () => {
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(undefined);
 
   // make big fetch
   useEffect(() => {
     axios.get('/getObs').then((res) => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
+      setTimer(res.data.timeRemaining);
       setIsLoading(false);
     });
   }, []);
+
+  let timerId: any;
+  useEffect(() => {
+    if (isLoading === false) {
+      // start timer
+      timerId = setInterval(() => {
+        setTimer((timer) => {
+          // console.log(timer);
+          return timer - 1;
+        });
+      }, 1000);
+      setIntervalId(timerId);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (timer < 1) clearInterval(intervalId);
+  }, [timer]);
+
+  const transferCount = (timer?: number) => {};
 
   return (
     <div id='Main'>
@@ -41,6 +65,13 @@ const App = () => {
               fullArray={fullArr}
               taxaArrays={taxaArrays}
               isLoading={isLoading}
+              countdownComponent={
+                !isLoading && intervalId ? (
+                  <Countdown startTime={timer} transferCount={transferCount} />
+                ) : (
+                  <></>
+                )
+              }
             />
           }
         />

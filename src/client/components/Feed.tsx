@@ -37,6 +37,7 @@ interface IfeedProps {
   fullArray: any[];
   taxaArrays: Object;
   isLoading: boolean;
+  countdownComponent: JSX.Element;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -137,6 +138,7 @@ const Feed = (props: IfeedProps) => {
           activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
         }
       />
+      {props.countdownComponent}
       <div id='result-summary'>
         Displaying{' '}
         {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}

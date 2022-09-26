@@ -13,13 +13,17 @@ const inat: controller = {};
 
 inat.getCurrent = async (req: Request, res: Response, next: NextFunction) => {
   // check cache or update cache, then return value
-  res.locals.current = await checkCache('current');
+  const { returnVal, timeRemaining } = await checkCache('current');
+  res.locals.current = returnVal;
+  res.locals.timeRemaining = timeRemaining;
   return next();
 };
 
 inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
   // check cache or update cache, then return value
-  res.locals.baseline = await checkCache('baseline');
+  const { returnVal, timeRemaining } = await checkCache('baseline');
+  res.locals.baseline = returnVal;
+  res.locals.timeRemaining = timeRemaining;
   return next();
 };
 
