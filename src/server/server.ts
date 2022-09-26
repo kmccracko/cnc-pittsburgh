@@ -47,6 +47,7 @@ app.use(
     return res.status(200).json({
       taxaArrays: res.locals.taxaArrays,
       fullArray: res.locals.fullArray,
+      timeRemaining: res.locals.timeRemaining,
     });
   }
 );

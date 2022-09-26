@@ -4,8 +4,9 @@ type Object = {
   [key: string]: any;
 };
 
-const myCache = new NodeCache({ stdTTL: 0, checkperiod: 60 * 30 });
+const myCache = new NodeCache({ stdTTL: 0 });
 const db = require('../db/db-connect');
+const currentLife = 60 * 30;
 
 // queries
 const queries: Object = {
@@ -68,36 +69,28 @@ const checkCache = async (key: string) => {
   else {
     console.log(key, 'not in cache. about to create a key');
 
-    let newData;
     let lifeTime;
 
     if (key === 'baseline') {
-      newData = await db.query('select * from baseline;');
-      newData = newData.rows;
+      returnVal = await db.query('select * from baseline;');
+      returnVal = returnVal.rows;
       lifeTime = undefined;
-      returnVal = newData;
     }
     if (key === 'current') {
-      newData = await makeQuery(key);
-      lifeTime = 60 * 30;
-      returnVal = newData;
+      returnVal = await makeQuery(key);
+      lifeTime = currentLife;
     }
-    myCache.set(key, newData, lifeTime); // 3 mins
+    myCache.set(key, returnVal, lifeTime); // 3 mins
   }
-  return returnVal;
+  // get time left on current's cache
+  let timeOfExpiry = myCache.getTtl('current');
+  const timeRemaining = (timeOfExpiry - +new Date()) / 1000;
+
+  return { returnVal, timeRemaining };
 };
 
 myCache.on('expired', (key: string, value: any) => {
-  console.log(
-    key,
-    ' expired! about to replace it - ',
-    new Date().toLocaleString()
-  );
-  // define new dataset
-  const newData = makeQuery(key);
-  // set cache for 3mins
-  const lifeTime = key === 'current' ? 60 * 30 : 0;
-  myCache.set(key, newData, lifeTime); // 3 mins
+  console.log(key, ' expired! ', new Date().toLocaleString());
 });
 
 module.exports = { checkCache, makeQuery };
