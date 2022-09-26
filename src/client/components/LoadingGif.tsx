@@ -4,10 +4,15 @@ import React from 'react';
 // import puckman from '../assets/puckman.gif';
 // import * as puckman from '../assets/puckman.gif';
 
-const LoadingGif = () => {
+interface IloadingGifProps {
+  size: string;
+  color?: string;
+}
+
+const LoadingGif = (props: IloadingGifProps) => {
   return (
     <div id='loader'>
-      <CircularProgress size='5rem' />
+      <CircularProgress size={`${props.size}rem`} />
     </div>
   );
 };

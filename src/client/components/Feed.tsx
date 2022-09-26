@@ -4,16 +4,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 import BirdCard from './BirdCard';
 import '../index.scss';
 import LoadingGif from './LoadingGif';
-
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import Filter from './Filter';
 
 type TallCards = Object[];
-type TNumArr = Number[];
 type Object = {
   [key: string]: any;
 };
@@ -47,7 +40,6 @@ interface IfeedProps {
 }
 
 const Feed = (props: IfeedProps) => {
-  console.log(props.fullArray);
   // set vars
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
@@ -64,12 +56,7 @@ const Feed = (props: IfeedProps) => {
     setActiveFilters(filters);
   }, [props.fullArray]);
 
-  // on change of viewArr
-  useEffect(() => {
-    console.log(viewArr);
-  }, [viewArr]);
-
-  // on filter change
+  // on filter change, update activeArr and viewArr
   useEffect(() => {
     let newView = [];
     // if no active filters, show everything
@@ -91,6 +78,18 @@ const Feed = (props: IfeedProps) => {
     setActiveArr(newView);
     setViewArr(newView.slice(0, 25));
   }, [activeFilters]);
+
+  // update one filter
+  const toggleFilter = (el?: [string, boolean]) => {
+    setActiveFilters({ ...activeFilters, [el[0]]: !el[1] });
+  };
+
+  // toggle all filters to false
+  const clearAllFilters = () => {
+    const filtersClone = { ...activeFilters };
+    for (let key in filtersClone) filtersClone[key] = false;
+    setActiveFilters(filtersClone);
+  };
 
   function handleScroll() {
     setViewArr([
@@ -127,139 +126,23 @@ const Feed = (props: IfeedProps) => {
     </InfiniteScroll>
   );
 
-  const matches = useMediaQuery('(min-width:601px)');
-  let filterContainer;
-  if (matches) {
-    filterContainer = (
-      <div id='filters-band' className='hotdog'>
-        <form id='filters-container'>
-          {Object.entries(activeFilters).map((el) => {
-            return (
-              <div className='filter-item'>
-                <input
-                  type='checkbox'
-                  name={el[0]}
-                  id={el[0]}
-                  checked={el[1]}
-                  onChange={() => {
-                    setActiveFilters({
-                      ...activeFilters,
-                      [el[0]]: !el[1],
-                    });
-                  }}
-                />
-                <label className='filterButton' htmlFor={el[0]}>
-                  {el[0]}
-                </label>
-              </div>
-            );
-          })}
-        </form>
-        <button
-          id='clear-filters-button'
-          className={`filterButton ${
-            activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
-          }`}
-          onClick={() => {
-            const filtersClone = { ...activeFilters };
-            for (let key in filtersClone) filtersClone[key] = false;
-            setActiveFilters(filtersClone);
-          }}
-        >
-          Clear all filters
-        </button>
-      </div>
-    );
-  } else {
-    filterContainer = (
-      <div id='filters-band' className='hamburger'>
-        <Accordion
-          disableGutters
-          sx={{
-            color: 'white',
-            backgroundColor: 'rgb(0,0,0,0)',
-            margin: '35px 0px',
-            '&.Mui-expanded:first-of-type': {
-              margin: '35px 0px',
-            },
-            '&.Mui-expanded:last-of-type': {
-              margin: '35px 0px',
-            },
-          }}
-        >
-          <AccordionSummary
-            sx={{
-              backgroundColor: 'rgb(35,35,35)',
-            }}
-            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-            aria-controls='panel1a-content'
-            id='panel1a-header'
-          >
-            <Typography>Filter options</Typography>
-          </AccordionSummary>
-          <AccordionDetails
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              backgroundColor: 'rgb(0,0,0,0)',
-              border: '2px solid rgb(50,50,50)',
-              padding: '6px 5px',
-            }}
-          >
-            <form id='filters-container'>
-              {Object.entries(activeFilters).map((el) => {
-                return (
-                  <div className='filter-item'>
-                    <input
-                      type='checkbox'
-                      name={el[0]}
-                      id={el[0]}
-                      checked={el[1]}
-                      onChange={() => {
-                        setActiveFilters({
-                          ...activeFilters,
-                          [el[0]]: !el[1],
-                        });
-                      }}
-                    />
-                    <label className='filterButton' htmlFor={el[0]}>
-                      {el[0]}
-                    </label>
-                  </div>
-                );
-              })}
-            </form>
-            <button
-              id='clear-filters-button'
-              className={`filterButton ${
-                activeArr.length !== props.fullArray.length
-                  ? 'active'
-                  : 'inactive'
-              }`}
-              onClick={() => {
-                const filtersClone = { ...activeFilters };
-                for (let key in filtersClone) filtersClone[key] = false;
-                setActiveFilters(filtersClone);
-              }}
-            >
-              Clear all filters
-            </button>
-          </AccordionDetails>
-        </Accordion>
-      </div>
-    );
-  }
-
   return (
     <div id='Main'>
-      {filterContainer}
+      <Filter
+        activeFilters={activeFilters}
+        toggleFilter={toggleFilter}
+        clearAllFilters={clearAllFilters}
+        isLoading={props.isLoading ? true : false}
+        status={
+          activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
+        }
+      />
       <div id='result-summary'>
         Displaying{' '}
         {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
         unobserved species
       </div>
-      {props.isLoading ? <LoadingGif /> : infiniteScroll}
+      {props.isLoading ? <LoadingGif size='5' /> : infiniteScroll}
     </div>
   );
 };

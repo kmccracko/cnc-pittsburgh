@@ -23,7 +23,6 @@ const App = () => {
 
   // make big fetch
   useEffect(() => {
-    console.log('useeffect');
     axios.get('/getObs').then((res) => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
