@@ -49,7 +49,7 @@ const Feed = (props: IfeedProps) => {
   // make big fetch
   useEffect(() => {
     setActiveArr(props.fullArray);
-    setViewArr(props.fullArray.slice(0, 25));
+    setViewArr(props.fullArray.slice(0, 5));
     const filters: Object = {};
     for (const key in props.taxaArrays) {
       filters[taxaTranslation[key]] = false;
@@ -95,7 +95,7 @@ const Feed = (props: IfeedProps) => {
   function handleScroll() {
     setViewArr([
       ...viewArr,
-      ...activeArr.slice(viewArr.length, viewArr.length + 25),
+      ...activeArr.slice(viewArr.length, viewArr.length + 5),
     ]);
   }
 

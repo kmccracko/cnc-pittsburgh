@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface IbirdCardProps {
   name: string;
@@ -9,10 +9,19 @@ interface IbirdCardProps {
 }
 
 const BirdCard = (props: IbirdCardProps) => {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <div className='card'>
       <div className='card-img'>
-        <img src={props.pictureUrl} />
+        <img
+          className={imgLoaded ? 'bouncy' : ''}
+          src={props.pictureUrl}
+          // loading='lazy'
+          onLoad={(e) => {
+            setImgLoaded(true);
+          }}
+        />
         <div className='count'>
           <a
             href={`https://www.inaturalist.org/observations?month=4,5&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
