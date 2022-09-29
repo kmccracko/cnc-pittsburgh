@@ -18,7 +18,7 @@ const About = () => {
         City Nature Challenge.
         <br />
         <br />
-        This site uses INaturalist data to identify species that have not yet
+        This site uses iNaturalist data to identify species that have not yet
         been observed within a given date range, and sorts them such that the
         most likely to be observed species are positioned at the top of the
         list. This provides ideas of what to seek out, and ensures species
@@ -29,14 +29,16 @@ const About = () => {
         However you like! My grandmother enjoyed looking at the birds, mostly.
         Just know that the species that appear in the feed are ones that have
         not yet been identified in the given timeframe. Naturalists can use this
-        information to guide your efforts in observing as many new species as
-        you can.
+        information to guide their efforts in observing as many new species as
+        possible.
       </p>
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
-        The site will have a new update every 30 minutes, but requires a page
-        refresh in order to deliver the new data. I'll add a "time since"
-        counter for you soon so you can keep track.
+        The network of hamster wheels that keeps this site running is able to
+        fetch updates every 30 minutes, but requires a page refresh in order to
+        deliver the new data. There's a countdown on the feed page that shows
+        how much time is left, and if you like math, how recently the data has
+        been updated.
       </p>
       <h2>How did you decide what filters to offer?</h2>
       <p>
@@ -44,7 +46,7 @@ const About = () => {
         <a href='https://www.inaturalist.org/taxa/' target='_blank'>
           taxa page
         </a>{' '}
-        on INaturalist lists the major categories it uses. Note that these are
+        on iNaturalist lists the major categories it uses. Note that these are
         different levels of identification, including kingdoms, classes, and
         phylums.
       </p>

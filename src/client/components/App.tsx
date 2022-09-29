@@ -21,8 +21,6 @@ const App = () => {
   const [fullArr, setFullArr] = useState<TallCards>([]);
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [timer, setTimer] = useState(0);
-  const [intervalId, setIntervalId] = useState(undefined);
   const [refreshTime, setRefreshTime] = useState(0);
 
   // make big fetch
@@ -31,28 +29,9 @@ const App = () => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
-      setTimer(res.data.timeRemaining);
       setIsLoading(false);
     });
   }, []);
-
-  let timerId: any;
-  useEffect(() => {
-    if (isLoading === false) {
-      // start timer
-      timerId = setInterval(() => {
-        setTimer((timer) => {
-          // console.log(timer);
-          return timer - 1;
-        });
-      }, 1000);
-      setIntervalId(timerId);
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (timer < 1) clearInterval(intervalId);
-  }, [timer]);
 
   return (
     <div id='Main'>
@@ -66,11 +45,7 @@ const App = () => {
               taxaArrays={taxaArrays}
               isLoading={isLoading}
               countdownComponent={
-                !isLoading && intervalId ? (
-                  <Countdown startTime={timer} refreshTime={refreshTime} />
-                ) : (
-                  <></>
-                )
+                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
               }
             />
           }
