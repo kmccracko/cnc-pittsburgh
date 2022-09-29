@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 interface IcountdownProps {
   startTime: number;
-  transferCount: Function;
+  refreshTime: number;
 }
 
 const Countdown = (props: IcountdownProps) => {
@@ -17,14 +17,13 @@ const Countdown = (props: IcountdownProps) => {
     if (timer >= 1) {
       timerInterval = setInterval(() => {
         setTimer((timer) => {
-          console.log(timer);
+          // console.log(timer);
           return timer - 1;
         });
       }, 1000);
       setIntervalId(timerInterval);
     }
     // clear interval
-    props.transferCount();
     return function cleanup() {
       if (timerInterval) {
         clearInterval(timerInterval);
@@ -34,6 +33,8 @@ const Countdown = (props: IcountdownProps) => {
   }, []);
 
   useEffect(() => {
+    // if refreshtime has arrived (browser can unload page)
+    if (+new Date() > props.refreshTime) setTimer(0);
     if (timer < 1) clearInterval(intervalId);
   }, [timer]);
 
@@ -49,7 +50,6 @@ const Countdown = (props: IcountdownProps) => {
         .padStart(2, '0')}
     </div>
   );
-
   const dataReady = (
     <div className='ready'>
       <a href=''>New data available. Click me to update!</a>

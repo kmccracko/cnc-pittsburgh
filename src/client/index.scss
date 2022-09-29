@@ -190,6 +190,26 @@ body {
     opacity: 1;
   }
 }
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+.bouncy {
+  animation-name: bounce;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
 
 #result-summary {
   margin: 10px 0px 20px 0px;

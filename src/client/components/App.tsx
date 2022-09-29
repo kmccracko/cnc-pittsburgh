@@ -23,12 +23,14 @@ const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [timer, setTimer] = useState(0);
   const [intervalId, setIntervalId] = useState(undefined);
+  const [refreshTime, setRefreshTime] = useState(0);
 
   // make big fetch
   useEffect(() => {
     axios.get('/getObs').then((res) => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
+      setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
       setTimer(res.data.timeRemaining);
       setIsLoading(false);
     });
@@ -52,8 +54,6 @@ const App = () => {
     if (timer < 1) clearInterval(intervalId);
   }, [timer]);
 
-  const transferCount = (timer?: number) => {};
-
   return (
     <div id='Main'>
       <Navbar />
@@ -67,7 +67,7 @@ const App = () => {
               isLoading={isLoading}
               countdownComponent={
                 !isLoading && intervalId ? (
-                  <Countdown startTime={timer} transferCount={transferCount} />
+                  <Countdown startTime={timer} refreshTime={refreshTime} />
                 ) : (
                   <></>
                 )
