@@ -1,51 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
 interface IcountdownProps {
-  startTime: number;
-  refreshTime: number;
+  refreshTime: number; // time in ms
 }
 
 const Countdown = (props: IcountdownProps) => {
-  const [timer, setTimer] = useState(props.startTime);
+  const [timeRemaining, setTimeRemaining] = useState(
+    props.refreshTime - +new Date()
+  ); // timer in ms
   const [intervalId, setIntervalId] = useState(undefined);
 
   useEffect(() => {
-    console.log('creating the countdown with ', props.startTime);
-
     // start interval
     let timerInterval: any;
-    if (timer >= 1) {
+    if (timeRemaining >= 1) {
       timerInterval = setInterval(() => {
-        setTimer((timer) => {
-          // console.log(timer);
-          return timer - 1;
-        });
+        setTimeRemaining(props.refreshTime - +new Date());
       }, 1000);
       setIntervalId(timerInterval);
     }
     // clear interval
     return function cleanup() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        console.log('leaving countdown with ', timer);
-      }
+      if (timerInterval) clearInterval(timerInterval);
     };
   }, []);
 
   useEffect(() => {
-    // if refreshtime has arrived (browser can unload page)
-    if (+new Date() > props.refreshTime) setTimer(0);
-    if (timer < 1) clearInterval(intervalId);
-  }, [timer]);
+    // if refreshtime has arrived (browser can freeze page)
+    if (+new Date() > props.refreshTime) setTimeRemaining(0);
+    if (timeRemaining < 1) clearInterval(intervalId);
+  }, [timeRemaining]);
 
   const timerText = (
     <div className='pending'>
       New data available in{' '}
-      {Math.floor((timer % 3600) / 60)
+      {Math.floor(timeRemaining / 60000)
         .toString()
         .padStart(2, '0')}
       :{' '}
-      {Math.floor(timer % 60)
+      {Math.floor((timeRemaining % 60000) / 1000)
         .toString()
         .padStart(2, '0')}
     </div>
@@ -56,7 +49,9 @@ const Countdown = (props: IcountdownProps) => {
     </div>
   );
 
-  return <div id='countainer'>{timer >= 1 ? timerText : dataReady}</div>;
+  return (
+    <div id='countainer'>{timeRemaining >= 1 ? timerText : dataReady}</div>
+  );
 };
 
 export default Countdown;
