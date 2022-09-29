@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import BirdCard from './BirdCard';
-import '../index.scss';
 import LoadingGif from './LoadingGif';
 import Filter from './Filter';
 
@@ -139,12 +138,21 @@ const Feed = (props: IfeedProps) => {
         }
       />
       {props.countdownComponent}
-      <div id='result-summary'>
-        Displaying{' '}
-        {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-        unobserved species
-      </div>
-      {props.isLoading ? <LoadingGif size='5' /> : infiniteScroll}
+
+      {props.isLoading ? (
+        // <React.Fragment>
+        <LoadingGif size='5' />
+      ) : (
+        // </React.Fragment>
+        <React.Fragment>
+          <div id='result-summary'>
+            Displaying{' '}
+            {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+            unobserved species
+          </div>
+          {infiniteScroll}
+        </React.Fragment>
+      )}
     </div>
   );
 };

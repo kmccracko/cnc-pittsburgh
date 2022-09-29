@@ -1,8 +1,5 @@
 import React from 'react';
 
-import '../index.scss';
-import LoadingGif from './LoadingGif';
-
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';

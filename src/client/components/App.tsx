@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
-import '../index.scss';
+import '../styles/index.scss';
 import Navbar from './Navbar';
 import Feed from './Feed';
 import About from './About';
