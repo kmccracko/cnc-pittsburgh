@@ -33,7 +33,7 @@ const LoadingGif = (props: IloadingGifProps) => {
       <img className='hamster' src={hamsterGif}></img>
       <div className='loading-text'>
         <span className='hidden'>{'.'.repeat(dots)}</span>
-        This hamster works hard so you don't have to. New data coming right up
+        The server hamster is fetching your data
         <span>{'.'.repeat(dots)}</span>
       </div>
     </div>
