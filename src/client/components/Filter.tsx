@@ -99,12 +99,12 @@ const Filter = (props: IfilterProps) => {
           sx={{
             color: 'white',
             backgroundColor: 'rgb(0,0,0,0)',
-            margin: '35px 0px',
+            margin: '3% 0px',
             '&.Mui-expanded:first-of-type': {
-              margin: '35px 0px',
+              margin: '3% 0px',
             },
             '&.Mui-expanded:last-of-type': {
-              margin: '35px 0px',
+              margin: '3% 0px',
             },
           }}
         >
