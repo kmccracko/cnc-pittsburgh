@@ -293,6 +293,39 @@ body {
   }
 }
 
+// @keyframes dots {
+//   from {
+//     opacity: 1;
+//     font-size: xx-large;
+//   }
+//   50% {
+//     opacity: 0;
+//     font-size: large;
+//   }
+//   to {
+//     opacity: 1;
+//     font-size: xx-large;
+//   }
+// }
+
+// .dots {
+//   font-size: large;
+//   animation: dots 1.5s ease-in-out infinite;
+// }
+// .dot1 {
+//   animation-delay: 0s;
+// }
+// .dot2 {
+//   animation-delay: 500ms;
+// }
+// .dot3 {
+//   animation-delay: 1000ms;
+// }
+// .dot4 {
+//   visibility: hidden;
+//   font-size: xx-large;
+// }
+
 @media only screen and (max-width: 1200px) {
   #filters-band {
     #filters-container {
