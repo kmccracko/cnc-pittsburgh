@@ -1,5 +1,5 @@
 const NodeCache = require('node-cache');
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 type Object = {
   [key: string]: any;
 };
