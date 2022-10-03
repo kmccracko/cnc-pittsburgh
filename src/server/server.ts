@@ -28,14 +28,13 @@ app.use(express.static('dist'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* for use only when updating baseline data
-const {initializeDB} = require('../db/db-init.ts');
+// for use only when updating baseline data
+const { initializeDB } = require('../db/db-init.ts');
 app.use('/db/fillBaseline', (req: Request, res: Response) => {
   console.log('test from server');
   initializeDB();
   return res.sendStatus(201);
 });
-*/
 
 app.use('/assets', express.static('src/client/assets'));
 app.use('/styles', express.static('src/client/styles'));
@@ -79,6 +78,7 @@ app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
   return res.status(400).json(err);
 });
 
-app.listen(3003, () => {
-  console.log(`Server listening on port: 3003`);
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => {
+  console.log(`Server listening on port: ${PORT}`);
 });

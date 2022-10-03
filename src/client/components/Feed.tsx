@@ -146,9 +146,21 @@ const Feed = (props: IfeedProps) => {
         // </React.Fragment>
         <React.Fragment>
           <div id='result-summary'>
-            Displaying{' '}
-            {activeArr.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-            unobserved species
+            <span>
+              Displaying{' '}
+              {activeArr.length
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+              unobserved species during&nbsp;
+            </span>{' '}
+            <span>
+              {`${new Date(process.env.CURRENT_D1).toLocaleDateString('en-US', {
+                timeZone: 'UTC',
+              })}-${new Date(process.env.CURRENT_D2).toLocaleDateString(
+                'en-US',
+                { timeZone: 'UTC' }
+              )}`}
+            </span>
           </div>
           {infiniteScroll}
         </React.Fragment>
