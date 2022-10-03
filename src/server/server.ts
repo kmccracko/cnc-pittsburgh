@@ -1,15 +1,12 @@
 // Require Modules
+require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
 const path = require('path');
+const { checkEnv, initializeDB } = require('../db/db-init.ts');
 
 // TYPES
 type ServerError = {};
-type Object = {
-  [key: string]: any;
-};
 
-// const cookieParser = require('cookie-parser');
-require('dotenv').config();
 // Import Controllers
 const inatController = require('./inat-api-controller');
 //create app instance and other const variables
@@ -29,7 +26,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // for use only when updating baseline data
-const { initializeDB } = require('../db/db-init.ts');
 app.use('/db/fillBaseline', (req: Request, res: Response) => {
   console.log('test from server');
   initializeDB();
@@ -62,7 +58,6 @@ app.get('/', (req: Request, res: Response) => {
 app.use('*', (req: Request, res: Response) => {
   console.log('sending back from 404 route');
   return res.sendStatus(404);
-  // res.status(206).sendFile(path.resolve(__dirname, '../dist/index.html'));
 });
 
 //create global error handler
@@ -79,6 +74,7 @@ app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT = process.env.PORT || 3003;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await checkEnv();
   console.log(`Server listening on port: ${PORT}`);
 });
