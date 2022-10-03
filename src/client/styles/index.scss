@@ -212,6 +212,9 @@ body {
 }
 
 #result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin: 10px 0px 20px 0px;
   font-size: large;
   // font-weight: ;
@@ -376,6 +379,9 @@ body {
 }
 
 @media only screen and (max-width: 380px) {
+  #result-summary span {
+    font-size: medium;
+  }
   #cards-container {
     grid-template-columns: repeat(2, 1fr);
   }

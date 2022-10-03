@@ -24,7 +24,7 @@ const BirdCard = (props: IbirdCardProps) => {
         />
         <div className='count'>
           <a
-            href={`https://www.inaturalist.org/observations?month=4,5&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
+            href={`https://www.inaturalist.org/observations?month=${process.env.BASELINE_MONTH}&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
             target='_blank'
           >
             {props.count} Observations
@@ -37,7 +37,7 @@ const BirdCard = (props: IbirdCardProps) => {
             href={`https://www.inaturalist.org/taxa/${props.taxaId}`}
             target='_blank'
           >
-            {props.name}
+            {props.name || 'No Common Name'}
           </a>
         </div>
         <div className='scientific-name'>({props.scientificName})</div>
