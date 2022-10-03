@@ -37,6 +37,9 @@ app.use('/db/fillBaseline', (req: Request, res: Response) => {
 });
 */
 
+app.use('/assets', express.static('src/client/assets'));
+app.use('/styles', express.static('src/client/styles'));
+
 app.use(
   '/getObs',
   inatController.getBaseline,

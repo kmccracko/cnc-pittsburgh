@@ -1,8 +1,5 @@
 import React from 'react';
 
-import '../index.scss';
-import LoadingGif from './LoadingGif';
-
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -102,12 +99,12 @@ const Filter = (props: IfilterProps) => {
           sx={{
             color: 'white',
             backgroundColor: 'rgb(0,0,0,0)',
-            margin: '35px 0px',
+            margin: '3% 0px',
             '&.Mui-expanded:first-of-type': {
-              margin: '35px 0px',
+              margin: '3% 0px',
             },
             '&.Mui-expanded:last-of-type': {
-              margin: '35px 0px',
+              margin: '3% 0px',
             },
           }}
         >
