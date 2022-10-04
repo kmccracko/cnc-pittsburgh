@@ -8,7 +8,11 @@ import React from 'react';
 
 // somewhere, give credit the the philly guy for the idea
 
-const About = () => {
+interface IaboutProps {
+  queryInfo: Object;
+}
+
+const About = (props: IaboutProps) => {
   return (
     <div id='about'>
       <h1>About The Site</h1>

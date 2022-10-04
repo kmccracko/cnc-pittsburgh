@@ -69,7 +69,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/client/index.html',
     }),
-    new Dotenv({ systemvars: true }),
+    // new Dotenv({ systemvars: true }),
     // new BundleAnalyzerPlugin(),
   ],
 };

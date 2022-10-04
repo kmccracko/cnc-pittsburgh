@@ -37,6 +37,7 @@ interface IfeedProps {
   taxaArrays: Object;
   isLoading: boolean;
   countdownComponent: JSX.Element;
+  queryInfo: Object;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -107,6 +108,7 @@ const Feed = (props: IfeedProps) => {
         scientificName={el.scientificname}
         count={el.count}
         pictureUrl={el.pictureurl}
+        obsMonth={props.queryInfo.baselineMonth}
       />
     );
   });
@@ -154,9 +156,9 @@ const Feed = (props: IfeedProps) => {
               unobserved species during&nbsp;
             </span>{' '}
             <span>
-              {`${new Date(process.env.CURRENT_D1).toLocaleDateString('en-US', {
+              {`${new Date(props.queryInfo.curD1).toLocaleDateString('en-US', {
                 timeZone: 'UTC',
-              })}-${new Date(process.env.CURRENT_D2).toLocaleDateString(
+              })}-${new Date(props.queryInfo.curD2).toLocaleDateString(
                 'en-US',
                 { timeZone: 'UTC' }
               )}`}

@@ -22,6 +22,7 @@ const App = () => {
   const [taxaArrays, setTaxaArrays] = useState<Object>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
+  const [queryInfo, setQueryInfo] = useState<Object>({});
 
   // make big fetch
   useEffect(() => {
@@ -29,6 +30,7 @@ const App = () => {
       setTaxaArrays(res.data.taxaArrays);
       setFullArr(res.data.fullArray);
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
+      setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
     });
   }, []);
@@ -44,13 +46,14 @@ const App = () => {
               fullArray={fullArr}
               taxaArrays={taxaArrays}
               isLoading={isLoading}
+              queryInfo={queryInfo}
               countdownComponent={
                 !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
               }
             />
           }
         />
-        <Route path='/about' element={<About />} />
+        <Route path='/about' element={<About queryInfo={queryInfo} />} />
       </Routes>
     </div>
   );

@@ -6,6 +6,7 @@ interface IbirdCardProps {
   count: number;
   pictureUrl: string;
   taxaId: number;
+  obsMonth: Object;
 }
 
 const BirdCard = (props: IbirdCardProps) => {

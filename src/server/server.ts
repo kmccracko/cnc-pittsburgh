@@ -46,6 +46,11 @@ app.use(
       taxaArrays: res.locals.taxaArrays,
       fullArray: res.locals.fullArray,
       timeRemaining: res.locals.timeRemaining,
+      queryInfo: {
+        baselineMonth: process.env.BASELINE_MONTH,
+        curD1: process.env.CURRENT_D1,
+        curD2: process.env.CURRENT_D2,
+      },
     });
   }
 );
