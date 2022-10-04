@@ -25,7 +25,7 @@ const BirdCard = (props: IbirdCardProps) => {
         />
         <div className='count'>
           <a
-            href={`https://www.inaturalist.org/observations?month=${process.env.BASELINE_MONTH}&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
+            href={`https://www.inaturalist.org/observations?month=${props.obsMonth}&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
             target='_blank'
           >
             {props.count} Observations
