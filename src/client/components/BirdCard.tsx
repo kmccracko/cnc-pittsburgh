@@ -6,7 +6,8 @@ interface IbirdCardProps {
   count: number;
   pictureUrl: string;
   taxaId: number;
-  obsMonth: Object;
+  obsMonth: number;
+  showModal: Function;
 }
 
 const BirdCard = (props: IbirdCardProps) => {
@@ -21,6 +22,9 @@ const BirdCard = (props: IbirdCardProps) => {
           // loading='lazy'
           onLoad={(e) => {
             setImgLoaded(true);
+          }}
+          onClick={() => {
+            props.showModal(props);
           }}
         />
         <div className='count'>

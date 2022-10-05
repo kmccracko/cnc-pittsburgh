@@ -16,7 +16,6 @@ const LoadingGif = (props: IloadingGifProps) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setDots((dots) => {
-        console.log(dots);
         const newDots = dots + 1 === 4 ? 1 : dots + 1;
         return newDots;
       });

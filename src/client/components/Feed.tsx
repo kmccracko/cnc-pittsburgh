@@ -4,6 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import BirdCard from './BirdCard';
 import LoadingGif from './LoadingGif';
 import Filter from './Filter';
+import Modal from './Modal';
 
 type TallCards = Object[];
 type Object = {
@@ -45,8 +46,10 @@ const Feed = (props: IfeedProps) => {
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [activeFilters, setActiveFilters] = useState<Object>({});
+  const [modal, setModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<Object>({});
 
-  // make big fetch
+  // assign props to state
   useEffect(() => {
     setActiveArr(props.fullArray);
     setViewArr(props.fullArray.slice(0, 5));
@@ -80,6 +83,18 @@ const Feed = (props: IfeedProps) => {
     setViewArr(newView.slice(0, 25));
   }, [activeFilters]);
 
+  // show modal
+  const showModal = (data: any) => {
+    setModal(true);
+    setModalContent(data);
+  };
+
+  // close modal
+  const closeModal = () => {
+    setModal(false);
+    setModalContent({});
+  };
+
   // update one filter
   const toggleFilter = (el?: [string, boolean]) => {
     setActiveFilters({ ...activeFilters, [el[0]]: !el[1] });
@@ -109,6 +124,7 @@ const Feed = (props: IfeedProps) => {
         count={el.count}
         pictureUrl={el.pictureurl}
         obsMonth={props.queryInfo.baselineMonth}
+        showModal={showModal}
       />
     );
   });
@@ -130,6 +146,7 @@ const Feed = (props: IfeedProps) => {
 
   return (
     <div id='Main'>
+      {modal && <Modal modalContent={modalContent} closeModal={closeModal} />}
       <Filter
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}
