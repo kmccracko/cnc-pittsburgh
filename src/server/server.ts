@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { Socket } from 'socket.io';
 import { allFoundObj, foundObj } from '../types';
 const path = require('path');
+const cors = require('cors');
 const { checkEnv, initializeDB } = require('../db/db-init.ts');
 const { addLiveUpdate, getLiveUpdates } = require('./cacher');
 
@@ -17,7 +18,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: ['http://localhost:9090'],
+    origin: ['http://localhost:9090', 'http://66.228.42.169:3333'],
   },
 });
 
@@ -28,6 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use(cors());
 app.use(express.static('dist'));
 
 //handle parsing request body
