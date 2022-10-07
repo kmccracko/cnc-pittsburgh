@@ -8,13 +8,14 @@ interface IbirdCardProps {
   taxaId: number;
   obsMonth: number;
   showModal: Function;
+  found: boolean;
 }
 
 const BirdCard = (props: IbirdCardProps) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <div className='card'>
+    <div className={props.found ? 'card found' : 'card'}>
       <div className='card-img'>
         <img
           className={imgLoaded ? 'bouncy' : ''}
