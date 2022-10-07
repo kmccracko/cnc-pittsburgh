@@ -27,30 +27,4 @@ inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
-inat.getMissing = async (req: Request, res: Response, next: NextFunction) => {
-  // get current names only
-  const curResNames = new Set([]);
-  for (const el of res.locals.current) {
-    curResNames.add(el.taxaid);
-  }
-
-  console.log(res.locals.baseline.length);
-  // filter full list where current name exists
-  const missingSpecies = res.locals.baseline.filter((el: Object) => {
-    return !curResNames.has(el.taxaid);
-  });
-  console.log(missingSpecies.length);
-
-  // loop through full list, distribute each specie into taxa
-  const taxaArrays = missingSpecies.reduce((obj: Object, cur: Object) => {
-    if (obj[cur.taxon]) obj[cur.taxon].push(cur);
-    else obj[cur.taxon] = [cur];
-    return obj;
-  }, {});
-
-  res.locals.taxaArrays = taxaArrays;
-  res.locals.fullArray = missingSpecies;
-  return next();
-};
-
 module.exports = inat;
