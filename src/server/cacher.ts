@@ -1,5 +1,6 @@
 const NodeCache = require('node-cache');
 import axios from 'axios';
+import { allFoundObj } from '../types';
 type Object = {
   [key: string]: any;
 };
@@ -32,11 +33,12 @@ const makeQuery = async (type: string) => {
           name: el.taxon.preferred_common_name,
           scientificname: el.taxon.name,
           count: el.count,
-          taxaid: el.taxon.id,
+          taxaId: String(el.taxon.id),
           pictureurl: el.taxon.default_photo
             ? el.taxon.default_photo.medium_url
             : null,
           taxon: el.taxon.iconic_taxon_name,
+          found: false,
         };
       })
     );
@@ -89,8 +91,30 @@ const checkCache = async (key: string) => {
   return { returnVal, timeRemaining };
 };
 
+const getLiveUpdates = async () => {
+  // return contents of cache
+  let result: allFoundObj;
+  let updatesObj: allFoundObj | undefined = myCache.get('liveUpdates');
+  result = updatesObj ? updatesObj : {};
+  return result;
+};
+const addLiveUpdate = async (speciesObj: allFoundObj) => {
+  console.log('adding live update');
+  // get cache obj
+  const updatesObj: allFoundObj = await getLiveUpdates();
+  // update cache obj with new data
+  const newUpdatesObj: allFoundObj = { ...updatesObj, ...speciesObj };
+  // updatesObj[speciesObj.taxaId] = speciesObj;
+  console.log('about to set key', 'liveUpdates', updatesObj);
+  // set key, no expiration
+  myCache.set('liveUpdates', newUpdatesObj);
+  console.log(myCache.get('liveUpdates'));
+};
+
 myCache.on('expired', (key: string, value: any) => {
+  value = myCache.del('liveUpdates');
   console.log(key, ' expired! ', new Date().toLocaleString());
+  // manually clear the cache for live updates
 });
 
-module.exports = { checkCache, makeQuery };
+module.exports = { checkCache, makeQuery, addLiveUpdate, getLiveUpdates };
