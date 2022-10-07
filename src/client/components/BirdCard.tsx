@@ -15,8 +15,12 @@ const BirdCard = (props: IbirdCardProps) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
-    <div className={props.found ? 'card found' : 'card'}>
-      <div className='card-img'>
+    <div className='card'>
+      <div className='card-img'
+        onClick={() => {
+          props.showModal(props);
+        }}
+      >
         <img
           className={imgLoaded ? 'bouncy' : ''}
           src={props.pictureUrl}
@@ -24,10 +28,14 @@ const BirdCard = (props: IbirdCardProps) => {
           onLoad={(e) => {
             setImgLoaded(true);
           }}
-          onClick={() => {
-            props.showModal(props);
-          }}
         />
+        
+        {
+          props.found && <div className={imgLoaded ? 'img-overlay bouncy' : 'img-overlay'}>
+          <span className='img-overlay-text'>Observed!</span>
+        </div>
+        }
+
         <div className='count'>
           <a
             href={`https://www.inaturalist.org/observations?month=${props.obsMonth}&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
