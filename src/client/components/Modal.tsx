@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { SocketContext } from '../context/socket';
 
 interface ImodalProps {
   modalContent: any;
   closeModal: any;
+  sendFoundSpecies: Function;
 }
 
 const Modal = (props: ImodalProps) => {
+  const socket = useContext(SocketContext);
+  console.log('MODAL UPDATES HERE!!!');
   return (
     <div className='modal-background' onClick={props.closeModal}>
       <div className='modal-card' onClick={(e) => e.stopPropagation()}>
@@ -38,6 +42,36 @@ const Modal = (props: ImodalProps) => {
           <div className='modal-scientific-name'>
             ({props.modalContent.scientificName})
           </div>
+
+          {(!props.modalContent.found ||
+            props.modalContent.found === document.cookie.split('=')[1]) && (
+            <button
+              type='button'
+              onClick={() => {
+                let signature: string;
+                // if cookie exists
+                if (document.cookie.split('=')[0] === 'clientid') {
+                  // signature = cookie
+                  signature = document.cookie.split('=')[1];
+                } else {
+                  // else, update cookie and set signature
+                  document.cookie = `clientid=${socket.id}`;
+                  signature = socket.id;
+                }
+                props.sendFoundSpecies({
+                  [props.modalContent.taxaId]: {
+                    taxaId: props.modalContent.taxaId,
+                    signature: props.modalContent.found ? undefined : signature,
+                    credName: undefined,
+                  },
+                });
+              }}
+            >
+              {props.modalContent.found
+                ? `Unfind this, please`
+                : `I made an observation on iNaturalist!`}
+            </button>
+          )}
         </div>
       </div>
     </div>
