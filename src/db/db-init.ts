@@ -24,17 +24,18 @@ const initializeDB = async () => {
 
   const createTable = `
   CREATE TABLE baseline (
-  taxaid int,
+  "taxaId" varchar,
   count int,
   name varchar,
   scientificname varchar,
   pictureurl varchar,
-  taxon varchar
+  taxon varchar,
+  found boolean
   );
   `;
 
   const fillTable = `
-  INSERT INTO baseline (name, scientificname, count, taxaid, pictureurl, taxon)
+  INSERT INTO baseline (name, scientificname, count, "taxaId", pictureurl, taxon, found)
   VALUES 
   ${JSON.stringify(
     result.map((obj: any) => {
