@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { Object } from '../../types';
 import { SocketContext } from '../context/socket';
 
 interface ImodalProps {
@@ -8,6 +9,15 @@ interface ImodalProps {
 }
 
 const Modal = (props: ImodalProps) => {
+  const [modalContent, setModalContent] = useState<Object>({})
+
+  useEffect(()=>{
+    setModalContent(props.modalContent)
+    console.log('modal just mounted')
+  },[])
+
+  console.log(modalContent.found)
+
   const socket = useContext(SocketContext);
   console.log('MODAL UPDATES HERE!!!');
   return (
@@ -43,8 +53,8 @@ const Modal = (props: ImodalProps) => {
             ({props.modalContent.scientificName})
           </div>
 
-          {(!props.modalContent.found ||
-            props.modalContent.found === document.cookie.split('=')[1]) && (
+          {(!modalContent.found ||
+            modalContent.found === document.cookie.split('=')[1]) && (
             <button
               type='button'
               onClick={() => {
@@ -58,17 +68,19 @@ const Modal = (props: ImodalProps) => {
                   document.cookie = `clientid=${socket.id}`;
                   signature = socket.id;
                 }
+                const contentClone: Object = {...modalContent}
+                contentClone.found = modalContent.found ? undefined : signature,
+                setModalContent(contentClone)
                 props.sendFoundSpecies({
-                  [props.modalContent.taxaId]: {
-                    taxaId: props.modalContent.taxaId,
-                    signature: props.modalContent.found ? undefined : signature,
+                  [modalContent.taxaId]: {
+                    taxaId: modalContent.taxaId,
+                    signature: modalContent.found ? undefined : signature,
                     credName: undefined,
                   },
                 });
               }}
             >
-              {props.modalContent.found
-                ? `Unfind this, please`
+              {modalContent.found ? `Unfind this, please`
                 : `I made an observation on iNaturalist!`}
             </button>
           )}
