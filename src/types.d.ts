@@ -7,3 +7,7 @@ export interface foundObj {
 export interface allFoundObj {
   [index: string]: foundObj;
 }
+
+export interface Object {
+  [index: string]: any;
+}
