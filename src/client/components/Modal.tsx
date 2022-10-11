@@ -1,25 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Object } from '../../types';
-import { SocketContext } from '../context/socket';
+import React from 'react';
 
 interface ImodalProps {
   modalContent: any;
   closeModal: any;
-  sendFoundSpecies: Function;
 }
 
 const Modal = (props: ImodalProps) => {
-  const [modalContent, setModalContent] = useState<Object>({})
-
-  useEffect(()=>{
-    setModalContent(props.modalContent)
-    console.log('modal just mounted')
-  },[])
-
-  console.log(modalContent.found)
-
-  const socket = useContext(SocketContext);
-  console.log('MODAL UPDATES HERE!!!');
   return (
     <div className='modal-background' onClick={props.closeModal}>
       <div className='modal-card' onClick={(e) => e.stopPropagation()}>
@@ -52,38 +38,6 @@ const Modal = (props: ImodalProps) => {
           <div className='modal-scientific-name'>
             ({props.modalContent.scientificName})
           </div>
-
-          {(!modalContent.found ||
-            modalContent.found === document.cookie.split('=')[1]) && (
-            <button
-              type='button'
-              onClick={() => {
-                let signature: string;
-                // if cookie exists
-                if (document.cookie.split('=')[0] === 'clientid') {
-                  // signature = cookie
-                  signature = document.cookie.split('=')[1];
-                } else {
-                  // else, update cookie and set signature
-                  document.cookie = `clientid=${socket.id}`;
-                  signature = socket.id;
-                }
-                const contentClone: Object = {...modalContent}
-                contentClone.found = modalContent.found ? undefined : signature,
-                setModalContent(contentClone)
-                props.sendFoundSpecies({
-                  [modalContent.taxaId]: {
-                    taxaId: modalContent.taxaId,
-                    signature: modalContent.found ? undefined : signature,
-                    credName: undefined,
-                  },
-                });
-              }}
-            >
-              {modalContent.found ? `Unfind this, please`
-                : `I made an observation on iNaturalist!`}
-            </button>
-          )}
         </div>
       </div>
     </div>

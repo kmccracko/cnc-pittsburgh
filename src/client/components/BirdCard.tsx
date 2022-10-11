@@ -8,7 +8,6 @@ interface IbirdCardProps {
   taxaId: number;
   obsMonth: number;
   showModal: Function;
-  found: boolean;
 }
 
 const BirdCard = (props: IbirdCardProps) => {
@@ -16,7 +15,8 @@ const BirdCard = (props: IbirdCardProps) => {
 
   return (
     <div className='card'>
-      <div className='card-img'
+      <div
+        className='card-img'
         onClick={() => {
           props.showModal(props);
         }}
@@ -29,12 +29,6 @@ const BirdCard = (props: IbirdCardProps) => {
             setImgLoaded(true);
           }}
         />
-        
-        {
-          props.found && <div className={imgLoaded ? 'img-overlay bouncy' : 'img-overlay'}>
-          <span className='img-overlay-text'>Observed!</span>
-        </div>
-        }
 
         <div className='count'>
           <a

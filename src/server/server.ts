@@ -1,12 +1,9 @@
 // Require Modules
 require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
-import { Socket } from 'socket.io';
-import { allFoundObj, foundObj } from '../types';
 const path = require('path');
 const cors = require('cors');
 const { checkEnv, initializeDB } = require('../db/db-init.ts');
-const { addLiveUpdate, getLiveUpdates } = require('./cacher');
 
 // TYPES
 type ServerError = {};
@@ -15,12 +12,7 @@ type ServerError = {};
 const inatController = require('./inat-api-controller');
 //create app instance and other const variables
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  cors: {
-    origin: ['http://localhost:9090', 'http://66.228.42.169:3333'],
-  },
-});
+app.use(cors());
 
 // run this for all requests, for cleaner log-reading
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -29,7 +21,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-app.use(cors());
 app.use(express.static('dist'));
 
 //handle parsing request body
@@ -52,12 +43,10 @@ app.use(
   inatController.getCurrent,
   async (req: Request, res: Response) => {
     console.log(Object.keys(res.locals));
-    const liveUpdates: allFoundObj = await getLiveUpdates();
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
       timeRemaining: res.locals.timeRemaining,
-      liveUpdates: liveUpdates,
       queryInfo: {
         baselineMonth: process.env.BASELINE_MONTH,
         curD1: process.env.CURRENT_D1,
@@ -90,17 +79,8 @@ app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
   return res.status(400).json(err);
 });
 
-io.on('connection', (socket: Socket) => {
-  socket.on('send-found-species', (speciesObj: foundObj) => {
-    // emit to all others
-    socket.broadcast.emit('receive-found-species', speciesObj);
-    // update cache
-    addLiveUpdate(speciesObj);
-  });
-});
-
 const PORT = process.env.PORT || 3003;
-server.listen(PORT, async () => {
+app.listen(PORT, async () => {
   await checkEnv();
   console.log(`Server listening on port: ${PORT}`);
 });

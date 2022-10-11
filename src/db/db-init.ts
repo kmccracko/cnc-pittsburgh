@@ -29,13 +29,12 @@ const initializeDB = async () => {
   name varchar,
   scientificname varchar,
   pictureurl varchar,
-  taxon varchar,
-  found boolean
+  taxon varchar
   );
   `;
 
   const fillTable = `
-  INSERT INTO baseline (name, scientificname, count, "taxaId", pictureurl, taxon, found)
+  INSERT INTO baseline (name, scientificname, count, "taxaId", pictureurl, taxon)
   VALUES 
   ${JSON.stringify(
     result.map((obj: any) => {

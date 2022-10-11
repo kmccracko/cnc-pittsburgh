@@ -39,7 +39,6 @@ interface IfeedProps {
   isLoading: boolean;
   countdownComponent: JSX.Element;
   queryInfo: Object;
-  sendFoundSpecies: Function;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -139,7 +138,6 @@ const Feed = (props: IfeedProps) => {
         pictureUrl={el.pictureurl}
         obsMonth={props.queryInfo.baselineMonth}
         showModal={showModal}
-        found={el.found}
       />
     );
   });
@@ -161,13 +159,7 @@ const Feed = (props: IfeedProps) => {
 
   return (
     <div id='Main'>
-      {modal && (
-        <Modal
-          modalContent={modalContent}
-          closeModal={closeModal}
-          sendFoundSpecies={props.sendFoundSpecies}
-        />
-      )}
+      {modal && <Modal modalContent={modalContent} closeModal={closeModal} />}
       <Filter
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}

@@ -565,30 +565,6 @@ body {
   }
 }
 
-.found {
-  background-color: red !important;
-}
-
-.img-overlay {
-  z-index: 1;
-  // display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.5;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.img-overlay-text {
-  font-size:x-large;
-  font-weight: bold;
-  color:white;
-}
-
 // * {
 //   border: 1px solid rgb(110, 0, 0) !important;
 // }
