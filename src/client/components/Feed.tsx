@@ -4,6 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import BirdCard from './BirdCard';
 import LoadingGif from './LoadingGif';
 import Filter from './Filter';
+import Modal from './Modal';
 
 type TallCards = Object[];
 type Object = {
@@ -45,16 +46,31 @@ const Feed = (props: IfeedProps) => {
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [activeFilters, setActiveFilters] = useState<Object>({});
+  const [modal, setModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<Object>({});
+  const [needApp, setNeedApp] = useState<boolean>(true);
 
-  // make big fetch
+  // assign props to state
   useEffect(() => {
-    setActiveArr(props.fullArray);
-    setViewArr(props.fullArray.slice(0, 5));
-    const filters: Object = {};
-    for (const key in props.taxaArrays) {
-      filters[taxaTranslation[key]] = false;
+    console.log('fullARR CHANGEDDDD');
+
+    // this use effect exists only to bring down our app-level data
+    // we only need to trigger it when app passes down something useful
+    // after that, we set needApp to false so we don't update when we don't need to
+    // all data is passed by reference, so a top level update doesn't require trickle-down updates
+    if (needApp) {
+      if (props.fullArray.length && Object.keys(props.taxaArrays).length) {
+        setNeedApp(false);
+        setActiveArr(props.fullArray);
+        setViewArr(props.fullArray.slice(0, 5));
+        const filters: Object = {};
+        for (const key in props.taxaArrays) {
+          filters[taxaTranslation[key]] = false;
+        }
+        setActiveFilters(filters);
+      }
     }
-    setActiveFilters(filters);
+    if (modal) setModalContent({ ...modalContent });
   }, [props.fullArray]);
 
   // on filter change, update activeArr and viewArr
@@ -70,15 +86,27 @@ const Feed = (props: IfeedProps) => {
         const actualTaxa = taxaTranslation[shownTaxa];
         const include =
           activeFilters[shownTaxa] && props.taxaArrays[actualTaxa];
-        if (include) newView.push(...props.taxaArrays[actualTaxa]);
+        if (include) newView.push(...props.taxaArrays[actualTaxa]); // here we're creating an arr without our prev info
         newView.sort((a, b) => {
           return b.count - a.count;
         });
       }
     }
     setActiveArr(newView);
-    setViewArr(newView.slice(0, 25));
+    setViewArr(newView.slice(0, 25)); // here and right above, we're using it
   }, [activeFilters]);
+
+  // show modal
+  const showModal = (data: any) => {
+    setModal(true);
+    setModalContent(data);
+  };
+
+  // close modal
+  const closeModal = () => {
+    setModal(false);
+    setModalContent({});
+  };
 
   // update one filter
   const toggleFilter = (el?: [string, boolean]) => {
@@ -102,13 +130,14 @@ const Feed = (props: IfeedProps) => {
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
     return (
       <BirdCard
-        key={el.taxaid}
-        taxaId={el.taxaid}
+        key={el.taxaId}
+        taxaId={el.taxaId}
         name={el.name}
         scientificName={el.scientificname}
         count={el.count}
         pictureUrl={el.pictureurl}
         obsMonth={props.queryInfo.baselineMonth}
+        showModal={showModal}
       />
     );
   });
@@ -130,6 +159,7 @@ const Feed = (props: IfeedProps) => {
 
   return (
     <div id='Main'>
+      {modal && <Modal modalContent={modalContent} closeModal={closeModal} />}
       <Filter
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}

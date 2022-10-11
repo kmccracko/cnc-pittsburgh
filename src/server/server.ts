@@ -2,6 +2,7 @@
 require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
 const path = require('path');
+const cors = require('cors');
 const { checkEnv, initializeDB } = require('../db/db-init.ts');
 
 // TYPES
@@ -11,6 +12,7 @@ type ServerError = {};
 const inatController = require('./inat-api-controller');
 //create app instance and other const variables
 const app = express();
+app.use(cors());
 
 // run this for all requests, for cleaner log-reading
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -39,12 +41,11 @@ app.use(
   '/getObs',
   inatController.getBaseline,
   inatController.getCurrent,
-  inatController.getMissing,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     console.log(Object.keys(res.locals));
     return res.status(200).json({
-      taxaArrays: res.locals.taxaArrays,
-      fullArray: res.locals.fullArray,
+      current: res.locals.current,
+      baseline: res.locals.baseline,
       timeRemaining: res.locals.timeRemaining,
       queryInfo: {
         baselineMonth: process.env.BASELINE_MONTH,

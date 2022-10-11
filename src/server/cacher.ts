@@ -32,11 +32,11 @@ const makeQuery = async (type: string) => {
           name: el.taxon.preferred_common_name,
           scientificname: el.taxon.name,
           count: el.count,
-          taxaid: el.taxon.id,
+          taxaId: String(el.taxon.id),
           pictureurl: el.taxon.default_photo
             ? el.taxon.default_photo.medium_url
             : null,
-          taxon: el.taxon.iconic_taxon_name,
+          taxon: el.taxon.iconic_taxon_name
         };
       })
     );

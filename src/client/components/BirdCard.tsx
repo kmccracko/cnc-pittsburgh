@@ -6,7 +6,8 @@ interface IbirdCardProps {
   count: number;
   pictureUrl: string;
   taxaId: number;
-  obsMonth: Object;
+  obsMonth: number;
+  showModal: Function;
 }
 
 const BirdCard = (props: IbirdCardProps) => {
@@ -14,7 +15,12 @@ const BirdCard = (props: IbirdCardProps) => {
 
   return (
     <div className='card'>
-      <div className='card-img'>
+      <div
+        className='card-img'
+        onClick={() => {
+          props.showModal(props);
+        }}
+      >
         <img
           className={imgLoaded ? 'bouncy' : ''}
           src={props.pictureUrl}
@@ -23,6 +29,7 @@ const BirdCard = (props: IbirdCardProps) => {
             setImgLoaded(true);
           }}
         />
+
         <div className='count'>
           <a
             href={`https://www.inaturalist.org/observations?month=${props.obsMonth}&place_id=122840&taxon_id=${props.taxaId}&verifiable=any`}
