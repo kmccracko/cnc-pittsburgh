@@ -14,12 +14,7 @@ const Modal = (props: ImodalProps) => {
             ✖
           </div>
           <div className='modal-common-name'>
-            <a
-              href={`https://www.inaturalist.org/taxa/${props.modalContent.taxaId}`}
-              target='_blank'
-            >
-              {props.modalContent.name || props.modalContent.scientificName}
-            </a>
+            {props.modalContent.name || props.modalContent.scientificName}
           </div>
           <div className='empty'></div>
         </div>
@@ -27,16 +22,24 @@ const Modal = (props: ImodalProps) => {
           <img src={props.modalContent.pictureUrl} />
         </div>
         <div className='modal-summary-label'>
+          <div className='modal-scientific-name'>
+            ({props.modalContent.scientificName})
+          </div>
+          <div>
+            <a
+              href={`https://www.inaturalist.org/taxa/${props.modalContent.taxaId}`}
+              target='_blank'
+            >
+              View on iNaturalist ↪
+            </a>
+          </div>
           <div className='modal-count'>
             <a
               href={`https://www.inaturalist.org/observations?month=${props.modalContent.obsMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&verifiable=any`}
               target='_blank'
             >
-              {props.modalContent.count} Observations
+              View {props.modalContent.count} Observations on iNaturalist ↪
             </a>
-          </div>
-          <div className='modal-scientific-name'>
-            ({props.modalContent.scientificName})
           </div>
         </div>
       </div>

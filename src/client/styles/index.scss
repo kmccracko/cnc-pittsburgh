@@ -484,6 +484,10 @@ body {
   visibility: hidden;
 }
 
+.modal-background ~ div {
+  filter: blur(7px);
+}
+
 .modal-background {
   display: flex;
   align-items: center;
@@ -504,6 +508,20 @@ body {
     margin: 20px;
     background-color: rgb(44, 44, 44);
     box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+    .modal-card-img {
+      // width: 150%;
+      // position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        max-width: 95%;
+        // max-width: 100%;
+        // margin: 20px;
+        // width: 100%;
+        object-fit: cover;
+      }
+    }
     .modal-top {
       width: 100%; // to keep
       // height: 30px;
@@ -529,32 +547,19 @@ body {
         width: 50px;
       }
     }
-    .modal-card-img {
-      // width: 150%;
-      // position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      img {
-        max-width: 95%;
-        // max-width: 100%;
-        // margin: 20px;
-        // width: 100%;
-        object-fit: cover;
-      }
-    }
     .modal-summary-label {
       // height: 50px;
       align-self: flex-start;
       padding: 10px 5px 25px 5px;
-      .modal-count {
-        a {
-          all: unset;
-          cursor: pointer;
-          &:hover {
-            text-decoration: underline;
-          }
+      div a {
+        all: unset;
+        cursor: pointer;
+        color: rgb(230, 224, 152);
+        &:hover {
+          text-decoration: underline;
         }
+      }
+      .modal-count {
       }
       .modal-scientific-name {
         font-weight: 400;
