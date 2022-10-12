@@ -12,12 +12,6 @@ const Navbar = () => {
       </Link>
       <div id='nav-right'>
         <Link to='/about'>About</Link>
-        <a
-          href='https://carnegiemnh.org/explore/city-nature-challenge/'
-          target='_blank'
-        >
-          CNC
-        </a>
       </div>
     </div>
   );
