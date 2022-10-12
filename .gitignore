@@ -2,6 +2,9 @@
 z_*
 cmdbuild.js
 
+#package-lock
+package-lock.json
+
 # Logs
 logs
 *.log
