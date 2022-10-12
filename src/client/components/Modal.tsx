@@ -10,13 +10,12 @@ const Modal = (props: ImodalProps) => {
     <div className='modal-background' onClick={props.closeModal}>
       <div className='modal-card' onClick={(e) => e.stopPropagation()}>
         <div className='modal-top'>
-          <div className='modal-close' onClick={props.closeModal}>
-            ✖
-          </div>
           <div className='modal-common-name'>
             {props.modalContent.name || props.modalContent.scientificName}
           </div>
-          <div className='empty'></div>
+          <div className='modal-close' onClick={props.closeModal}>
+            ✖
+          </div>
         </div>
         <div className='modal-card-img'>
           <img src={props.modalContent.pictureUrl} />
