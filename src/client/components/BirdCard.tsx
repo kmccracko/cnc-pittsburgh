@@ -8,6 +8,7 @@ interface IbirdCardProps {
   pictureUrl: string;
   taxaId: number;
   queryInfo: queryParams;
+  found: boolean;
   showModal: Function;
 }
 

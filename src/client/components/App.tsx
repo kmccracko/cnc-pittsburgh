@@ -9,6 +9,7 @@ import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
+import Modal from './Modal';
 
 type Object = {
   [key: string]: any;
@@ -28,6 +29,8 @@ const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
+  const [modal, setModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<Object>({});
 
   // make big fetch
   useEffect(() => {
@@ -76,7 +79,7 @@ const App = () => {
     }
     // build found
     for (let el of current) {
-      currentSpecies.push({ ...el, found: false });
+      currentSpecies.push({ ...el, found: true });
       if (currentTaxaObj[el.taxon]) currentTaxaObj[el.taxon].push(el);
       else currentTaxaObj[el.taxon] = [el];
     }
@@ -98,8 +101,27 @@ const App = () => {
     setActiveInd(!activeInd);
   }
 
+  // show modal
+  const showModal = (data: any) => {
+    setModal(true);
+    setModalContent(data);
+  };
+
+  // close modal
+  const closeModal = () => {
+    setModal(false);
+    setModalContent({});
+  };
+
   return (
     <div id='Main'>
+      {modal && (
+        <Modal
+          activeInd={activeInd}
+          modalContent={modalContent}
+          closeModal={closeModal}
+        />
+      )}
       <Navbar />
       <Routes>
         <Route
@@ -115,13 +137,22 @@ const App = () => {
               countdownComponent={
                 !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
               }
+              showModal={showModal}
+              closeModal={closeModal}
             />
           }
         />
         <Route path='/about' element={<About queryInfo={queryInfo} />} />
         <Route
           path='/search'
-          element={<Search allArr={[...missingArr, ...foundArr]} />}
+          element={
+            <Search
+              allArr={[...missingArr, ...foundArr]}
+              queryInfo={queryInfo}
+              showModal={showModal}
+              closeModal={closeModal}
+            />
+          }
         />
       </Routes>
     </div>
