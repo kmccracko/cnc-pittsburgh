@@ -5,6 +5,7 @@ import BirdCard from './BirdCard';
 import LoadingGif from './LoadingGif';
 import Filter from './Filter';
 import Modal from './Modal';
+import { queryParams } from '../../types';
 
 type TallCards = Object[];
 type Object = {
@@ -34,11 +35,12 @@ taxaTranslation = Object.fromEntries([
 ]);
 
 interface IfeedProps {
+  activeInd: boolean;
   fullArray: any[];
   taxaArrays: Object;
   isLoading: boolean;
   countdownComponent: JSX.Element;
-  queryInfo: Object;
+  queryInfo: queryParams;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -58,18 +60,18 @@ const Feed = (props: IfeedProps) => {
     // we only need to trigger it when app passes down something useful
     // after that, we set needApp to false so we don't update when we don't need to
     // all data is passed by reference, so a top level update doesn't require trickle-down updates
-    if (needApp) {
-      if (props.fullArray.length && Object.keys(props.taxaArrays).length) {
-        setNeedApp(false);
-        setActiveArr(props.fullArray);
-        setViewArr(props.fullArray.slice(0, 5));
-        const filters: Object = {};
-        for (const key in props.taxaArrays) {
-          filters[taxaTranslation[key]] = false;
-        }
-        setActiveFilters(filters);
+    // if (needApp) {
+    if (props.fullArray.length && Object.keys(props.taxaArrays).length) {
+      // setNeedApp(false);
+      setActiveArr(props.fullArray);
+      setViewArr(props.fullArray.slice(0, 5));
+      const filters: Object = {};
+      for (const key in props.taxaArrays) {
+        filters[taxaTranslation[key]] = false;
       }
+      setActiveFilters(filters);
     }
+    // }
     if (modal) setModalContent({ ...modalContent });
   }, [props.fullArray]);
 
@@ -136,7 +138,7 @@ const Feed = (props: IfeedProps) => {
         scientificName={el.scientificname}
         count={el.count}
         pictureUrl={el.pictureurl}
-        obsMonth={props.queryInfo.baselineMonth}
+        queryInfo={props.queryInfo}
         showModal={showModal}
       />
     );
@@ -159,7 +161,13 @@ const Feed = (props: IfeedProps) => {
 
   return (
     <div id='Main'>
-      {modal && <Modal modalContent={modalContent} closeModal={closeModal} />}
+      {modal && (
+        <Modal
+          activeInd={props.activeInd}
+          modalContent={modalContent}
+          closeModal={closeModal}
+        />
+      )}
       <Filter
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}
@@ -183,7 +191,7 @@ const Feed = (props: IfeedProps) => {
               {activeArr.length
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-              unobserved species during&nbsp;
+              {props.activeInd ? 'observed' : 'unobserved'} species during&nbsp;
             </span>{' '}
             <span>
               {`${new Date(props.queryInfo.curD1).toLocaleDateString('en-US', {
