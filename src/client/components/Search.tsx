@@ -1,43 +1,54 @@
 import React, { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import SearchRecord from './SearchRecord';
 
 interface IsearchProps {
   allArr: any;
+  queryInfo: Object;
+  showModal: Function;
+  closeModal: Function;
 }
 
 const Search = (props: IsearchProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [resultsArr, setResultsArr] = useState([]);
+  const [viewArr, setViewArr] = useState([]);
 
   useEffect(() => {
-    console.log(
-      props.allArr.filter((el: any) => {
-        const scientificMatch =
-          el.scientificname.toLowerCase().indexOf(searchTerm.toLowerCase()) >
-          -1;
-        const commonMatch =
-          el.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-        return scientificMatch || commonMatch;
-      })
-    );
+    console.log(props.allArr);
+  }, []);
 
-    setResultsArr(
-      props.allArr.filter((el: any) => {
-        const scientificMatch =
-          el.scientificname.toLowerCase().indexOf(searchTerm.toLowerCase()) >
-          -1;
-        const commonMatch =
-          el.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-        return scientificMatch || commonMatch;
-      })
-    );
+  useEffect(() => {
+    // ignore if empty search
+    if (searchTerm === '') return;
+
+    // get results
+    const results: Object[] = [];
+    for (let el of props.allArr) {
+      const scientificMatch =
+        el.scientificname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+      const commonMatch =
+        el.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+
+      // add to results if match
+      if (scientificMatch || commonMatch) results.push(el);
+
+      // give the gui something short and keep working
+      if (results.length === 20) setResultsArr(results);
+    }
+
+    // set results after checking everything
+    setResultsArr(results);
+    setViewArr(results.slice(0, 5));
   }, [searchTerm]);
 
   const handleSearchUpdate = (e: any) => {
+    // setViewArr([]);
+    setResultsArr([]);
     setSearchTerm(e.target.value);
   };
 
-  const allCardElements: JSX.Element[] = resultsArr.map((el: any) => {
+  const allCardElements: JSX.Element[] = viewArr.map((el: any) => {
     return (
       <SearchRecord
         key={el.taxaId}
@@ -46,18 +57,56 @@ const Search = (props: IsearchProps) => {
         scientificName={el.scientificname}
         count={el.count}
         pictureUrl={el.pictureurl}
+        found={el.found}
+        showModal={props.showModal}
+        queryInfo={props.queryInfo}
       />
     );
   });
 
+  function handleScroll() {
+    console.log('aboutto break');
+    setViewArr([
+      ...viewArr,
+      ...resultsArr.slice(viewArr.length, viewArr.length + 5),
+    ]);
+  }
+
+  const infiniteScroll = (
+    <InfiniteScroll
+      pageStart={0}
+      loadMore={handleScroll}
+      hasMore={viewArr.length < resultsArr.length}
+      loader={
+        <div className='loader' key={0}>
+          Loading ...
+        </div>
+      }
+    >
+      <div id='search-results'>{allCardElements}</div>
+    </InfiniteScroll>
+  );
+
   return (
     <div id='search-container'>
-      <input
-        id='searchbar'
-        value={searchTerm}
-        onChange={handleSearchUpdate}
-      ></input>
-      {allCardElements}
+      <div id='search-top'>
+        <input
+          id='searchbar'
+          value={searchTerm}
+          onChange={handleSearchUpdate}
+          placeholder='Search...'
+        ></input>
+        <div id='search-key'>
+          <span>
+            Missing:
+            <span className='missing'>◌</span>
+          </span>
+          <span>
+            Found:<span className='found'>✔</span>
+          </span>
+        </div>
+      </div>
+      {infiniteScroll}
     </div>
   );
 };
