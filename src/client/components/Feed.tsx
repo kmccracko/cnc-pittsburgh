@@ -41,6 +41,9 @@ interface IfeedProps {
   isLoading: boolean;
   countdownComponent: JSX.Element;
   queryInfo: queryParams;
+  toggleMissingVsFound: any;
+  showModal: Function;
+  closeModal: Function;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -48,21 +51,12 @@ const Feed = (props: IfeedProps) => {
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [activeFilters, setActiveFilters] = useState<Object>({});
-  const [modal, setModal] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<Object>({});
   const [needApp, setNeedApp] = useState<boolean>(true);
 
   // assign props to state
   useEffect(() => {
     console.log('fullARR CHANGEDDDD');
-
-    // this use effect exists only to bring down our app-level data
-    // we only need to trigger it when app passes down something useful
-    // after that, we set needApp to false so we don't update when we don't need to
-    // all data is passed by reference, so a top level update doesn't require trickle-down updates
-    // if (needApp) {
     if (props.fullArray.length && Object.keys(props.taxaArrays).length) {
-      // setNeedApp(false);
       setActiveArr(props.fullArray);
       setViewArr(props.fullArray.slice(0, 5));
       const filters: Object = {};
@@ -71,8 +65,6 @@ const Feed = (props: IfeedProps) => {
       }
       setActiveFilters(filters);
     }
-    // }
-    if (modal) setModalContent({ ...modalContent });
   }, [props.fullArray]);
 
   // on filter change, update activeArr and viewArr
@@ -97,18 +89,6 @@ const Feed = (props: IfeedProps) => {
     setActiveArr(newView);
     setViewArr(newView.slice(0, 25)); // here and right above, we're using it
   }, [activeFilters]);
-
-  // show modal
-  const showModal = (data: any) => {
-    setModal(true);
-    setModalContent(data);
-  };
-
-  // close modal
-  const closeModal = () => {
-    setModal(false);
-    setModalContent({});
-  };
 
   // update one filter
   const toggleFilter = (el?: [string, boolean]) => {
@@ -138,8 +118,9 @@ const Feed = (props: IfeedProps) => {
         scientificName={el.scientificname}
         count={el.count}
         pictureUrl={el.pictureurl}
+        found={el.found}
         queryInfo={props.queryInfo}
-        showModal={showModal}
+        showModal={props.showModal}
       />
     );
   });
@@ -161,22 +142,42 @@ const Feed = (props: IfeedProps) => {
 
   return (
     <div id='Main'>
-      {modal && (
-        <Modal
-          activeInd={props.activeInd}
-          modalContent={modalContent}
-          closeModal={closeModal}
+      <div id='filters-band' className='hamburger'>
+        <div id='toggle-missing-container'>
+          <input
+            id='toggle-missing'
+            type='checkbox'
+            checked={props.activeInd}
+            onChange={props.toggleMissingVsFound}
+          ></input>
+          <label
+            className={`missing-label ${
+              props.activeInd ? 'deselected' : 'selected'
+            }`}
+            htmlFor='toggle-missing'
+          >
+            Missing
+          </label>
+          <span className='spacer'>|</span>
+          <label
+            className={`found-label ${
+              props.activeInd ? 'selected' : 'deselected'
+            }`}
+            htmlFor='toggle-missing'
+          >
+            Found
+          </label>
+        </div>
+        <Filter
+          activeFilters={activeFilters}
+          toggleFilter={toggleFilter}
+          clearAllFilters={clearAllFilters}
+          isLoading={props.isLoading ? true : false}
+          status={
+            activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
+          }
         />
-      )}
-      <Filter
-        activeFilters={activeFilters}
-        toggleFilter={toggleFilter}
-        clearAllFilters={clearAllFilters}
-        isLoading={props.isLoading ? true : false}
-        status={
-          activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
-        }
-      />
+      </div>
       {props.countdownComponent}
 
       {props.isLoading ? (

@@ -8,6 +8,8 @@ import Feed from './Feed';
 import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
+import Search from './Search';
+import Modal from './Modal';
 
 type Object = {
   [key: string]: any;
@@ -27,6 +29,8 @@ const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
+  const [modal, setModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<Object>({});
 
   // make big fetch
   useEffect(() => {
@@ -54,36 +58,36 @@ const App = () => {
   }, []);
 
   function getMissingVsFound(baseline: Object[], current: Object[]) {
-    //
-    // THIS CAN BE REFACTORED BIG TIME
-    //
-    //
     // get current names only
     const curResNames = new Set([]);
+    const missingSpecies: Object[] = [];
+    const missingTaxaObj: Object = {};
+    const currentSpecies: Object[] = [];
+    const currentTaxaObj: Object = {};
+
     for (const el of current) {
       curResNames.add(el.taxaId);
     }
 
+    // get and build missing
+    for (let el of baseline) {
+      if (!curResNames.has(el.taxaId)) {
+        missingSpecies.push({ ...el, found: false });
+        if (missingTaxaObj[el.taxon]) missingTaxaObj[el.taxon].push(el);
+        else missingTaxaObj[el.taxon] = [el];
+      }
+    }
+    // build found
+    for (let el of current) {
+      currentSpecies.push({ ...el, found: true });
+      if (currentTaxaObj[el.taxon]) currentTaxaObj[el.taxon].push(el);
+      else currentTaxaObj[el.taxon] = [el];
+    }
+
     console.log(baseline.length);
-    // filter full list where current name exists
-    const missingSpecies: Object[] = baseline.filter((el: Object) => {
-      return !curResNames.has(el.taxaId);
-    });
     console.log(missingSpecies.length);
 
-    // loop through full list, distribute each specie into taxa
-    const missingTaxaObj = missingSpecies.reduce((obj: Object, cur: Object) => {
-      if (obj[cur.taxon]) obj[cur.taxon].push(cur);
-      else obj[cur.taxon] = [cur];
-      return obj;
-    }, {});
-    const currentTaxaObj = current.reduce((obj: Object, cur: Object) => {
-      if (obj[cur.taxon]) obj[cur.taxon].push(cur);
-      else obj[cur.taxon] = [cur];
-      return obj;
-    }, {});
-
-    return [missingSpecies, current, missingTaxaObj, currentTaxaObj];
+    return [missingSpecies, currentSpecies, missingTaxaObj, currentTaxaObj];
   }
 
   function toggleMissingVsFound() {
@@ -97,17 +101,34 @@ const App = () => {
     setActiveInd(!activeInd);
   }
 
+  // show modal
+  const showModal = (data: any) => {
+    setModal(true);
+    setModalContent(data);
+  };
+
+  // close modal
+  const closeModal = () => {
+    setModal(false);
+    setModalContent({});
+  };
+
   return (
     <div id='Main'>
+      {modal && (
+        <Modal
+          activeInd={activeInd}
+          modalContent={modalContent}
+          closeModal={closeModal}
+        />
+      )}
       <Navbar />
-      <button onClick={toggleMissingVsFound}>{`Show ${
-        activeInd ? 'Missing' : 'Found'
-      } Species`}</button>
       <Routes>
         <Route
           path='/'
           element={
             <Feed
+              toggleMissingVsFound={toggleMissingVsFound}
               activeInd={activeInd}
               fullArray={fullArr}
               taxaArrays={taxaObj}
@@ -116,10 +137,23 @@ const App = () => {
               countdownComponent={
                 !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
               }
+              showModal={showModal}
+              closeModal={closeModal}
             />
           }
         />
         <Route path='/about' element={<About queryInfo={queryInfo} />} />
+        <Route
+          path='/search'
+          element={
+            <Search
+              allArr={[...missingArr, ...foundArr]}
+              queryInfo={queryInfo}
+              showModal={showModal}
+              closeModal={closeModal}
+            />
+          }
+        />
       </Routes>
     </div>
   );

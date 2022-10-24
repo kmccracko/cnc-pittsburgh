@@ -93,46 +93,44 @@ const Filter = (props: IfilterProps) => {
   // put it in an accordion
   else {
     filterContainer = (
-      <div id='filters-band' className='hamburger'>
-        <Accordion
-          disableGutters
-          sx={{
-            color: 'white',
-            backgroundColor: 'rgb(0,0,0,0)',
+      <Accordion
+        disableGutters
+        sx={{
+          color: 'white',
+          backgroundColor: 'rgb(0,0,0,0)',
+          margin: '3% 0px',
+          '&.Mui-expanded:first-of-type': {
             margin: '3% 0px',
-            '&.Mui-expanded:first-of-type': {
-              margin: '3% 0px',
-            },
-            '&.Mui-expanded:last-of-type': {
-              margin: '3% 0px',
-            },
+          },
+          '&.Mui-expanded:last-of-type': {
+            margin: '3% 0px',
+          },
+        }}
+      >
+        <AccordionSummary
+          sx={{
+            backgroundColor: 'rgb(35,35,35)',
+          }}
+          expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+          aria-controls='panel1a-content'
+          id='panel1a-header'
+        >
+          <Typography>Filter options</Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            backgroundColor: 'rgb(0,0,0,0)',
+            border: '2px solid rgb(50,50,50)',
+            padding: '6px 5px',
           }}
         >
-          <AccordionSummary
-            sx={{
-              backgroundColor: 'rgb(35,35,35)',
-            }}
-            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-            aria-controls='panel1a-content'
-            id='panel1a-header'
-          >
-            <Typography>Filter options</Typography>
-          </AccordionSummary>
-          <AccordionDetails
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              backgroundColor: 'rgb(0,0,0,0)',
-              border: '2px solid rgb(50,50,50)',
-              padding: '6px 5px',
-            }}
-          >
-            {filterForm}
-            {clearFiltersBtn}
-          </AccordionDetails>
-        </Accordion>
-      </div>
+          {filterForm}
+          {clearFiltersBtn}
+        </AccordionDetails>
+      </Accordion>
     );
   }
 
