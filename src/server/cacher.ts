@@ -10,8 +10,8 @@ const currentLife = 60 * 30;
 
 // queries
 const queries: Object = {
-  baseline: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=${process.env.BASELINE_MONTH}&per_page=1000`,
-  current: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}&per_page=500`,
+  baseline: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
+  current: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}&lrank=species&hrank=species&per_page=500`,
 };
 
 // make query function
@@ -29,14 +29,14 @@ const makeQuery = async (type: string) => {
     fullResult.push(
       ...result.data.results.map((el: Object) => {
         return {
-          name: el.taxon.preferred_common_name,
+          name: el.taxon.preferred_common_name || el.taxon.name,
           scientificname: el.taxon.name,
           count: el.count,
           taxaId: String(el.taxon.id),
           pictureurl: el.taxon.default_photo
             ? el.taxon.default_photo.medium_url
             : null,
-          taxon: el.taxon.iconic_taxon_name
+          taxon: el.taxon.iconic_taxon_name,
         };
       })
     );
