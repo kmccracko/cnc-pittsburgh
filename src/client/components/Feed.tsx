@@ -143,9 +143,31 @@ const Feed = (props: IfeedProps) => {
   return (
     <div id='Main'>
       <div id='filters-band' className='hamburger'>
-        <button onClick={props.toggleMissingVsFound}>{`Show ${
-          props.activeInd ? 'Missing' : 'Found'
-        } Species`}</button>
+        <div id='toggle-missing-container'>
+          <input
+            id='toggle-missing'
+            type='checkbox'
+            checked={props.activeInd}
+            onChange={props.toggleMissingVsFound}
+          ></input>
+          <label
+            className={`missing-label ${
+              props.activeInd ? 'deselected' : 'selected'
+            }`}
+            htmlFor='toggle-missing'
+          >
+            Missing
+          </label>
+          <span className='spacer'>|</span>
+          <label
+            className={`found-label ${
+              props.activeInd ? 'selected' : 'deselected'
+            }`}
+            htmlFor='toggle-missing'
+          >
+            Found
+          </label>
+        </div>
         <Filter
           activeFilters={activeFilters}
           toggleFilter={toggleFilter}

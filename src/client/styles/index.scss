@@ -111,6 +111,33 @@ body {
   &.hotdog {
     padding: 15px 0px;
   }
+
+  #toggle-missing-container {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    font-size: larger;
+    #toggle-missing {
+      display: none;
+    }
+    .spacer {
+      color: gray;
+      margin: 0px 15px;
+    }
+    label {
+      cursor: pointer;
+      color: rgb(255, 255, 255, 0.3);
+      transition: text-shadow 0.5s ease, color 0.3s ease;
+    }
+    .missing-label.selected {
+      color: rgb(235, 99, 99);
+      text-shadow: 0 0 8px rgb(73, 73, 73), 0 0 10px rgb(235, 99, 99);
+    }
+    .found-label.selected {
+      color: rgb(97, 226, 97);
+      text-shadow: 0 0 8px rgb(91, 91, 91), 0 0 10px rgb(97, 226, 97);
+    }
+  }
   #clear-filters-button {
     background-color: transparent;
     margin: 10px 0px;
