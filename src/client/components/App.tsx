@@ -54,36 +54,36 @@ const App = () => {
   }, []);
 
   function getMissingVsFound(baseline: Object[], current: Object[]) {
-    //
-    // THIS CAN BE REFACTORED BIG TIME
-    //
-    //
     // get current names only
     const curResNames = new Set([]);
+    const missingSpecies: Object[] = [];
+    const missingTaxaObj: Object = {};
+    const currentSpecies: Object[] = [];
+    const currentTaxaObj: Object = {};
+
     for (const el of current) {
       curResNames.add(el.taxaId);
     }
 
+    // get and build missing
+    for (let el of baseline) {
+      if (!curResNames.has(el.taxaId)) {
+        missingSpecies.push({ ...el, found: false });
+        if (missingTaxaObj[el.taxon]) missingTaxaObj[el.taxon].push(el);
+        else missingTaxaObj[el.taxon] = [el];
+      }
+    }
+    // build found
+    for (let el of current) {
+      currentSpecies.push({ ...el, found: false });
+      if (currentTaxaObj[el.taxon]) currentTaxaObj[el.taxon].push(el);
+      else currentTaxaObj[el.taxon] = [el];
+    }
+
     console.log(baseline.length);
-    // filter full list where current name exists
-    const missingSpecies: Object[] = baseline.filter((el: Object) => {
-      return !curResNames.has(el.taxaId);
-    });
     console.log(missingSpecies.length);
 
-    // loop through full list, distribute each specie into taxa
-    const missingTaxaObj = missingSpecies.reduce((obj: Object, cur: Object) => {
-      if (obj[cur.taxon]) obj[cur.taxon].push(cur);
-      else obj[cur.taxon] = [cur];
-      return obj;
-    }, {});
-    const currentTaxaObj = current.reduce((obj: Object, cur: Object) => {
-      if (obj[cur.taxon]) obj[cur.taxon].push(cur);
-      else obj[cur.taxon] = [cur];
-      return obj;
-    }, {});
-
-    return [missingSpecies, current, missingTaxaObj, currentTaxaObj];
+    return [missingSpecies, currentSpecies, missingTaxaObj, currentTaxaObj];
   }
 
   function toggleMissingVsFound() {
