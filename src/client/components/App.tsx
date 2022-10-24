@@ -7,6 +7,7 @@ import Navbar from './Navbar';
 import Feed from './Feed';
 import About from './About';
 import Countdown from './Countdown';
+import { queryParams } from '../../types';
 
 type Object = {
   [key: string]: any;
@@ -16,11 +17,16 @@ const App = () => {
   // get styles
   // const classes = useStyles();
   // set vars
+  const [activeInd, setActiveInd] = useState<boolean>(false);
   const [fullArr, setFullArr] = useState<Object[]>([]);
-  const [taxaArrays, setTaxaArrays] = useState<Object>({});
+  const [missingArr, setMissingArr] = useState<Object[]>([]);
+  const [foundArr, setFoundArr] = useState<Object[]>([]);
+  const [taxaObj, setTaxaObj] = useState<Object>({});
+  const [missingTaxaObj, setMissingTaxaObj] = useState<Object>({});
+  const [foundTaxaObj, setFoundTaxaObj] = useState<Object>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
-  const [queryInfo, setQueryInfo] = useState<Object>({});
+  const [queryInfo, setQueryInfo] = useState<queryParams>({});
 
   // make big fetch
   useEffect(() => {
@@ -28,18 +34,30 @@ const App = () => {
       const current: Object[] = res.data.current;
       const baseline: Object[] = res.data.baseline;
 
-      let missingSpecies: any, taxaArrays: Object;
-      [missingSpecies, taxaArrays] = getMissing(baseline, current);
+      let missingSpecies: any,
+        foundSpecies: any,
+        missingTaxa: Object,
+        foundTaxa: Object;
+      [missingSpecies, foundSpecies, missingTaxa, foundTaxa] =
+        getMissingVsFound(baseline, current);
 
-      setTaxaArrays(taxaArrays);
+      setTaxaObj(missingTaxa);
+      setMissingTaxaObj(missingTaxa);
+      setFoundTaxaObj(foundTaxa);
       setFullArr(missingSpecies);
+      setMissingArr(missingSpecies);
+      setFoundArr(foundSpecies);
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
       setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
     });
   }, []);
 
-  function getMissing(baseline: Object[], current: Object[]) {
+  function getMissingVsFound(baseline: Object[], current: Object[]) {
+    //
+    // THIS CAN BE REFACTORED BIG TIME
+    //
+    //
     // get current names only
     const curResNames = new Set([]);
     for (const el of current) {
@@ -54,25 +72,45 @@ const App = () => {
     console.log(missingSpecies.length);
 
     // loop through full list, distribute each specie into taxa
-    const taxaArrays = missingSpecies.reduce((obj: Object, cur: Object) => {
+    const missingTaxaObj = missingSpecies.reduce((obj: Object, cur: Object) => {
+      if (obj[cur.taxon]) obj[cur.taxon].push(cur);
+      else obj[cur.taxon] = [cur];
+      return obj;
+    }, {});
+    const currentTaxaObj = current.reduce((obj: Object, cur: Object) => {
       if (obj[cur.taxon]) obj[cur.taxon].push(cur);
       else obj[cur.taxon] = [cur];
       return obj;
     }, {});
 
-    return [missingSpecies, taxaArrays];
+    return [missingSpecies, current, missingTaxaObj, currentTaxaObj];
+  }
+
+  function toggleMissingVsFound() {
+    if (!activeInd) {
+      setFullArr(foundArr);
+      setTaxaObj(foundTaxaObj);
+    } else {
+      setFullArr(missingArr);
+      setTaxaObj(missingTaxaObj);
+    }
+    setActiveInd(!activeInd);
   }
 
   return (
     <div id='Main'>
       <Navbar />
+      <button onClick={toggleMissingVsFound}>{`Show ${
+        activeInd ? 'Missing' : 'Found'
+      } Species`}</button>
       <Routes>
         <Route
           path='/'
           element={
             <Feed
+              activeInd={activeInd}
               fullArray={fullArr}
-              taxaArrays={taxaArrays}
+              taxaArrays={taxaObj}
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={

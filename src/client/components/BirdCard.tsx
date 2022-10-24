@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { queryParams } from '../../types';
 
 interface IbirdCardProps {
   name: string;
@@ -6,7 +7,7 @@ interface IbirdCardProps {
   count: number;
   pictureUrl: string;
   taxaId: number;
-  obsMonth: number;
+  queryInfo: queryParams;
   showModal: Function;
 }
 

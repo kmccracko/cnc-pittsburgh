@@ -1,4 +1,5 @@
 import React from 'react';
+import { queryParams } from '../../types';
 
 // talk about purpose of this website
 
@@ -9,7 +10,7 @@ import React from 'react';
 // somewhere, give credit the the philly guy for the idea
 
 interface IaboutProps {
-  queryInfo: Object;
+  queryInfo: queryParams;
 }
 
 const About = (props: IaboutProps) => {
