@@ -41,6 +41,7 @@ interface IfeedProps {
   isLoading: boolean;
   countdownComponent: JSX.Element;
   queryInfo: queryParams;
+  toggleMissingVsFound: any;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -168,6 +169,9 @@ const Feed = (props: IfeedProps) => {
           closeModal={closeModal}
         />
       )}
+      <button onClick={props.toggleMissingVsFound}>{`Show ${
+        props.activeInd ? 'Missing' : 'Found'
+      } Species`}</button>
       <Filter
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}

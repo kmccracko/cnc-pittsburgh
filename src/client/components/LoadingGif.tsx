@@ -1,9 +1,5 @@
-import { CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import hamsterGif from '../assets/hamster-wheel.gif';
-
-// import puckman from '../assets/puckman.gif';
-// import * as puckman from '../assets/puckman.gif';
 
 interface IloadingGifProps {
   size: string;

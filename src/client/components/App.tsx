@@ -8,6 +8,7 @@ import Feed from './Feed';
 import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
+import Search from './Search';
 
 type Object = {
   [key: string]: any;
@@ -100,14 +101,12 @@ const App = () => {
   return (
     <div id='Main'>
       <Navbar />
-      <button onClick={toggleMissingVsFound}>{`Show ${
-        activeInd ? 'Missing' : 'Found'
-      } Species`}</button>
       <Routes>
         <Route
           path='/'
           element={
             <Feed
+              toggleMissingVsFound={toggleMissingVsFound}
               activeInd={activeInd}
               fullArray={fullArr}
               taxaArrays={taxaObj}
@@ -120,6 +119,10 @@ const App = () => {
           }
         />
         <Route path='/about' element={<About queryInfo={queryInfo} />} />
+        <Route
+          path='/search'
+          element={<Search allArr={[...missingArr, ...foundArr]} />}
+        />
       </Routes>
     </div>
   );
