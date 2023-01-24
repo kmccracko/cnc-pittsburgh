@@ -46,24 +46,26 @@ interface IfilterProps {
 const Filter = (props: IfilterProps) => {
   const filterForm = (
     <form id='filters-container'>
-      {Object.entries(props.activeFilters).map((el) => {
-        return (
-          <div key={el[0]} className='filter-item'>
-            <input
-              type='checkbox'
-              name={el[0]}
-              id={el[0]}
-              checked={el[1]}
-              onChange={(e) => {
-                props.toggleFilter(el);
-              }}
-            />
-            <label className='filterButton' htmlFor={el[0]}>
-              {el[0]}
-            </label>
-          </div>
-        );
-      })}
+      {Object.entries(props.activeFilters)
+        .sort((a: any, b: any) => a[0].localeCompare(b[0]))
+        .map((el) => {
+          return (
+            <div key={el[0]} className='filter-item'>
+              <input
+                type='checkbox'
+                name={el[0]}
+                id={el[0]}
+                checked={el[1]}
+                onChange={(e) => {
+                  props.toggleFilter(el);
+                }}
+              />
+              <label className='filterButton' htmlFor={el[0]}>
+                {el[0]}
+              </label>
+            </div>
+          );
+        })}
     </form>
   );
 
