@@ -71,17 +71,20 @@ const App = () => {
 
     // get and build missing
     for (let el of baseline) {
+      const elPlusFound = { ...el, found: false };
       if (!curResNames.has(el.taxaId)) {
-        missingSpecies.push({ ...el, found: false });
-        if (missingTaxaObj[el.taxon]) missingTaxaObj[el.taxon].push(el);
-        else missingTaxaObj[el.taxon] = [el];
+        missingSpecies.push(elPlusFound);
+        if (missingTaxaObj[el.taxon])
+          missingTaxaObj[el.taxon].push(elPlusFound);
+        else missingTaxaObj[el.taxon] = [elPlusFound];
       }
     }
     // build found
     for (let el of current) {
-      currentSpecies.push({ ...el, found: true });
-      if (currentTaxaObj[el.taxon]) currentTaxaObj[el.taxon].push(el);
-      else currentTaxaObj[el.taxon] = [el];
+      const elPlusFound = { ...el, found: true };
+      currentSpecies.push(elPlusFound);
+      if (currentTaxaObj[el.taxon]) currentTaxaObj[el.taxon].push(elPlusFound);
+      else currentTaxaObj[el.taxon] = [elPlusFound];
     }
 
     console.log(baseline.length);
