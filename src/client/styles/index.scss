@@ -38,6 +38,10 @@ body {
     :visited {
       color: rgb(194, 189, 127);
     }
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
   li {
     font-size: 1.1rem;
@@ -90,13 +94,9 @@ body {
     padding: 0px 4% 0px 0px;
     font-size: large;
     a {
-      all: unset;
       margin: 20px;
       cursor: pointer;
       color: white;
-      &:hover {
-        text-decoration: underline;
-      }
     }
   }
 }
@@ -199,8 +199,6 @@ body {
     }
     animation: blinker 2s ease-in-out infinite;
   }
-  .pending {
-  }
 }
 
 @keyframes blinker {
@@ -264,6 +262,7 @@ body {
     width: 100%;
     height: 210px;
     position: relative;
+    cursor: pointer;
     img {
       width: 100%;
       height: 100%;
@@ -276,13 +275,6 @@ body {
       padding: 5px 0px 5px 3px;
       color: white;
       background-color: rgba(0, 0, 0, 0.5);
-      a {
-        all: unset;
-        cursor: pointer;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
     }
   }
 
@@ -340,6 +332,69 @@ body {
   filter: blur(7px);
 }
 
+@keyframes radial-circlepath {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes radial-button {
+  0% {
+    background-position: 0% 0%;
+    // background-position: 100% 0%;
+  }
+  50% {
+    background-position: 5% 5%;
+    // background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+    // background-position: 100% 0%;
+  }
+}
+.filter-item {
+  label {
+    &:hover {
+      box-sizing: border-box;
+      background: radial-gradient(
+        rgb(94, 94, 94),
+        rgb(0, 0, 0, 0.3),
+        rgb(0, 0, 0, 0.3),
+        rgb(0, 0, 0, 0.3),
+        rgb(105, 105, 105)
+      );
+      background-size: 200% 200%;
+      animation: radial-button 3s ease-in-out infinite;
+    }
+  }
+  input:checked + label {
+    &:hover {
+      box-sizing: border-box;
+      background: radial-gradient(
+        rgb(106, 96, 65),
+        rgb(0, 0, 0, 0.3),
+        rgb(0, 0, 0, 0.3),
+        rgb(0, 0, 0, 0.3),
+        rgb(106, 96, 65)
+      );
+      background-size: 200% 200%;
+      animation: radial-button 3s ease-in-out infinite;
+    }
+  }
+}
+
 .modal-background {
   display: flex;
   align-items: center;
@@ -351,73 +406,104 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgb(0, 0, 0, 0.5);
-  .modal-card {
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .modal-card-outline {
+    // min-height: 400px;
+    // min-width: 400px;
+    // border: 1px solid red;
+    box-sizing: border-box;
+    background: radial-gradient(
+      rgb(145, 145, 145),
+      rgb(0, 0, 0, 0.3),
+      rgb(0, 0, 0, 0.3),
+      rgb(163, 163, 163)
+    );
+    background-size: 200% 200%;
+    background-position: 100% 100%;
+
+    margin: 24px;
+
+    padding: 1px;
     border-radius: 15px;
-    margin: 20px;
-    padding: 0px 10px;
-    background-color: rgb(44, 44, 44);
-    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
-    .modal-card-img {
-      // width: 150%;
-      // position: relative;
+
+    .modal-card {
+      max-height: 100vh;
+      box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
       display: flex;
-      justify-content: center;
+      // display: none;
+      flex-direction: column;
+      z-index: 3;
       align-items: center;
-      img {
-        max-width: 100%;
-        // max-width: 100%;
-        // margin: 20px;
-        // width: 100%;
-        object-fit: cover;
+      border-radius: 15px;
+      // margin: 20px;
+      padding: 0px 15px;
+      background-color: rgb(44, 44, 44);
+
+      .modal-card-img {
+        // width: 150%;
+        // position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 0px;
+        border: 10px solid rgb(210, 210, 210);
+        max-height: 70vh;
+        img {
+          max-width: 100%;
+          max-height: 70vh;
+          // max-width: 100%;
+          // margin: 20px;
+          // width: 100%;
+          object-fit: cover;
+        }
       }
-    }
-    .modal-top {
-      width: 100%; // to keep
-      // height: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: x-large;
-      margin: 5px 0px;
-      .modal-close {
-        text-align: center;
-        width: 50px;
+      .modal-top {
+        width: 100%; // to keep
+        // height: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: x-large;
+        margin: 5px 0px;
+        .modal-close {
+          text-align: center;
+          width: 50px;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        .modal-common-name {
+          text-align: center;
+          font-weight: 700;
+          text-transform: capitalize;
+          a {
+            all: unset;
+            cursor: pointer;
+          }
+        }
+        .empty {
+          width: 50px;
+        }
       }
-      .modal-common-name {
-        text-align: center;
-        font-weight: 700;
-        text-transform: capitalize;
-        a {
+      .modal-summary-label {
+        // height: 50px;
+        align-self: flex-start;
+        padding: 0px 5px 25px 5px;
+        div a {
           all: unset;
           cursor: pointer;
+          color: rgb(230, 224, 152);
+          &:hover {
+            text-decoration: underline;
+          }
         }
-      }
-      .empty {
-        width: 50px;
-      }
-    }
-    .modal-summary-label {
-      // height: 50px;
-      align-self: flex-start;
-      padding: 10px 5px 25px 5px;
-      div a {
-        all: unset;
-        cursor: pointer;
-        color: rgb(230, 224, 152);
-        &:hover {
-          text-decoration: underline;
+        .modal-count {
         }
-      }
-      .modal-count {
-      }
-      .modal-scientific-name {
-        font-weight: 400;
-        font-style: italic;
-        text-transform: capitalize;
+        .modal-scientific-name {
+          font-weight: 400;
+          font-style: italic;
+          text-transform: capitalize;
+          margin-bottom: 7px;
+        }
       }
     }
   }
@@ -483,6 +569,7 @@ body {
       // margin: 15px 0px;
       padding: 15px 0px;
       border-bottom: 3px solid rgb(22, 22, 22);
+      transition: background-color 0.2s ease;
       &:hover {
         background-color: rgb(57, 57, 57);
       }
