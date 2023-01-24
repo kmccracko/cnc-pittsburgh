@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { queryParams } from '../../types';
 
 // talk about purpose of this website
@@ -32,10 +32,18 @@ const About = (props: IaboutProps) => {
       <h2>How do I use this site?</h2>
       <p>
         However you like! My grandmother enjoyed looking at the birds, mostly.
-        Just know that the species that appear in the feed are ones that have
-        not yet been identified in the given timeframe. Naturalists can use this
-        information to guide their efforts in observing as many new species as
-        possible.
+        Just know that the species that appear in the <b>Missing</b> feed are
+        ones that have not yet been identified in the given timeframe, while
+        species in the <b>Found</b> feed have been observed in the given
+        timeframe. Naturalists can use this information to guide their efforts
+        in observing as many new species as possible.
+      </p>
+      <h2>Can check the status of a species without scrolling?</h2>
+      <p>
+        Yes! The <b>Search</b> feature at the top of the page allows you to type
+        any part of a species' name (both common and scientific) and view all
+        species matching that search term. On the right side of each result is
+        an icon indicating the status of that species.
       </p>
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
@@ -69,6 +77,22 @@ const About = (props: IaboutProps) => {
             target='_blank'
           >
             City Nature Challenge (Pittsburgh)
+          </a>
+        </li>
+      </ul>
+      <h3>My links</h3>
+      <ul>
+        <li>
+          <a
+            href='https://github.com/kmccracko/cnc-pittsburgh/'
+            target='_blank'
+          >
+            This project on Github
+          </a>
+        </li>
+        <li>
+          <a href='https://www.buymeacoffee.com/kmccracko/' target='_blank'>
+            Buy Me a Coffee
           </a>
         </li>
       </ul>
