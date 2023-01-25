@@ -96,6 +96,13 @@ const About = (props: IaboutProps) => {
           </a>
         </li>
       </ul>
+      <p>
+        Inspired by{' '}
+        <a href='http://targets.cncphilly.org/' target='_blank'>
+          targets.cncphilly.org&nbsp;
+        </a>
+        and its creator, Navin Sasikumar.
+      </p>
       <div className='spacer'></div>
     </div>
   );
