@@ -11,5 +11,3 @@ RUN npm i
 # set container port?
 EXPOSE 3003
 #
-# docker build -t [org]/dev .
-# docker run -d --name CNC-PGH-DEV -p 9090:9090 [org]/prod
