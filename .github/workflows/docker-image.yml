@@ -2,9 +2,9 @@ name: Docker Image Build
 
 on:
   push:
-    branches: ['main']
+    branches: ['dockercicd']
   pull_request:
-    branches: ['main']
+    branches: ['dockercicd']
 
 jobs:
   build:
