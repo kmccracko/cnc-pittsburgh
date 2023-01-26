@@ -8,7 +8,9 @@ COPY . .
 RUN npm install && npm install ts-node -g
 # build the application
 RUN --mount=type=secret,id=PG_URI \
+    --mount=type=secret,id=TESTVAL \
     export PG_URI=$(cat /run/secrets/PG_URI) && \
+    export TESTVAL=$(cat /run/secrets/TESTVAL) && \
     npm run build
 # set container port?
 EXPOSE 3003

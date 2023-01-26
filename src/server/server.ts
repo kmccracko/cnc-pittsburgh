@@ -81,6 +81,9 @@ app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
+  console.log('a', process.env.TESTY);
+  console.log('b', process.env.TESTVAL);
+  console.log('c', process.env.PG_URI);
   await checkEnv();
   console.log(`Server listening on port: ${PORT}`);
 });
