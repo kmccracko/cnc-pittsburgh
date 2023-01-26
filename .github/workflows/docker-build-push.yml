@@ -29,5 +29,5 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_ORGANIZATION }}/citest
           secrets: |
-            PG_URI=${{ secrets.PG_URI }}
-            TESTVAL=testvalstring
+            "PG_URI=${{ secrets.PG_URI }}"
+            "TESTVAL=testvalstring"
