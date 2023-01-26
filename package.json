@@ -5,7 +5,7 @@
   "main": "./src/server/server.ts",
   "scripts": {
     "tsnode": "node --loader ts-node/esm --no-warnings",
-    "build": "NODE_ENV=production webpack && printenv PG_URI && printenv TESTVAL && printenv NODE_ENV",
+    "build": "NODE_ENV=production webpack",
     "start": "NODE_ENV=production ts-node ./src/server/server.ts",
     "start-web": "NODE_ENV=production PORT=80 ts-node ./src/server/server.ts",
     "dev": "NODE_ENV=development webpack-dev-server & nodemon ./src/server/server.ts",
