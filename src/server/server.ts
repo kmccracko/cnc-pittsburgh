@@ -85,6 +85,7 @@ app.listen(PORT, async () => {
   console.log('b', process.env.TESTVAL);
   console.log('c', process.env.PG_URI);
   console.log('d', process.env.TEST3);
+  console.log('d', process.env.NODE_ENV);
   await checkEnv();
   console.log(`Server listening on port: ${PORT}`);
 });
