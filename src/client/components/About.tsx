@@ -53,7 +53,7 @@ const About = (props: IaboutProps) => {
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
         The network of hamster wheels that keeps this site running is able to
-        fetch updates every 30 minutes, but requires a page refresh in order to
+        fetch updates every 15 minutes, but requires a page refresh in order to
         deliver the new data. There's a countdown on the feed page that shows
         how much time is left, and if you like math, how recently the data has
         been updated.
