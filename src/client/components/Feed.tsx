@@ -109,6 +109,23 @@ const Feed = (props: IfeedProps) => {
     ]);
   }
 
+  const formatHistoricalText = (dateArr: [string, string]) => {
+    const months: string[] = dateArr.reduce((acc, cur) => {
+      const monthStr = new Date(cur).toLocaleDateString('en-US', {
+        month: 'long',
+      });
+      if (monthStr === acc[0]) return acc;
+      return [...acc, monthStr];
+    }, []);
+    const plural = months.length;
+    const formatter = new Intl.ListFormat('en', {
+      style: 'long',
+      type: 'conjunction',
+    });
+    const monthsText = formatter.format(months);
+    return `Comparing to data in ${monthsText}, all years.`;
+  };
+
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
     return (
       <BirdCard
@@ -181,27 +198,37 @@ const Feed = (props: IfeedProps) => {
       {props.countdownComponent}
 
       {props.isLoading ? (
-        // <React.Fragment>
         <LoadingGif size='5' />
       ) : (
-        // </React.Fragment>
         <React.Fragment>
           <div id='result-summary'>
-            <span>
-              Displaying{' '}
-              {activeArr.length
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-              {props.activeInd ? 'observed' : 'unobserved'} species during&nbsp;
-            </span>{' '}
-            <span>
-              {`${new Date(props.queryInfo.curD1).toLocaleDateString('en-US', {
-                timeZone: 'UTC',
-              })}-${new Date(props.queryInfo.curD2).toLocaleDateString(
-                'en-US',
-                { timeZone: 'UTC' }
-              )}`}
-            </span>
+            <div>
+              <span>
+                Displaying{' '}
+                {activeArr.length
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                {props.activeInd ? 'observed' : 'unobserved'} species
+                during&nbsp;
+              </span>
+              <span>
+                {[props.queryInfo.curD1, props.queryInfo.curD2]
+                  .map((el) =>
+                    new Date(el).toLocaleDateString('en-US', {
+                      timeZone: 'UTC',
+                    })
+                  )
+                  .join('-')}
+              </span>
+            </div>
+            <div>
+              <span>
+                {formatHistoricalText([
+                  props.queryInfo.curD1,
+                  props.queryInfo.curD2,
+                ])}
+              </span>
+            </div>
           </div>
           {infiniteScroll}
         </React.Fragment>

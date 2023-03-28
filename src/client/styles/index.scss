@@ -238,9 +238,19 @@ body {
 
 #result-summary {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
-  margin: 10px 0px 20px 0px;
+  align-items: center;
+  * {
+    display: flex;
+    // flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    // align-items: center;
+    margin: 0px 0px 3px 0px;
+  }
+  margin: 15px 0px 20px 0px;
   font-size: large;
   // font-weight: ;
   color: rgb(203, 203, 203);
