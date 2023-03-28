@@ -6,7 +6,7 @@ type Object = {
 
 const myCache = new NodeCache({ stdTTL: 0 });
 const db = require('../db/db-connect');
-const currentLife = 60 * 30;
+const currentLife = 60 * 15;
 
 // queries
 const queries: Object = {

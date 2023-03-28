@@ -1,13 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { queryParams } from '../../types';
-
-// talk about purpose of this website
-
-// talk about where the filter options come from
-
-// create bottom bar for links (mine, and CNC ones)
-
-// somewhere, give credit the the philly guy for the idea
 
 interface IaboutProps {
   queryInfo: queryParams;
@@ -38,7 +30,20 @@ const About = (props: IaboutProps) => {
         timeframe. Naturalists can use this information to guide their efforts
         in observing as many new species as possible.
       </p>
-      <h2>Can check the status of a species without scrolling?</h2>
+      <h2>How do you determine what species are more likely to be observed?</h2>
+      <p>
+        This site compares information from two data sources: one data source
+        for the "Current" timeframe, and another for the "Historical" timeframe,
+        which looks at all observations for a given month, across all years.{' '}
+        <br></br>
+        <br></br> We find what species from the "Historical" dataset do not
+        occur in the "Current" dataset and sort them all by the total amount of
+        observations per species. Because we can reasonably conclude that the
+        species with more historical observations are more likely to be seen
+        again during the current timeframe, we sort highest to lowest, putting
+        the "low hanging fruit" to the top.
+      </p>
+      <h2>Can I check the observed status of a species without scrolling?</h2>
       <p>
         Yes! The <b>Search</b> feature at the top of the page allows you to type
         any part of a species' name (both common and scientific) and view all
@@ -48,7 +53,7 @@ const About = (props: IaboutProps) => {
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
         The network of hamster wheels that keeps this site running is able to
-        fetch updates every 30 minutes, but requires a page refresh in order to
+        fetch updates every 15 minutes, but requires a page refresh in order to
         deliver the new data. There's a countdown on the feed page that shows
         how much time is left, and if you like math, how recently the data has
         been updated.
