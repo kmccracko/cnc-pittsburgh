@@ -37,14 +37,14 @@ const Modal = (props: ImodalProps) => {
             <div className='modal-count'>
               {props.modalContent.found ? (
                 <a
-                  href={`https://www.inaturalist.org/observations?d1=${props.modalContent.queryInfo.curD1}&d2=${props.modalContent.queryInfo.curD2}&place_id=122840&taxon_id=${props.modalContent.taxaId}&verifiable=any`}
+                  href={`https://www.inaturalist.org/observations?d1=${props.modalContent.queryInfo.curD1}&d2=${props.modalContent.queryInfo.curD2}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`}
                   target='_blank'
                 >
                   View {props.modalContent.count} Current Obs. on iNaturalist ↪
                 </a>
               ) : (
                 <a
-                  href={`https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&verifiable=any`}
+                  href={`https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`}
                   target='_blank'
                 >
                   View {props.modalContent.count} Past Obs. on iNaturalist ↪
