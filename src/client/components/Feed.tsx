@@ -55,16 +55,13 @@ const Feed = (props: IfeedProps) => {
 
   // assign props to state
   useEffect(() => {
-    console.log('fullARR CHANGEDDDD');
-    if (props.fullArray.length && Object.keys(props.taxaArrays).length) {
-      setActiveArr(props.fullArray);
-      setViewArr(props.fullArray.slice(0, 5));
-      const filters: Object = {};
-      for (const key in props.taxaArrays) {
-        filters[taxaTranslation[key]] = false;
-      }
-      setActiveFilters(filters);
+    setActiveArr(props.fullArray);
+    setViewArr(props.fullArray.slice(0, 5));
+    const filters: Object = {};
+    for (const key in props.taxaArrays) {
+      filters[taxaTranslation[key]] = false;
     }
+    setActiveFilters(filters);
   }, [props.fullArray]);
 
   // on filter change, update activeArr and viewArr

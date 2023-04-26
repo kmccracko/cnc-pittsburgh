@@ -15,10 +15,6 @@ const Search = (props: IsearchProps) => {
   const [viewArr, setViewArr] = useState([]);
 
   useEffect(() => {
-    console.log(props.allArr);
-  }, []);
-
-  useEffect(() => {
     // ignore if empty search
     if (searchTerm === '') return;
 
@@ -65,7 +61,6 @@ const Search = (props: IsearchProps) => {
   });
 
   function handleScroll() {
-    console.log('aboutto break');
     setViewArr([
       ...viewArr,
       ...resultsArr.slice(viewArr.length, viewArr.length + 5),
