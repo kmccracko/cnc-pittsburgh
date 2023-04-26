@@ -18,7 +18,6 @@ const LoadingGif = (props: IloadingGifProps) => {
     }, 500);
 
     return () => {
-      console.log('clearing interval');
       clearInterval(intervalId);
     };
   }, []);

@@ -87,9 +87,6 @@ const App = () => {
       else currentTaxaObj[el.taxon] = [elPlusFound];
     }
 
-    console.log(baseline.length);
-    console.log(missingSpecies.length);
-
     return [missingSpecies, currentSpecies, missingTaxaObj, currentTaxaObj];
   }
 
