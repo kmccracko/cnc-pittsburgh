@@ -583,7 +583,6 @@ body {
       }
       .record-left {
         display: flex;
-        text-transform: capitalize;
         .record-thumb {
           height: 120px;
           width: 120px;
@@ -593,6 +592,9 @@ body {
             width: 120px;
             object-fit: cover;
           }
+        }
+        .names .common-name {
+          text-transform: capitalize;
         }
       }
       .status {
