@@ -4,7 +4,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 import BirdCard from './BirdCard';
 import LoadingGif from './LoadingGif';
 import Filter from './Filter';
-import Modal from './Modal';
 import { queryParams } from '../../types';
 
 type TallCards = Object[];
@@ -35,13 +34,13 @@ taxaTranslation = Object.fromEntries([
 ]);
 
 interface IfeedProps {
-  activeInd: boolean;
+  activeInd?: boolean;
   fullArray: any[];
   taxaArrays: Object;
   isLoading: boolean;
   countdownComponent: JSX.Element;
   queryInfo: queryParams;
-  toggleMissingVsFound: any;
+  toggleMissingVsFound?: any;
   showModal: Function;
   closeModal: Function;
 }
@@ -51,7 +50,6 @@ const Feed = (props: IfeedProps) => {
   const [activeArr, setActiveArr] = useState<TallCards>([]);
   const [viewArr, setViewArr] = useState<TallCards>([]);
   const [activeFilters, setActiveFilters] = useState<Object>({});
-  const [needApp, setNeedApp] = useState<boolean>(true);
 
   // assign props to state
   useEffect(() => {
@@ -114,7 +112,6 @@ const Feed = (props: IfeedProps) => {
       if (monthStr === acc[0]) return acc;
       return [...acc, monthStr];
     }, []);
-    const plural = months.length;
     const formatter = new Intl.ListFormat('en', {
       style: 'long',
       type: 'conjunction',
@@ -154,34 +151,55 @@ const Feed = (props: IfeedProps) => {
     </InfiniteScroll>
   );
 
+  const missingFoundContainer =
+    props.activeInd !== undefined ? (
+      <div id='toggle-missing-container'>
+        <input
+          id='toggle-missing'
+          type='checkbox'
+          checked={props.activeInd}
+          onChange={props.toggleMissingVsFound}
+        ></input>
+
+        <label
+          className={`missing-label ${
+            props.activeInd ? 'deselected' : 'selected'
+          }`}
+          htmlFor='toggle-missing'
+        >
+          Missing
+        </label>
+        <span className='spacer'>|</span>
+        <label
+          className={`found-label ${
+            props.activeInd ? 'selected' : 'deselected'
+          }`}
+          htmlFor='toggle-missing'
+        >
+          Found
+        </label>
+      </div>
+    ) : (
+      <div id='previous-warning-container'>
+        <span className='warn'>Warning!&nbsp;</span>
+        <a href='#/'>
+          <span>
+            This is last year's challenge data. Click this text to return to the
+            current year's view instead.
+          </span>
+        </a>
+      </div>
+    );
+
+  const queryDays =
+    props.activeInd !== undefined
+      ? { D1: props.queryInfo.curD1, D2: props.queryInfo.curD2 }
+      : { D1: props.queryInfo.prevD1, D2: props.queryInfo.prevD2 };
+
   return (
     <div id='Main'>
       <div id='filters-band' className='hamburger'>
-        <div id='toggle-missing-container'>
-          <input
-            id='toggle-missing'
-            type='checkbox'
-            checked={props.activeInd}
-            onChange={props.toggleMissingVsFound}
-          ></input>
-          <label
-            className={`missing-label ${
-              props.activeInd ? 'deselected' : 'selected'
-            }`}
-            htmlFor='toggle-missing'
-          >
-            Missing
-          </label>
-          <span className='spacer'>|</span>
-          <label
-            className={`found-label ${
-              props.activeInd ? 'selected' : 'deselected'
-            }`}
-            htmlFor='toggle-missing'
-          >
-            Found
-          </label>
-        </div>
+        {missingFoundContainer}
         <Filter
           activeFilters={activeFilters}
           toggleFilter={toggleFilter}
@@ -209,7 +227,7 @@ const Feed = (props: IfeedProps) => {
                 during&nbsp;
               </span>
               <span>
-                {[props.queryInfo.curD1, props.queryInfo.curD2]
+                {[queryDays.D1, queryDays.D2]
                   .map((el) =>
                     new Date(el).toLocaleDateString('en-US', {
                       timeZone: 'UTC',
@@ -219,12 +237,7 @@ const Feed = (props: IfeedProps) => {
               </span>
             </div>
             <div>
-              <span>
-                {formatHistoricalText([
-                  props.queryInfo.curD1,
-                  props.queryInfo.curD2,
-                ])}
-              </span>
+              <span>{formatHistoricalText([queryDays.D1, queryDays.D2])}</span>
             </div>
           </div>
           {infiniteScroll}

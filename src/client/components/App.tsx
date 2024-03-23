@@ -23,9 +23,11 @@ const App = () => {
   const [fullArr, setFullArr] = useState<Object[]>([]);
   const [missingArr, setMissingArr] = useState<Object[]>([]);
   const [foundArr, setFoundArr] = useState<Object[]>([]);
+  const [prevArr, setPrevArr] = useState<Object[]>([]);
   const [taxaObj, setTaxaObj] = useState<Object>({});
   const [missingTaxaObj, setMissingTaxaObj] = useState<Object>({});
   const [foundTaxaObj, setFoundTaxaObj] = useState<Object>({});
+  const [prevTaxaObj, setPrevTaxaObj] = useState<Object>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
@@ -37,6 +39,7 @@ const App = () => {
     axios.get('/getObs').then((res) => {
       const current: Object[] = res.data.current;
       const baseline: Object[] = res.data.baseline;
+      const previous: Object[] = res.data.previous;
 
       let missingSpecies: any,
         foundSpecies: any,
@@ -51,6 +54,15 @@ const App = () => {
       setFullArr(missingSpecies);
       setMissingArr(missingSpecies);
       setFoundArr(foundSpecies);
+
+      let prevMissingSpecies: any, prevMissingTaxa: Object;
+      const arr = getMissingVsFound(baseline, [...previous, ...current]);
+      prevMissingSpecies = arr[0];
+      prevMissingTaxa = arr[2];
+
+      setPrevTaxaObj(prevMissingTaxa);
+      setPrevArr(prevMissingSpecies);
+
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
       setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
@@ -132,6 +144,23 @@ const App = () => {
               activeInd={activeInd}
               fullArray={fullArr}
               taxaArrays={taxaObj}
+              isLoading={isLoading}
+              queryInfo={queryInfo}
+              countdownComponent={
+                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
+              }
+              showModal={showModal}
+              closeModal={closeModal}
+            />
+          }
+        />
+        <Route
+          path='/previous'
+          element={
+            <Feed
+              toggleMissingVsFound={toggleMissingVsFound}
+              fullArray={prevArr}
+              taxaArrays={prevTaxaObj}
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={

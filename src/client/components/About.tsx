@@ -50,6 +50,15 @@ const About = (props: IaboutProps) => {
         species matching that search term. On the right side of each result is
         an icon indicating the status of that species.
       </p>
+      <h2>I like a challenge. What do you suggest?</h2>
+      <p>
+        I've created a new feature that allows you to view Pittsburgh's
+        performance from last year. Specifically, by visiting the{' '}
+        <a href='/#/previous'>last year misses page</a>, you can view the
+        remaining species that weren't observed during the previous challenge
+        that also have not yet been observed during this challenge. Basically,
+        you can try to get what we couldn't last year!
+      </p>
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
         The network of hamster wheels that keeps this site running is able to
