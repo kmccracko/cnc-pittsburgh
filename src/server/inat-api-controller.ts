@@ -19,6 +19,14 @@ inat.getCurrent = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
+inat.getPrevious = async (req: Request, res: Response, next: NextFunction) => {
+  // check cache or update cache, then return value
+  const { returnVal, timeRemaining } = await checkCache('previous');
+  res.locals.previous = returnVal;
+  res.locals.timeRemaining = timeRemaining;
+  return next();
+};
+
 inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
   // check cache or update cache, then return value
   const { returnVal, timeRemaining } = await checkCache('baseline');

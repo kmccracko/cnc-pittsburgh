@@ -3,7 +3,7 @@ require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
 const path = require('path');
 const cors = require('cors');
-const { checkEnv, initializeDB } = require('../db/db-init.ts');
+const { checkEnv, initializeDataTable } = require('../db/db-init.ts');
 
 // TYPES
 type ServerError = {};
@@ -29,8 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // for use only when updating baseline data
 app.use('/db/fillBaseline', (req: Request, res: Response) => {
-  console.log('test from server');
-  initializeDB();
+  checkEnv('skip');
   return res.sendStatus(201);
 });
 
@@ -41,16 +40,20 @@ app.use(
   '/getObs',
   inatController.getBaseline,
   inatController.getCurrent,
+  inatController.getPrevious,
   async (req: Request, res: Response) => {
     console.log(Object.keys(res.locals));
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
+      previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
       queryInfo: {
         baselineMonth: process.env.BASELINE_MONTH,
         curD1: process.env.CURRENT_D1,
         curD2: process.env.CURRENT_D2,
+        prevD1: process.env.PREVIOUS_D1,
+        prevD2: process.env.PREVIOUS_D2,
       },
     });
   }
