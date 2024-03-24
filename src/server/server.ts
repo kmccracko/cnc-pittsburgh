@@ -1,9 +1,14 @@
 // Require Modules
 require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
+import debug from '../../betterDebug';
+import morgan from 'morgan';
+
+const dbg = debug(`cncpgh:server`);
+
 const path = require('path');
 const cors = require('cors');
-const { checkEnv, initializeDataTable } = require('../db/db-init.ts');
+const { checkEnv } = require('../db/db-init.ts');
 
 // TYPES
 type ServerError = {};
@@ -15,11 +20,7 @@ const app = express();
 app.use(cors());
 
 // run this for all requests, for cleaner log-reading
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`${'-'.repeat(20)} a request has come in! ${'-'.repeat(20)}`);
-  console.log(`${'-'.repeat(20)} source: ${req.url}`);
-  next();
-});
+app.use(morgan('dev', { stream: { write: (msg: any) => dbg(msg) } }));
 
 app.use(express.static('dist'));
 
@@ -27,10 +28,16 @@ app.use(express.static('dist'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// for use only when updating baseline data
-app.use('/db/fillBaseline', (req: Request, res: Response) => {
-  checkEnv('skip');
-  return res.sendStatus(201);
+// used to repopulate DB without touching env
+app.use('/db/fillDB/:id', (req: Request, res: Response) => {
+  if (req.params.id === process.env.DEV_KEY) {
+    dbg('ACCESS GRANTED TO: ', req.params.id);
+    checkEnv('force');
+    return res.status(201).send('ACCESS GRANTED');
+  } else {
+    dbg('Bad dev key: ', req.params.id);
+    return res.status(200).send('Bad dev key.');
+  }
 });
 
 app.use('/assets', express.static('src/client/assets'));
@@ -42,7 +49,7 @@ app.use(
   inatController.getCurrent,
   inatController.getPrevious,
   async (req: Request, res: Response) => {
-    console.log(Object.keys(res.locals));
+    dbg(Object.keys(res.locals));
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
@@ -65,14 +72,14 @@ app.get('/', (req: Request, res: Response) => {
 
 //404 error
 app.use('*', (req: Request, res: Response) => {
-  console.log('sending back from 404 route');
+  dbg('Sending back from 404 route');
   return res.sendStatus(404);
 });
 
 //create global error handler
 app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
-  console.log('in global err handler');
+  dbg('Global Error Handler:');
+  console.error(err);
   // const defaultErr = {
   //   log: 'Caught unknown middleware error',
   //   staus: 500,
@@ -85,5 +92,5 @@ app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
   await checkEnv();
-  console.log(`Server listening on port: ${PORT}`);
+  dbg(`Server listening on port: ${PORT}`);
 });

@@ -1,8 +1,10 @@
 const db = require('./db-connect.ts');
 const { makeQuery } = require('../server/cacher');
+import debug from '../../betterDebug';
+const dbg = debug(`cncpgh:database`);
 
 const updateInfo = async (label: string, value: string, replace?: boolean) => {
-  console.log(`${replace ? 'UPDATING' : 'INSERTING'} ${label} to be ${value}`);
+  dbg(`${replace ? 'UPDATING' : 'INSERTING'} ${label} to be ${value}`);
   const params: string[] = [label, value];
   const updateQuery = `
   UPDATE info
@@ -22,7 +24,7 @@ const updateInfo = async (label: string, value: string, replace?: boolean) => {
 };
 
 const initializeDataTable = async (tableName: string) => {
-  console.log('in init DB!!!');
+  dbg(`Initializing ${tableName} table...`);
   // Query iNaturalist for data
   const result = await makeQuery(tableName);
 
@@ -56,12 +58,12 @@ const initializeDataTable = async (tableName: string) => {
 
   // truncate table
   await db.query(truncTable).catch((err: Error) => {
-    console.log('failed during table truncation');
+    console.error('Failed during table truncation: ', err);
   });
 
   // loop through results and update table
   await db.query(fillTable).catch((err: Error) => {
-    console.log('failed during table fill');
+    console.error('Failed during table fill: ', err);
   });
 };
 
@@ -75,7 +77,7 @@ const checkEnv = async (cmd: string) => {
     }
   }
 
-  if (cmd === 'skip') {
+  if (cmd === 'force') {
     await initializeDataTable('baseline');
     await initializeDataTable('previous');
   }
@@ -86,8 +88,7 @@ const checkEnv = async (cmd: string) => {
   FROM info;`;
 
   const result = await db.query(getInfo).catch((err: Error) => {
-    console.error(err);
-    console.error('Failed while retrieving ENV info');
+    console.error('Failed while retrieving ENV info: ', err);
   });
 
   // Loop through env expectations
@@ -109,13 +110,4 @@ const checkEnv = async (cmd: string) => {
   if (prevFlag) await initializeDataTable('previous');
 };
 
-const testFunc = async () => {
-  console.log('about to testfunc');
-  const result = await db.query('select * from baseline');
-  console.log(result);
-};
-
-module.exports = { checkEnv, initializeDataTable, testFunc };
-
-// testFunc();
-// initFunc();
+module.exports = { checkEnv, initializeDataTable };

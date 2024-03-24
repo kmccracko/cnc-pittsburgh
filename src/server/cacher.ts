@@ -1,5 +1,7 @@
 import axios from 'axios';
+import debug from '../../betterDebug';
 const NodeCache = require('node-cache');
+const dbg = debug(`cncpgh:cache`);
 
 type Object = {
   [key: string]: any;
@@ -18,8 +20,9 @@ const queries: Object = {
 
 // make query function
 const makeQuery = async (type: string) => {
-  console.log(`entered makequery for ${type} query`);
-  console.log(queries[type]);
+  const dbg = debug(`cncpgh:makeQuery`);
+  dbg(`entered makequery for ${type} query`);
+  dbg(queries[type]);
   const getNextPage: Function = async (page = 1, fullResult: Object[] = []) => {
     // make query
     const result = await axios.get(`${queries[type]}&page=${page}`);
@@ -44,7 +47,7 @@ const makeQuery = async (type: string) => {
     if (result.data.total_results > result.data.per_page * page) {
       return getNextPage(page + 1, fullResult);
     } else {
-      console.log('iNat query complete');
+      dbg('iNat query complete');
       return fullResult;
     }
   };
@@ -59,12 +62,12 @@ const checkCache = async (key: string) => {
   let returnVal;
   // if in cache, return value
   if (keyVal) {
-    console.log(key, 'already in cache!');
+    dbg(`"${key}" already in cache!`);
     returnVal = keyVal;
   }
   // if not in cache, set value and return that
   else {
-    console.log(key, 'not in cache.');
+    dbg(`"${key}" not in cache.`);
 
     let lifeTime;
 
@@ -75,7 +78,7 @@ const checkCache = async (key: string) => {
       returnVal = await makeQuery(key);
       lifeTime = newLifeTime;
     }
-    console.log(`Updated ${key} in cache with ${returnVal.length} records`);
+    dbg(`Updated "${key}" in cache with ${returnVal.length} records`);
     myCache.set(key, returnVal, lifeTime);
   }
   // get time left on current's cache
@@ -86,7 +89,7 @@ const checkCache = async (key: string) => {
 };
 
 myCache.on('expired', (key: string, value: any) => {
-  console.log(key, ' expired! ', new Date().toLocaleString());
+  dbg(`${key} expired! ${new Date().toLocaleString()}`);
 });
 
 module.exports = { checkCache, makeQuery };
