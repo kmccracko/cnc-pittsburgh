@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ImodalProps {
   activeInd: boolean;
@@ -17,6 +17,7 @@ const Modal = (props: ImodalProps) => {
           D1: props.modalContent.queryInfo.prevD1,
           D2: props.modalContent.queryInfo.prevD2,
         };
+  const [imgFail, setImgFail] = useState(false);
 
   return (
     <div className='modal-background' onClick={props.closeModal}>
@@ -31,7 +32,16 @@ const Modal = (props: ImodalProps) => {
             </div>
           </div>
           <div className='modal-card-img'>
-            <img src={props.modalContent.pictureUrl} />
+            <img
+              src={props.modalContent.pictureUrl}
+              className={`${imgFail ? 'default' : ''}`}
+              onError={({ currentTarget }) => {
+                if (!imgFail) {
+                  setImgFail(true);
+                  currentTarget.src = `../assets/${props.modalContent.taxon}.png`;
+                }
+              }}
+            />
           </div>
           <div className='modal-summary-label'>
             <div className='modal-scientific-name'>

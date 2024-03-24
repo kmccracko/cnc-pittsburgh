@@ -130,6 +130,7 @@ const Feed = (props: IfeedProps) => {
         count={el.count}
         pictureUrl={el.pictureurl}
         found={el.found}
+        taxon={el.taxon}
         queryInfo={props.queryInfo}
         showModal={props.showModal}
       />

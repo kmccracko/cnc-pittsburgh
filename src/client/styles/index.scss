@@ -297,6 +297,13 @@ body {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      &.default {
+        position: relative;
+        object-fit: fill;
+        margin: 10% 0 0 10%;
+        width: 80%;
+        height: 80%;
+      }
     }
     .count {
       width: 100%;
@@ -483,6 +490,14 @@ body {
           // margin: 20px;
           // width: 100%;
           object-fit: cover;
+
+          &.default {
+            position: relative;
+            object-fit: fill;
+            // margin: 10% 0 0 10%;
+            width: 80%;
+            height: 80%;
+          }
         }
       }
       .modal-top {
@@ -611,6 +626,13 @@ body {
             height: 120px;
             width: 120px;
             object-fit: cover;
+            &.default {
+              position: relative;
+              object-fit: fill;
+              // margin: 10% 0 0 10%;
+              width: 80%;
+              height: 80%;
+            }
           }
         }
         .names .common-name {

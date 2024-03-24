@@ -3,6 +3,7 @@ import { queryParams } from '../../types';
 
 interface IbirdCardProps {
   name: string;
+  taxon: string;
   scientificName: string;
   count: number;
   pictureUrl: string;
@@ -14,6 +15,7 @@ interface IbirdCardProps {
 
 const BirdCard = (props: IbirdCardProps) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgFail, setImgFail] = useState(false);
 
   return (
     <div className='card'>
@@ -24,11 +26,17 @@ const BirdCard = (props: IbirdCardProps) => {
         }}
       >
         <img
-          className={imgLoaded ? 'bouncy' : ''}
+          className={`${imgLoaded ? 'bouncy' : ''} ${imgFail ? 'default' : ''}`}
           src={props.pictureUrl}
           // loading='lazy'
           onLoad={(e) => {
             setImgLoaded(true);
+          }}
+          onError={({ currentTarget }) => {
+            if (!imgFail) {
+              setImgFail(true);
+              currentTarget.src = `../assets/${props.taxon}.png`;
+            }
           }}
         />
 
