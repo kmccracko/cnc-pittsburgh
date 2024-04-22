@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 import '../styles/index.scss';
@@ -10,6 +10,7 @@ import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
 import Modal from './Modal';
+import FourOFour from './FourOFour';
 
 type Object = {
   [key: string]: any;
@@ -34,8 +35,15 @@ const App = () => {
   const [modal, setModal] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<Object>({});
 
+  // Avoid unnecessary fetches
+  const location = useLocation();
+  const pathsRequiringData = ['/', '/previous', '/search'];
+
   // make big fetch
   useEffect(() => {
+    console.log(location.pathname);
+    if (!pathsRequiringData.includes(location.pathname)) return;
+
     axios.get('/getObs').then((res) => {
       const current: Object[] = res.data.current;
       const baseline: Object[] = res.data.baseline;
@@ -67,7 +75,7 @@ const App = () => {
       setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
     });
-  }, []);
+  }, [location.pathname]);
 
   function getMissingVsFound(baseline: Object[], current: Object[]) {
     // get current names only
@@ -183,6 +191,7 @@ const App = () => {
             />
           }
         />
+        <Route path='/*' element={<FourOFour />} />
       </Routes>
     </div>
   );

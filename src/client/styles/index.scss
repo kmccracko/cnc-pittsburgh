@@ -650,6 +650,18 @@ body {
   }
 }
 
+#FourOFour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px;
+  h1 {
+    font-size: 6em;
+    padding: 0px;
+    margin: 10px;
+  }
+}
+
 // @keyframes dots {
 //   from {
 //     opacity: 1;
