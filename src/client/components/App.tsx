@@ -41,7 +41,6 @@ const App = () => {
 
   // make big fetch
   useEffect(() => {
-    console.log(location.pathname);
     if (!pathsRequiringData.includes(location.pathname)) return;
 
     axios.get('/getObs').then((res) => {
@@ -63,33 +62,40 @@ const App = () => {
       setMissingArr(missingSpecies);
       setFoundArr(foundSpecies);
 
+      // Only update prev if it had no data (prev doesn't change)
       let prevMissingSpecies: any, prevMissingTaxa: Object;
-      const arr = getMissingVsFound(baseline, [...previous, ...current]);
-      prevMissingSpecies = arr[0];
-      prevMissingTaxa = arr[2];
+      if (prevArr.length === 0) {
+        const arr = getMissingVsFound(baseline, [...previous, ...current]);
+        prevMissingSpecies = arr[0];
+        prevMissingTaxa = arr[2];
+        setPrevTaxaObj(prevMissingTaxa);
+        setPrevArr(prevMissingSpecies);
+      }
 
-      setPrevTaxaObj(prevMissingTaxa);
-      setPrevArr(prevMissingSpecies);
+      // Only update queryInfo if it had no data (query doesn't change)
+      if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data.queryInfo);
 
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
-      setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
-
-      // Show modal if before challenge start
-      if (+new Date() <= +new Date(res.data.queryInfo.curD1)) {
-        setModal(true);
-        setModalContent({
-          alert: true,
-          title: `
-          05 Days, 20 Hours, 45 minutes
-    `,
-          body: `Until the challenge starts.
-  
-          You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
-        });
-      }
     });
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (Object.keys(queryInfo).length === 0) return;
+    // Show modal if before challenge start
+    if (+new Date() <= +new Date(queryInfo.curD1)) {
+      setModal(true);
+      setModalContent({
+        alert: true,
+        title: `
+        You're early!
+  `,
+        body: `until the challenge starts.
+
+        You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
+      });
+    }
+  }, [queryInfo]);
 
   function getMissingVsFound(baseline: Object[], current: Object[]) {
     // get current names only
