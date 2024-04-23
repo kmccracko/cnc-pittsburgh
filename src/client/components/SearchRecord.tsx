@@ -3,6 +3,7 @@ import { queryParams } from '../../types';
 
 interface IsearchRecordProps {
   name: string;
+  taxon: string;
   scientificName: string;
   count: number;
   pictureUrl: string;
@@ -13,11 +14,22 @@ interface IsearchRecordProps {
 }
 
 const SearchRecord = (props: IsearchRecordProps) => {
+  const [imgFail, setImgFail] = useState(false);
+
   return (
     <div className='record' onClick={() => props.showModal(props)}>
       <div className='record-left'>
         <div className='record-thumb'>
-          <img src={props.pictureUrl} />
+          <img
+            className={`${imgFail ? 'default' : ''}`}
+            src={props.pictureUrl}
+            onError={({ currentTarget }) => {
+              if (!imgFail) {
+                setImgFail(true);
+                currentTarget.src = `../assets/${props.taxon}.png`;
+              }
+            }}
+          />
         </div>
         <div className='names'>
           <div className='common-name'>{props.name || 'No Common Name'}</div>

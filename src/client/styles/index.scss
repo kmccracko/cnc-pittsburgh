@@ -1,3 +1,4 @@
+html,
 body {
   background-color: rgb(31, 31, 35);
   justify-content: center;
@@ -27,7 +28,7 @@ body {
     margin: 40px;
   }
   h2 {
-    color: rgb(222, 203, 116);
+    color: rgb(226, 215, 158);
   }
   p {
     font-size: 1.2rem;
@@ -138,6 +139,25 @@ body {
       text-shadow: 0 0 8px rgb(91, 91, 91), 0 0 10px rgb(97, 226, 97);
     }
   }
+  #previous-warning-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    font-size: large;
+    .warn {
+      font-size: larger;
+      color: rgb(246, 157, 157);
+      margin-right: 10px;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
   #clear-filters-button {
     background-color: transparent;
     margin: 10px 0px;
@@ -201,6 +221,14 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes blinker {
   from {
     opacity: 1;
@@ -277,6 +305,13 @@ body {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      &.default {
+        position: relative;
+        object-fit: fill;
+        margin: 10% 0 0 10%;
+        width: 80%;
+        height: 80%;
+      }
     }
     .count {
       width: 100%;
@@ -416,6 +451,9 @@ body {
   height: 100%;
   background-color: rgb(0, 0, 0, 0.5);
   .modal-card-outline {
+    animation: fadeIn 0.3s ease-out;
+    opacity: 0;
+    opacity: 1;
     // min-height: 400px;
     // min-width: 400px;
     // border: 1px solid red;
@@ -435,6 +473,7 @@ body {
     border-radius: 15px;
 
     .modal-card {
+      min-height: 50px;
       max-height: 100vh;
       box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
       display: flex;
@@ -446,41 +485,25 @@ body {
       // margin: 20px;
       padding: 0px 15px;
       background-color: rgb(44, 44, 44);
-
-      .modal-card-img {
-        // width: 150%;
-        // position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 10px 0px;
-        border: 10px solid rgb(210, 210, 210);
-        max-height: 70vh;
-        img {
-          max-width: 100%;
-          max-height: 70vh;
-          // max-width: 100%;
-          // margin: 20px;
-          // width: 100%;
-          object-fit: cover;
-        }
+      position: relative;
+      .modal-close {
+        font-size: x-large;
+        position: absolute;
+        top: 5px;
+        right: 15px;
+        cursor: pointer;
       }
-      .modal-top {
-        width: 100%; // to keep
+
+      .modal-title {
+        width: 90%; // to keep
         // height: 30px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: x-large;
         margin: 5px 0px;
-        .modal-close {
-          text-align: center;
-          width: 50px;
-          &:hover {
-            cursor: pointer;
-          }
-        }
         .modal-common-name {
+          text-wrap: balance;
           text-align: center;
           font-weight: 700;
           text-transform: capitalize;
@@ -493,24 +516,57 @@ body {
           width: 50px;
         }
       }
-      .modal-summary-label {
-        // height: 50px;
-        align-self: flex-start;
-        padding: 0px 5px 25px 5px;
-        div a {
-          all: unset;
-          cursor: pointer;
-          color: rgb(230, 224, 152);
-          &:hover {
-            text-decoration: underline;
+      .modal-body {
+        &.alert {
+          margin: 20px 20px 40px 20px;
+          // min-width: 300px;
+          max-width: 360px;
+        }
+        .modal-card-img {
+          // width: 150%;
+          // position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 10px 0px;
+          border: 10px solid rgb(210, 210, 210);
+          max-height: 70vh;
+          img {
+            max-width: 100%;
+            max-height: 70vh;
+            // max-width: 100%;
+            // margin: 20px;
+            // width: 100%;
+            object-fit: cover;
+
+            &.default {
+              position: relative;
+              object-fit: fill;
+              // margin: 10% 0 0 10%;
+              width: 80%;
+              height: 80%;
+            }
           }
         }
-        .modal-count {
-        }
-        .modal-scientific-name {
-          font-weight: 400;
-          font-style: italic;
-          margin-bottom: 7px;
+        .modal-summary-label {
+          // height: 50px;
+          align-self: flex-start;
+          padding: 0px 5px 25px 5px;
+          div a {
+            all: unset;
+            cursor: pointer;
+            color: rgb(230, 224, 152);
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+          .modal-count {
+          }
+          .modal-scientific-name {
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 7px;
+          }
         }
       }
     }
@@ -591,6 +647,13 @@ body {
             height: 120px;
             width: 120px;
             object-fit: cover;
+            &.default {
+              position: relative;
+              object-fit: fill;
+              // margin: 10% 0 0 10%;
+              width: 80%;
+              height: 80%;
+            }
           }
         }
         .names .common-name {
@@ -605,6 +668,18 @@ body {
         margin: 0px 10px;
       }
     }
+  }
+}
+
+#FourOFour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px;
+  h1 {
+    font-size: 6em;
+    padding: 0px;
+    margin: 10px;
   }
 }
 
@@ -726,6 +801,13 @@ body {
       height: 150px;
     }
   }
+  #navbar #home-link #nav-left {
+    font-size: larger;
+  }
+  #navbar #nav-right a {
+    margin: 20px 10px;
+    font-size: medium;
+  }
 }
 
 @media only screen and (max-width: 340px) {
@@ -758,6 +840,12 @@ body {
         height: 190px;
       }
     }
+  }
+  #navbar #home-link #nav-left {
+    font-size: large;
+  }
+  #navbar #nav-right a {
+    margin: 20px 10px;
   }
 }
 

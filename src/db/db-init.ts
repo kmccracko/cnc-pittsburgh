@@ -1,40 +1,48 @@
-// require db
 const db = require('./db-connect.ts');
-// require makeQuery
 const { makeQuery } = require('../server/cacher');
+import debug from '../../betterDebug';
+const dbg = debug(`cncpgh:database`);
 
-const initializeDB = async () => {
-  // update info table with ENV values
-  const params: string[] = [process.env.BASELINE_MONTH];
-  const updateInfo = `
+const updateInfo = async (label: string, value: string, replace?: boolean) => {
+  dbg(`${replace ? 'UPDATING' : 'INSERTING'} ${label} to be ${value}`);
+  const params: string[] = [label, value];
+  const updateQuery = `
   UPDATE info
-  SET value = $1
-  WHERE label = 'baseline_month';
+  SET value = $2
+  WHERE label = $1;
   `;
-  await db.query(updateInfo, params).catch((err: Error) => {
-    console.log('failed during env update');
-  });
-
-  // make query
-  const result = await makeQuery('baseline');
-
-  // set up queries
-  const dropTable = `
-  DROP TABLE baseline;`;
-
-  const createTable = `
-  CREATE TABLE baseline (
-  "taxaId" varchar,
-  count int,
-  name varchar,
-  scientificname varchar,
-  pictureurl varchar,
-  taxon varchar
-  );
+  const insertQuery = `
+  INSERT INTO info
+  VALUES ($1, $2);
   `;
+  await db
+    .query(replace ? updateQuery : insertQuery, params)
+    .catch((err: Error) => {
+      console.error(err);
+      console.error('Failed during info update:', { label, value, replace });
+    });
+};
+
+const initializeDataTable = async (tableName: string) => {
+  dbg(`Initializing ${tableName} table...`);
+  // Query iNaturalist for data
+  const result = await makeQuery(tableName);
+
+  //? Table schema for Baseline and Previous
+  // CREATE TABLE baseline (
+  // "taxaId" varchar,
+  // count int,
+  // name varchar,
+  // scientificname varchar,
+  // pictureurl varchar,
+  // taxon varchar
+  // );
+
+  const truncTable = `
+  TRUNCATE TABLE ${tableName};`;
 
   const fillTable = `
-  INSERT INTO baseline (name, scientificname, count, "taxaId", pictureurl, taxon)
+  INSERT INTO ${tableName} (name, scientificname, count, "taxaId", pictureurl, taxon)
   VALUES 
   ${JSON.stringify(
     result.map((obj: any) => {
@@ -48,66 +56,58 @@ const initializeDB = async () => {
     .slice(1, -1)}
   ;`;
 
-  // drop table
-  await db.query(dropTable).catch((err: Error) => {
-    console.log('failed during table drop');
-  });
-
-  // rebuild table
-  await db.query(createTable).catch((err: Error) => {
-    console.log('failed during table create');
+  // truncate table
+  await db.query(truncTable).catch((err: Error) => {
+    console.error('Failed during table truncation: ', err);
   });
 
   // loop through results and update table
   await db.query(fillTable).catch((err: Error) => {
-    console.log('failed during table fill');
+    console.error('Failed during table fill: ', err);
   });
 };
 
-const checkEnv = async () => {
-  // pull saved env info
+const checkEnv = async (cmd: string) => {
+  // Pre-check required environment variables
+  const requiredEnv = ['BASELINE_MONTH', 'PREVIOUS_D1', 'PREVIOUS_D2'];
+  let prevFlag = false;
+  for (const envName of requiredEnv) {
+    if (!process.env[envName]) {
+      throw new Error(`No ${envName} in ENV`);
+    }
+  }
+
+  if (cmd === 'force') {
+    await initializeDataTable('baseline');
+    await initializeDataTable('previous');
+  }
+
+  // Pull saved env info
   const getInfo: string = `
-  SELECT value
-  FROM info
-  WHERE label = 'baseline_month'`;
+  SELECT * 
+  FROM info;`;
 
   const result = await db.query(getInfo).catch((err: Error) => {
-    console.log('failed while retrieving ENV info');
+    console.error('Failed while retrieving ENV info: ', err);
   });
 
-  if (result.rows.length) {
-    console.log(result.rows[0].value, process.env.BASELINE_MONTH);
-    if (result.rows[0].value === process.env.BASELINE_MONTH) return;
-    else {
-      console.log(
-        'baseline month does not match ENV! going initialize DB with new baseline.'
-      );
-    }
-  } else {
-    console.log('baseline month does not exist! going to insert new record.');
-    const params: string[] = [process.env.BASELINE_MONTH];
-    const updateInfo = `
-    INSERT INTO info 
-    VALUES ('baseline_month', $1
+  // Loop through env expectations
+  for (const envName of requiredEnv) {
+    const record = result.rows.find(
+      (r: any) => r.label === envName.toLowerCase()
     );
-    `;
-    await db.query(updateInfo, params).catch((err: Error) => {
-      console.log('failed during env insert');
-    });
+
+    if (!record || record.value !== process.env[envName]) {
+      await updateInfo(envName.toLowerCase(), process.env[envName], !!record);
+
+      if (envName.toLowerCase() === 'baseline_month') {
+        await initializeDataTable('baseline');
+      } else prevFlag = true;
+    }
   }
-  // this will drop baseline and fill it
-  // we don't need to worry about the current table bc we don't use it
-  // so we don't need to check current_d1 or _d2
-  await initializeDB();
+
+  // If any prev dates are missing or changed, update table
+  if (prevFlag) await initializeDataTable('previous');
 };
 
-const testFunc = async () => {
-  console.log('about to testfunc');
-  const result = await db.query('select * from baseline');
-  console.log(result);
-};
-
-module.exports = { checkEnv, initializeDB, testFunc };
-
-// testFunc();
-// initFunc();
+module.exports = { checkEnv, initializeDataTable };

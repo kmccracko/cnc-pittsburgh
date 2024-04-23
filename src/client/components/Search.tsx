@@ -48,6 +48,7 @@ const Search = (props: IsearchProps) => {
     return (
       <SearchRecord
         key={el.taxaId}
+        taxon={el.taxon}
         taxaId={el.taxaId}
         name={el.name}
         scientificName={el.scientificname}
