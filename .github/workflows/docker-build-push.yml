@@ -2,7 +2,7 @@ name: Build and Publish Docker image
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'dev']
 
 jobs:
   push_to_dockerhub:
@@ -21,10 +21,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image to Production
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_ORGANIZATION }}/prod
+
+      - name: Build and push Docker image to Staging
+        if: github.ref == 'refs/heads/dev'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_ORGANIZATION }}/stage
