@@ -74,6 +74,20 @@ const App = () => {
       setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
       setQueryInfo(res.data.queryInfo);
       setIsLoading(false);
+
+      // Show modal if before challenge start
+      if (+new Date() <= +new Date(res.data.queryInfo.curD1)) {
+        setModal(true);
+        setModalContent({
+          alert: true,
+          title: `
+          05 Days, 20 Hours, 45 minutes
+    `,
+          body: `Until the challenge starts.
+  
+          You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
+        });
+      }
     });
   }, [location.pathname]);
 
@@ -140,6 +154,7 @@ const App = () => {
           activeInd={activeInd}
           modalContent={modalContent}
           closeModal={closeModal}
+          queryInfo={queryInfo}
         />
       )}
       <Navbar />

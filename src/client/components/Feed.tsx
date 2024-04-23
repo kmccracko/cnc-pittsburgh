@@ -117,7 +117,8 @@ const Feed = (props: IfeedProps) => {
       type: 'conjunction',
     });
     const monthsText = formatter.format(months);
-    return `Comparing to data in ${monthsText}, all years.`;
+    // return `Comparing to data in ${monthsText}, all years.`;
+    return `Comparing to data in April and May, all years.`;
   };
 
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
