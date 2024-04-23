@@ -40,20 +40,21 @@ const About = (props: IaboutProps) => {
         occur in the "Current" dataset and sort them all by the total amount of
         observations per species. Because we can reasonably conclude that the
         species with more historical observations are more likely to be seen
-        again during the current timeframe, we sort highest to lowest, putting
+        again during the current timeframe, we sort highest to lowest, bringing
         the "low hanging fruit" to the top.
       </p>
       <h2>Can I check the observed status of a species without scrolling?</h2>
       <p>
         Yes! The <b>Search</b> feature at the top of the page allows you to type
-        any part of a species' name (both common and scientific) and view all
-        species matching that search term. On the right side of each result is
-        an icon indicating the status of that species.
+        any part of a species' name (common name or scientific name) and view
+        all species matching that search term. On the right side of each result
+        is an icon indicating the status of that species: missing or found.
       </p>
       <h2>I like a challenge. What do you suggest?</h2>
       <p>
-        I've created a new feature that allows you to view Pittsburgh's
-        performance from last year. Specifically, by visiting the{' '}
+        I've introduced a new feature for 2024 that allows you to view
+        Pittsburgh's performance from last year. Specifically, by visiting
+        the&nbsp;
         <a href='/#/previous'>last year misses page</a>, you can view the
         remaining species that weren't observed during the previous challenge
         that also have not yet been observed during this challenge. Basically,
@@ -75,7 +76,7 @@ const About = (props: IaboutProps) => {
         </a>{' '}
         on iNaturalist lists the major categories it uses. Note that these are
         different levels of identification, including kingdoms, classes, and
-        phylums.
+        phyla.
       </p>
       <div className='spacer'></div>
       <h3>Relevant links</h3>

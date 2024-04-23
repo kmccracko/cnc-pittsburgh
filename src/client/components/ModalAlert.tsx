@@ -35,16 +35,16 @@ const cleanTimeUntil = (
 };
 
 const ModalAlert = (props: ImodalProps) => {
-  const { body } = props.modalContent;
-  const [title, setTitle] = useState('');
+  const { title, body } = props.modalContent;
+  const [timer, setTimer] = useState('');
 
   useEffect(() => {
     // start interval
     let timerInterval: any;
     const startTime = +new Date(props.queryInfo.curD1);
-    setTitle(`${cleanTimeUntil(startTime)}`);
+    setTimer(`${cleanTimeUntil(startTime)}`);
     timerInterval = setInterval(() => {
-      setTitle(`${cleanTimeUntil(startTime)}`);
+      setTimer(`${cleanTimeUntil(startTime)}`);
     }, 1000);
 
     // clear interval
@@ -53,17 +53,17 @@ const ModalAlert = (props: ImodalProps) => {
     };
   }, []);
 
-  const divArr = body.split('\n').map((el: any) => (
-    <div>
+  const divArr = body.split('\n').map((el: any, i: number) => (
+    <div key={i}>
       {el}
       <br />
     </div>
   ));
-  divArr.unshift(`${title}`);
+  divArr.unshift(`${timer}`);
 
   return (
     <div>
-      <div className='modal-title'>You're Early!</div>
+      <div className='modal-title'>{title}</div>
       <br />
       <div className='modal-body alert'>{divArr}</div>
       {/* <button onClick={props.closeModal}>Thanks!</button> */}
