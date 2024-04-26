@@ -9,7 +9,7 @@ RUN npm install && npm install ts-node -g
 # build the application
 RUN npm run build
 # set container port?
-EXPOSE 3003
+EXPOSE 80
 # give it a file to start on
 ENTRYPOINT ["ts-node", "./src/server/server.ts"]
 #
