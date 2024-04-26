@@ -13,8 +13,8 @@ docker tag 746994831809/cncpgh:latest 746994831809.dkr.ecr.us-east-2.amazonaws.c
 docker push 746994831809.dkr.ecr.us-east-2.amazonaws.com/cncpgh:$GITHUB_SHA
 # Use the linux sed command to replace the text '<VERSION>' in our Dockerrun file with the GitHub SHA key
 sed -i='' "s/<VERSION>/$GITHUB_SHA/" Dockerrun.aws.json
-# Zip up our codebase, along with modified Dockerrun and our .ebextensions directory
-zip -r cncpgh-prod-deploy.zip Dockerrun.aws.json .ebextensions
+# Zip up our codebase, along with modified Dockerrun
+zip -r cncpgh-prod-deploy.zip Dockerrun.aws.json
 # Upload zip file to s3 bucket
 aws s3 cp cncpgh-prod-deploy.zip s3://$EB_BUCKET/cncpgh-prod-deploy.zip
 # Create a new application version with new Dockerrun
