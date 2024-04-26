@@ -29,7 +29,6 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --user awscli
-          python3 -m pip install --user awsebcli
 
       - name: Run Deploy Script
         run: sh ./scripts/deploy.sh
