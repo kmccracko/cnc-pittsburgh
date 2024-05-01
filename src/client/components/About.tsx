@@ -82,8 +82,8 @@ const About = (props: IaboutProps) => {
       <h3>Relevant links</h3>
       <ul>
         <li>
-          <a href='https://citynaturechallenge.org/' target='_blank'>
-            City Nature Challenge
+          <a href='https://www.citynaturechallenge.org/faq/' target='_blank'>
+            City Nature Challenge FAQ
           </a>
         </li>
         <li>
@@ -92,6 +92,14 @@ const About = (props: IaboutProps) => {
             target='_blank'
           >
             City Nature Challenge (Pittsburgh)
+          </a>
+        </li>
+        <li>
+          <a
+            href={`https://www.inaturalist.org/projects/${props.queryInfo.projectId}/`}
+            target='_blank'
+          >
+            iNaturalist Challenge Page (Pittsburgh)
           </a>
         </li>
       </ul>

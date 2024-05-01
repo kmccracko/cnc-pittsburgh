@@ -41,8 +41,15 @@ const App = () => {
 
   // make big fetch
   useEffect(() => {
+    // Get queryinfo
+    axios.get('/getInfo').then((res) => {
+      if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data);
+    });
+
+    // Stop if no fetch needed
     if (!pathsRequiringData.includes(location.pathname)) return;
 
+    // Make big data fetch
     axios.get('/getObs').then((res) => {
       const current: Object[] = res.data.current;
       const baseline: Object[] = res.data.baseline;
@@ -71,9 +78,6 @@ const App = () => {
         setPrevTaxaObj(prevMissingTaxa);
         setPrevArr(prevMissingSpecies);
       }
-
-      // Only update queryInfo if it had no data (query doesn't change)
-      if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data.queryInfo);
 
       setRefreshTime(
         !res.data.timeRemaining
