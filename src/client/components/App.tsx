@@ -75,7 +75,11 @@ const App = () => {
       // Only update queryInfo if it had no data (query doesn't change)
       if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data.queryInfo);
 
-      setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
+      setRefreshTime(
+        !res.data.timeRemaining
+          ? 0
+          : +new Date() + res.data.timeRemaining * 1000
+      );
       setIsLoading(false);
     });
   }, [location.pathname]);
@@ -190,7 +194,11 @@ const App = () => {
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={
-                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
+                !isLoading && refreshTime ? (
+                  <Countdown refreshTime={refreshTime} />
+                ) : (
+                  <></>
+                )
               }
               showModal={showModal}
               closeModal={closeModal}
@@ -207,7 +215,11 @@ const App = () => {
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={
-                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
+                !isLoading && refreshTime ? (
+                  <Countdown refreshTime={refreshTime} />
+                ) : (
+                  <></>
+                )
               }
               showModal={showModal}
               closeModal={closeModal}

@@ -75,16 +75,26 @@ const checkCache = async (key: string) => {
       returnVal = await db.query(`SELECT * FROM ${key};`);
       returnVal = returnVal.rows;
     } else if (key === 'current') {
-      returnVal = await makeQuery(key);
-      lifeTime = newLifeTime;
+      // If within challenge dates, make current query. Otherwise, pull from DB
+      if (
+        +new Date(process.env.CURRENT_D1) < +new Date() &&
+        +new Date() < +new Date(process.env.CURRENT_END)
+      ) {
+        returnVal = await makeQuery(key);
+        lifeTime = newLifeTime;
+      } else {
+        returnVal = await db.query(`SELECT * FROM ${key};`);
+        returnVal = returnVal.rows;
+      }
     }
     dbg(`Updated "${key}" in cache with ${returnVal.length} records`);
     myCache.set(key, returnVal, lifeTime);
   }
   // get time left on current's cache
   let timeOfExpiry = myCache.getTtl('current');
-  const timeRemaining = (timeOfExpiry - +new Date()) / 1000;
+  const timeRemaining = !timeOfExpiry ? 0 : (timeOfExpiry - +new Date()) / 1000;
 
+  dbg({ timeOfExpiry, timeRemaining });
   return { returnVal, timeRemaining };
 };
 
