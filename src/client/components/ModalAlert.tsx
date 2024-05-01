@@ -35,13 +35,16 @@ const cleanTimeUntil = (
 };
 
 const ModalAlert = (props: ImodalProps) => {
-  const { title, body } = props.modalContent;
+  const { title, body, countdownto } = props.modalContent;
   const [timer, setTimer] = useState('');
 
   useEffect(() => {
+    // Only do a countdown if we're about to enter CNC season
+    if (!countdownto) return;
+
     // start interval
     let timerInterval: any;
-    const startTime = +new Date(props.queryInfo.curD1);
+    const startTime = +new Date(countdownto);
     setTimer(`${cleanTimeUntil(startTime)}`);
     timerInterval = setInterval(() => {
       setTimer(`${cleanTimeUntil(startTime)}`);
@@ -53,20 +56,22 @@ const ModalAlert = (props: ImodalProps) => {
     };
   }, []);
 
-  const divArr = body.split('\n').map((el: any, i: number) => (
-    <div key={i}>
-      {el}
-      <br />
-    </div>
-  ));
-  divArr.unshift(`${timer}`);
+  const divArr = body
+    .trim()
+    .split('\n')
+    .map((el: any, i: number) => (
+      <div key={i}>
+        {el}
+        <br />
+      </div>
+    ));
+  if (countdownto) divArr.unshift(`${timer}`);
 
   return (
     <div>
       <div className='modal-title'>{title}</div>
       <br />
       <div className='modal-body alert'>{divArr}</div>
-      {/* <button onClick={props.closeModal}>Thanks!</button> */}
     </div>
   );
 };

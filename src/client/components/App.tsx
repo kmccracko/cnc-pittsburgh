@@ -82,6 +82,7 @@ const App = () => {
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
+
     // Show modal if before challenge start
     if (+new Date() <= +new Date(queryInfo.curD1)) {
       setModal(true);
@@ -90,9 +91,22 @@ const App = () => {
         title: `
         You're early!
   `,
-        body: `until the challenge starts.
+        body: `
+        until the challenge starts.
 
         You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
+        countdownto: queryInfo.curEndDate,
+      });
+      // Show modal if after challenge end
+    } else if (+new Date() > +new Date(queryInfo.curEndDate)) {
+      setModal(true);
+      setModalContent({
+        alert: true,
+        title: `
+        PGH Targets is currently not in season.
+    `,
+        body: `
+        You're welcome to look around - just know that this data is no longer "live", and instead reflects the data at the end of the most recent City Nature Challenge.`,
       });
     }
   }, [queryInfo]);

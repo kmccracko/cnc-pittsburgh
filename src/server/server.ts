@@ -59,6 +59,7 @@ app.use(
         baselineMonth: process.env.BASELINE_MONTH,
         curD1: process.env.CURRENT_D1,
         curD2: process.env.CURRENT_D2,
+        curEndDate: process.env.CURRENT_END,
         prevD1: process.env.PREVIOUS_D1,
         prevD2: process.env.PREVIOUS_D2,
       },

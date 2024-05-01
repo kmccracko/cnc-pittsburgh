@@ -5,6 +5,7 @@ export interface Object {
 export interface queryParams {
   curD1?: string;
   curD2?: string;
+  curEndDate?: string;
   prevD1?: string;
   prevD2?: string;
   baselineMonth?: number;
