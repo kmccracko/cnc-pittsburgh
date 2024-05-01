@@ -8,5 +8,6 @@ export interface queryParams {
   curEndDate?: string;
   prevD1?: string;
   prevD2?: string;
+  projectId?: string;
   baselineMonth?: number;
 }

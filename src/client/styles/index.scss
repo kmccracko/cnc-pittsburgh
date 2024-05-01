@@ -561,6 +561,8 @@ body {
             }
           }
           .modal-count {
+            display: flex;
+            flex-direction: column;
           }
           .modal-scientific-name {
             font-weight: 400;

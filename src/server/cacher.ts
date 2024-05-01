@@ -11,11 +11,15 @@ const myCache = new NodeCache({ stdTTL: 0 });
 const db = require('../db/db-connect');
 const newLifeTime = 60 * 15; // 15 minutes
 
+const challenge = process.env.PROJECT_ID
+  ? `project_id=${process.env.PROJECT_ID}`
+  : 'place_id=122840';
+
 // queries
 const queries: Object = {
   baseline: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
-  previous: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}&lrank=species&hrank=species&per_page=500`,
-  current: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}&lrank=species&hrank=species&per_page=500`,
+  previous: `https://api.inaturalist.org/v1/observations/species_counts?${challenge}&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}&lrank=species&hrank=species&per_page=500`,
+  current: `https://api.inaturalist.org/v1/observations/species_counts?${challenge}&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}&lrank=species&hrank=species&per_page=500`,
 };
 
 // make query function

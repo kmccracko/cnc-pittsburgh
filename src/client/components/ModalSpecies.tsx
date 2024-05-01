@@ -19,6 +19,14 @@ const ModalSpecies = (props: ImodalProps) => {
         };
   const [imgFail, setImgFail] = useState(false);
 
+  const challenge = props.modalContent.queryInfo.projectId
+    ? `project_id=${props.modalContent.queryInfo.projectId}`
+    : 'place_id=122840';
+
+  const currentUrl = `https://www.inaturalist.org/observations?d1=${queryDays.D1}&d2=${queryDays.D2}&${challenge}&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+
+  const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+
   return (
     <div>
       <div className='modal-title'>
@@ -53,19 +61,20 @@ const ModalSpecies = (props: ImodalProps) => {
           </div>
           <div className='modal-count'>
             {props.modalContent.found ? (
-              <a
-                href={`https://www.inaturalist.org/observations?d1=${queryDays.D1}&d2=${queryDays.D2}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`}
-                target='_blank'
-              >
-                View {props.modalContent.count} Current Obs. on iNaturalist ↪
-              </a>
+              <>
+                <a href={currentUrl} target='_blank'>
+                  View {props.modalContent.count} Current Obs. on iNaturalist ↪
+                </a>
+              </>
             ) : (
-              <a
-                href={`https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`}
-                target='_blank'
-              >
-                View {props.modalContent.count} Past Obs. on iNaturalist ↪
-              </a>
+              <>
+                <a href={pastUrl} target='_blank'>
+                  View {props.modalContent.count} Past Obs. on iNaturalist ↪
+                </a>
+                <a href={currentUrl} target='_blank'>
+                  Is it still missing? ↪
+                </a>
+              </>
             )}
           </div>
         </div>
