@@ -19,11 +19,17 @@ const ModalSpecies = (props: ImodalProps) => {
         };
   const [imgFail, setImgFail] = useState(false);
 
-  const challenge = props.modalContent.queryInfo.projectId
+  const projectIdExists = props.modalContent.queryInfo.projectId;
+  const challenge = projectIdExists
     ? `project_id=${props.modalContent.queryInfo.projectId}`
     : 'place_id=122840';
+  const days = `&d1=${queryDays.D1}&d2=${queryDays.D2}`;
 
-  const currentUrl = `https://www.inaturalist.org/observations?d1=${queryDays.D1}&d2=${queryDays.D2}&${challenge}&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+  const currentUrl = `https://www.inaturalist.org/observations?${
+    projectIdExists ? challenge : challenge + days
+  }&taxon_id=${
+    props.modalContent.taxaId
+  }&hrank=species&lrank=species&verifiable=any`;
 
   const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
 

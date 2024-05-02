@@ -68,6 +68,7 @@ app.get('/getInfo', (req, res) => {
     prevD1: process.env.PREVIOUS_D1,
     prevD2: process.env.PREVIOUS_D2,
     projectId: process.env.PROJECT_ID,
+    previousProjectId: process.env.PREVIOUS_PROJECT_ID,
   });
 });
 

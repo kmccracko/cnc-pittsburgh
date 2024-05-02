@@ -71,12 +71,7 @@ const initializeDataTable = async (tableName: string) => {
 
 const checkEnv = async (cmd: string) => {
   // Pre-check required environment variables
-  const requiredEnv = [
-    'BASELINE_MONTH',
-    'PREVIOUS_D1',
-    'PREVIOUS_D2',
-    'CURRENT_END',
-  ];
+  const requiredEnv = ['BASELINE_MONTH', 'PREVIOUS_PROJECT_ID', 'PROJECT_ID'];
   let prevFlag = false;
   for (const envName of requiredEnv) {
     if (!process.env[envName]) {
@@ -105,26 +100,27 @@ const checkEnv = async (cmd: string) => {
       (r: any) => r.label === envName.toLowerCase()
     );
 
+    // If DB value of env is different from current env,
     if (!record || record.value !== process.env[envName]) {
+      // Update/insert it into info table
       await updateInfo(envName.toLowerCase(), process.env[envName], !!record);
 
       // If baseline is different, update its table
-      if (envName.toLowerCase() === 'baseline_month') {
+      if (envName.toLowerCase() === 'baseline_month')
         await initializeDataTable('baseline');
-      }
+      // If previous is different, update its table
+      else if (envName.toLowerCase() === 'previous_project_id')
+        await initializeDataTable('previous');
       // If current_end is different,
       else if (envName.toLowerCase() === 'current_end') {
         // If we are past the current_end specified in ENV, we can update the DB
         if (+new Date(process.env[envName]) < +new Date()) {
           await initializeDataTable('current');
-          // Otherwise, we're in season
         }
-      } else prevFlag = true;
+        // Otherwise, we're in season and will be querying iNat for new data, so updating DB doesn't help us
+      }
     }
   }
-
-  // If any prev dates are missing or changed, update table
-  if (prevFlag) await initializeDataTable('previous');
 };
 
 module.exports = { checkEnv, initializeDataTable };
