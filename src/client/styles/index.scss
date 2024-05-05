@@ -373,7 +373,7 @@ body {
 }
 
 .modal-background ~ div {
-  filter: blur(7px);
+  filter: blur(3px);
 }
 
 @keyframes radial-circlepath {
@@ -459,10 +459,10 @@ body {
     // border: 1px solid red;
     box-sizing: border-box;
     background: radial-gradient(
-      rgb(145, 145, 145),
+      rgb(90, 90, 90),
       rgb(0, 0, 0, 0.3),
       rgb(0, 0, 0, 0.3),
-      rgb(163, 163, 163)
+      rgb(90, 90, 90)
     );
     background-size: 200% 200%;
     background-position: 100% 100%;
@@ -475,7 +475,7 @@ body {
     .modal-card {
       min-height: 50px;
       max-height: 100vh;
-      box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
+      // box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
       display: flex;
       // display: none;
       flex-direction: column;
@@ -502,10 +502,10 @@ body {
         align-items: center;
         font-size: x-large;
         margin: 5px 0px;
+        font-weight: 700;
         .modal-common-name {
           text-wrap: balance;
           text-align: center;
-          font-weight: 700;
           text-transform: capitalize;
           a {
             all: unset;
@@ -515,10 +515,30 @@ body {
         .empty {
           width: 50px;
         }
+        &.alert {
+          margin: 10px 0px;
+        }
+      }
+      .line-horz {
+        margin-top: 7px;
+        margin-bottom: 10px;
+        justify-self: center;
+        align-self: center;
+        width: 100%;
+        height: 1.5px;
+        background: linear-gradient(
+          to right,
+          transparent 0%,
+          rgb(62, 62, 62) 5%,
+          rgb(62, 62, 62) 95%,
+          transparent 100%
+        ); /* Linear gradient with delayed fade */
       }
       .modal-body {
         &.alert {
-          margin: 20px 20px 40px 20px;
+          display: flex;
+          flex-direction: column;
+          margin: 0px 20px 20px 20px;
           // min-width: 300px;
           max-width: 360px;
         }
@@ -569,6 +589,35 @@ body {
             font-style: italic;
             margin-bottom: 7px;
           }
+        }
+      }
+      .modal-okay {
+        font-size: larger;
+        padding: 7px 30px;
+        cursor: pointer;
+        color: rgb(203, 203, 203);
+        background-color: #2d312d;
+        color: #77b977;
+        margin: 20px;
+        border-radius: 5px;
+        border: 2px solid #77b977;
+        box-shadow: none;
+        opacity: 0.8;
+        // align-self: flex-end;
+        &:hover {
+          box-sizing: border-box;
+          background: radial-gradient(
+            rgb(94, 94, 94),
+            rgb(0, 0, 0, 0.3),
+            rgb(0, 0, 0, 0.3),
+            rgb(0, 0, 0, 0.3),
+            rgb(105, 105, 105)
+          );
+          background-size: 200% 200%;
+          animation: radial-button 3s ease-in-out infinite;
+        }
+        &:active {
+          transform: scale(0.95, 0.95);
         }
       }
     }
@@ -671,6 +720,20 @@ body {
       }
     }
   }
+}
+
+.countdown-pretty {
+  align-self: center;
+  display: flex;
+  width: 250px;
+  justify-content: space-between;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: xx-large;
+  background-color: #151515;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
 
 #FourOFour {
@@ -788,6 +851,10 @@ body {
       grid-template-columns: repeat(2, 150px);
     }
   }
+  .modal-body.alert {
+    // Don't feel like repeating the whole class chain for specifictiy, so using important instead
+    margin: 10px 0px !important;
+  }
 }
 
 @media only screen and (max-width: 380px) {
@@ -829,6 +896,10 @@ body {
       }
     }
   }
+  .countdown-pretty {
+    width: 200px;
+    font-size: x-large;
+  }
 }
 
 @media only screen and (max-width: 325px) {
@@ -848,6 +919,13 @@ body {
   }
   #navbar #nav-right a {
     margin: 20px 10px;
+  }
+  .countdown-pretty {
+    width: 160px;
+    font-size: larger;
+    padding: 10px 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
   }
 }
 

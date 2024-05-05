@@ -86,17 +86,12 @@ app.use('*', (req: Request, res: Response) => {
 app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
   dbg('Global Error Handler:');
   console.error(err);
-  // const defaultErr = {
-  //   log: 'Caught unknown middleware error',
-  //   staus: 500,
-  //   message: { err: 'An error occured' },
-  // };
-  // const errorObj = Object.assign({}, defaultErr, err);
   return res.status(400).json(err);
 });
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
+  if (process.env.NODE_ENV === 'development') return;
   await checkEnv();
   dbg(`Server listening on port: ${PORT}`);
 });

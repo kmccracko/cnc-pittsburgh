@@ -9,8 +9,11 @@ import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
-import Modal from './Modal';
+import ModalAlert from './ModalAlert';
+// import ModalSpecies from './ModalSpecies';
 import FourOFour from './FourOFour';
+import DynamicComponent from './Dynamic';
+import ModalSpecies from './ModalSpecies';
 
 type Object = {
   [key: string]: any;
@@ -33,6 +36,7 @@ const App = () => {
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
   const [modal, setModal] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<string>('');
   const [modalContent, setModalContent] = useState<Object>({});
 
   // Avoid unnecessary fetches
@@ -47,7 +51,11 @@ const App = () => {
     });
 
     // Stop if no fetch needed
-    if (!pathsRequiringData.includes(location.pathname)) return;
+    if (
+      !pathsRequiringData.includes(location.pathname) ||
+      location.pathname.includes('/component/')
+    )
+      return;
 
     // Make big data fetch
     axios.get('/getObs').then((res) => {
@@ -90,26 +98,24 @@ const App = () => {
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
-
-    // Show modal if before challenge start
+    if (location.pathname.includes('/component/')) return;
     if (+new Date() <= +new Date(queryInfo.curD1)) {
+      // Show modal if before challenge start
+      setModalType('alert');
       setModal(true);
       setModalContent({
-        alert: true,
         title: `
-        You're early!
-  `,
+        You're early!`,
         body: `
-        until the challenge starts.
 
         You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
         countdownto: queryInfo.curEndDate,
       });
       // Show modal if after challenge end
     } else if (+new Date() > +new Date(queryInfo.curEndDate)) {
+      setModalType('alert');
       setModal(true);
       setModalContent({
-        alert: true,
         title: `
         PGH Targets is currently not in season.
     `,
@@ -164,8 +170,9 @@ const App = () => {
   }
 
   // show modal
-  const showModal = (data: any) => {
+  const showModal = (type: string, data: any) => {
     setModal(true);
+    setModalType(type);
     setModalContent(data);
   };
 
@@ -177,14 +184,16 @@ const App = () => {
 
   return (
     <div id='Main'>
-      {modal && (
-        <Modal
-          activeInd={activeInd}
-          modalContent={modalContent}
-          closeModal={closeModal}
-          queryInfo={queryInfo}
-        />
-      )}
+      {modal &&
+        (modalType === 'alert' ? (
+          <ModalAlert modalContent={modalContent} closeModal={closeModal} />
+        ) : (
+          <ModalSpecies
+            activeInd={activeInd}
+            modalContent={modalContent}
+            closeModal={closeModal}
+          />
+        ))}
       <Navbar />
       <Routes>
         <Route
@@ -205,7 +214,6 @@ const App = () => {
                 )
               }
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
         />
@@ -226,7 +234,6 @@ const App = () => {
                 )
               }
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
         />
@@ -238,9 +245,12 @@ const App = () => {
               allArr={[...missingArr, ...foundArr]}
               queryInfo={queryInfo}
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
+        />
+        <Route
+          path='/component/:name'
+          element={<DynamicComponent queryInfo={queryInfo} />}
         />
         <Route path='/*' element={<FourOFour />} />
       </Routes>

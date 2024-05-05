@@ -22,7 +22,7 @@ const BirdCard = (props: IbirdCardProps) => {
       <div
         className='card-img'
         onClick={() => {
-          props.showModal(props);
+          props.showModal('species', props);
         }}
       >
         <img

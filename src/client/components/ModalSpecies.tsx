@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Modal from './Modal';
 
 interface ImodalProps {
   activeInd: boolean;
@@ -33,60 +34,69 @@ const ModalSpecies = (props: ImodalProps) => {
 
   const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
 
-  return (
-    <div>
-      <div className='modal-title'>
-        <div className='modal-common-name'>
-          {props.modalContent.name || props.modalContent.scientificName}
-        </div>
-      </div>
-      <div className='modal-body'>
-        <div className='modal-card-img'>
-          <img
-            src={props.modalContent.pictureUrl}
-            className={`${imgFail ? 'default' : ''}`}
-            onError={({ currentTarget }) => {
-              if (!imgFail) {
-                setImgFail(true);
-                currentTarget.src = `../assets/${props.modalContent.taxon}.png`;
-              }
-            }}
-          />
-        </div>
-        <div className='modal-summary-label'>
-          <div className='modal-scientific-name'>
-            ({props.modalContent.scientificName})
+  const modal = (
+    <Modal
+      type={'species'}
+      closeModal={props.closeModal}
+      modalInner={
+        <>
+          <div className='modal-title'>
+            <div className='modal-common-name'>
+              {props.modalContent.name || props.modalContent.scientificName}
+            </div>
           </div>
-          <div>
-            <a
-              href={`https://www.inaturalist.org/taxa/${props.modalContent.taxaId}`}
-              target='_blank'
-            >
-              View on iNaturalist ↪
-            </a>
+          <div className='modal-body'>
+            <div className='modal-card-img'>
+              <img
+                src={props.modalContent.pictureUrl}
+                className={`${imgFail ? 'default' : ''}`}
+                onError={({ currentTarget }) => {
+                  if (!imgFail) {
+                    setImgFail(true);
+                    currentTarget.src = `../assets/${props.modalContent.taxon}.png`;
+                  }
+                }}
+              />
+            </div>
+            <div className='modal-summary-label'>
+              <div className='modal-scientific-name'>
+                ({props.modalContent.scientificName})
+              </div>
+              <div>
+                <a
+                  href={`https://www.inaturalist.org/taxa/${props.modalContent.taxaId}`}
+                  target='_blank'
+                >
+                  View on iNaturalist ↪
+                </a>
+              </div>
+              <div className='modal-count'>
+                {props.modalContent.found ? (
+                  <>
+                    <a href={currentUrl} target='_blank'>
+                      View {props.modalContent.count} Current Obs. on
+                      iNaturalist ↪
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <a href={pastUrl} target='_blank'>
+                      View {props.modalContent.count} Past Obs. on iNaturalist ↪
+                    </a>
+                    <a href={currentUrl} target='_blank'>
+                      Is it still missing? ↪
+                    </a>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-          <div className='modal-count'>
-            {props.modalContent.found ? (
-              <>
-                <a href={currentUrl} target='_blank'>
-                  View {props.modalContent.count} Current Obs. on iNaturalist ↪
-                </a>
-              </>
-            ) : (
-              <>
-                <a href={pastUrl} target='_blank'>
-                  View {props.modalContent.count} Past Obs. on iNaturalist ↪
-                </a>
-                <a href={currentUrl} target='_blank'>
-                  Is it still missing? ↪
-                </a>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
+
+  return modal;
 };
 
 export default ModalSpecies;
