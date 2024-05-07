@@ -3,8 +3,26 @@ import Modal from './Modal';
 
 interface ImodalProps {
   activeInd: boolean;
-  modalContent: any;
+  modalContent: iSpeciesModalContent;
   closeModal: any;
+}
+
+interface iSpeciesModalContent {
+  found: boolean,
+  count: number,
+  taxon: string,
+  pictureUrl: string,
+  name: string,
+  scientificName: string,
+  taxaId: number,
+  queryInfo: {
+    curD1: string,
+    curD2: string,
+    prevD1: string,
+    prevD2: string,
+    projectId: string,
+    baselineMonth: string
+  }
 }
 
 const ModalSpecies = (props: ImodalProps) => {

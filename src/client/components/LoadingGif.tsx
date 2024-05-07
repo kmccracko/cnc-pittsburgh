@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import hamsterGif from '../assets/hamster-wheel.gif';
 
 interface IloadingGifProps {
-  size: string;
+  size?: string;
   color?: string;
 }
 

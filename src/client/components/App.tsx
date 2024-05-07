@@ -10,10 +10,9 @@ import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
 import ModalAlert from './ModalAlert';
-// import ModalSpecies from './ModalSpecies';
-import FourOFour from './FourOFour';
-import DynamicComponent from './Dynamic';
 import ModalSpecies from './ModalSpecies';
+import FourOFour from './FourOFour';
+import Examples from './Examples';
 
 type Object = {
   [key: string]: any;
@@ -37,7 +36,7 @@ const App = () => {
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
   const [modal, setModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>('');
-  const [modalContent, setModalContent] = useState<Object>({});
+  const [modalContent, setModalContent] = useState<any>({});
 
   // Avoid unnecessary fetches
   const location = useLocation();
@@ -53,7 +52,7 @@ const App = () => {
     // Stop if no fetch needed
     if (
       !pathsRequiringData.includes(location.pathname) ||
-      location.pathname.includes('/component/')
+      location.pathname.includes('/examples/')
     )
       return;
 
@@ -98,7 +97,7 @@ const App = () => {
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
-    if (location.pathname.includes('/component/')) return;
+    if (location.pathname.includes('/examples/')) return;
     if (+new Date() <= +new Date(queryInfo.curD1)) {
       // Show modal if before challenge start
       setModalType('alert');
@@ -249,8 +248,8 @@ const App = () => {
           }
         />
         <Route
-          path='/component/:name'
-          element={<DynamicComponent queryInfo={queryInfo} />}
+          path='/examples/*'
+          element={<Examples queryInfo={queryInfo} />}
         />
         <Route path='/*' element={<FourOFour />} />
       </Routes>
