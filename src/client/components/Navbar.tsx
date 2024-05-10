@@ -1,7 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Hamburger from './Hamburger';
 
 const Navbar = () => {
+  let navLinks;
+  const wideEnough = useMediaQuery('(min-width:601px)');
+  const links = [
+    <Link to='/search'>Search</Link>,
+    <Link to='/previous'>Previous</Link>,
+    <Link to='/about'>About</Link>,
+  ];
+  if (wideEnough) {
+    navLinks = <>{links}</>;
+  } else {
+    navLinks = <Hamburger listitems={links} />;
+  }
+
+  console.log({ wideEnough });
+
   return (
     <div id='navbar'>
       <Link to='/' id='home-link'>
@@ -10,10 +27,8 @@ const Navbar = () => {
           <span id='cnc'>CNC</span>
         </div>
       </Link>
-      <div id='nav-right'>
-        {/* <Link to='/'>Feeds</Link> */}
-        <Link to='/search'>Search</Link>
-        <Link to='/about'>About</Link>
+      <div id='nav-right' className={`${!wideEnough ? 'mobile' : ''}`}>
+        {navLinks}
       </div>
     </div>
   );

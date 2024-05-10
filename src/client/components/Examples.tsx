@@ -1,10 +1,11 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 
 import LoadingGif from './LoadingGif';
 import Modal from './Modal';
 import ModalAlert from './ModalAlert';
 import ModalSpecies from './ModalSpecies';
+import Hamburger from './Hamburger';
 
 const Examples = (props: any) => {
   const location = '/#/examples/';
@@ -79,6 +80,18 @@ const Examples = (props: any) => {
         </>
       ),
     },
+    {
+      path: 'hamburger',
+      element: (
+        <>
+          <Hamburger
+            listitems={['about', 'previous', 'search'].map((el) => (
+              <Link to={`/#/${el}`}>{el}</Link>
+            ))}
+          />
+        </>
+      ),
+    },
   ];
 
   const routes = examples.map((el, i) => <Route key={i} {...el}></Route>);
@@ -91,7 +104,11 @@ const Examples = (props: any) => {
   ));
 
   return (
-    <>
+    <div id='examples-container'>
+      <style>{`
+      #examples-container {
+        height: 100vh;
+      }`}</style>
       <Routes>
         {routes}
         <Route
@@ -99,6 +116,9 @@ const Examples = (props: any) => {
           element={
             <div>
               <style>{`
+              #examples-container {
+                height: 100%;
+              }
               a {
                 color: yellow;
                 font-size: 20px;
@@ -113,7 +133,7 @@ const Examples = (props: any) => {
           }
         />
       </Routes>
-    </>
+    </div>
   );
 };
 export default Examples;
