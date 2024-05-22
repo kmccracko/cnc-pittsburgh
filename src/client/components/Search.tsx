@@ -6,7 +6,6 @@ interface IsearchProps {
   allArr: any;
   queryInfo: Object;
   showModal: Function;
-  closeModal: Function;
 }
 
 const Search = (props: IsearchProps) => {

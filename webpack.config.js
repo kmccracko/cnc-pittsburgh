@@ -68,6 +68,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/client/index.html',
+      favicon: './src/client/assets/targeticon.png',
     }),
     // new Dotenv({ systemvars: true }),
     // new BundleAnalyzerPlugin(),
