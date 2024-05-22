@@ -11,11 +11,21 @@ const myCache = new NodeCache({ stdTTL: 0 });
 const db = require('../db/db-connect');
 const newLifeTime = 60 * 15; // 15 minutes
 
+const place = 'place_id=122840';
+const curDates = `&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}`;
+const prevDates = `&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}`;
+const curProject = 'project_id=' + process.env.PROJECT_ID;
+const prevProject = 'project_id=' + process.env.PREVIOUS_PROJECT_ID;
+
 // queries
 const queries: Object = {
   baseline: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
-  previous: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}&lrank=species&hrank=species&per_page=500`,
-  current: `https://api.inaturalist.org/v1/observations/species_counts?place_id=122840&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}&lrank=species&hrank=species&per_page=500`,
+  previous: `https://api.inaturalist.org/v1/observations/species_counts?${
+    process.env.PREVIOUS_PROJECT_ID ? prevProject : place + prevDates
+  }&lrank=species&hrank=species&per_page=500`,
+  current: `https://api.inaturalist.org/v1/observations/species_counts?${
+    process.env.PROJECT_ID ? curProject : place + curDates
+  }&lrank=species&hrank=species&per_page=500`,
 };
 
 // make query function
@@ -75,16 +85,26 @@ const checkCache = async (key: string) => {
       returnVal = await db.query(`SELECT * FROM ${key};`);
       returnVal = returnVal.rows;
     } else if (key === 'current') {
-      returnVal = await makeQuery(key);
-      lifeTime = newLifeTime;
+      // If within challenge dates, make current query. Otherwise, pull from DB
+      if (
+        +new Date(process.env.CURRENT_D1) < +new Date() &&
+        +new Date() < +new Date(process.env.CURRENT_END)
+      ) {
+        returnVal = await makeQuery(key);
+        lifeTime = newLifeTime;
+      } else {
+        returnVal = await db.query(`SELECT * FROM ${key};`);
+        returnVal = returnVal.rows;
+      }
     }
     dbg(`Updated "${key}" in cache with ${returnVal.length} records`);
     myCache.set(key, returnVal, lifeTime);
   }
   // get time left on current's cache
   let timeOfExpiry = myCache.getTtl('current');
-  const timeRemaining = (timeOfExpiry - +new Date()) / 1000;
+  const timeRemaining = !timeOfExpiry ? 0 : (timeOfExpiry - +new Date()) / 1000;
 
+  dbg({ timeOfExpiry, timeRemaining });
   return { returnVal, timeRemaining };
 };
 

@@ -55,16 +55,22 @@ app.use(
       baseline: res.locals.baseline,
       previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
-      queryInfo: {
-        baselineMonth: process.env.BASELINE_MONTH,
-        curD1: process.env.CURRENT_D1,
-        curD2: process.env.CURRENT_D2,
-        prevD1: process.env.PREVIOUS_D1,
-        prevD2: process.env.PREVIOUS_D2,
-      },
     });
   }
 );
+
+app.get('/getInfo', (req, res) => {
+  return res.status(200).json({
+    baselineMonth: process.env.BASELINE_MONTH,
+    curD1: process.env.CURRENT_D1,
+    curD2: process.env.CURRENT_D2,
+    curEndDate: process.env.CURRENT_END,
+    prevD1: process.env.PREVIOUS_D1,
+    prevD2: process.env.PREVIOUS_D2,
+    projectId: process.env.PROJECT_ID,
+    previousProjectId: process.env.PREVIOUS_PROJECT_ID,
+  });
+});
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).sendFile(path.resolve(__dirname, '../../dist/index.html'));
@@ -80,17 +86,12 @@ app.use('*', (req: Request, res: Response) => {
 app.use((err: ServerError, req: Request, res: Response, next: NextFunction) => {
   dbg('Global Error Handler:');
   console.error(err);
-  // const defaultErr = {
-  //   log: 'Caught unknown middleware error',
-  //   staus: 500,
-  //   message: { err: 'An error occured' },
-  // };
-  // const errorObj = Object.assign({}, defaultErr, err);
   return res.status(400).json(err);
 });
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
+  if (process.env.NODE_ENV === 'development') return;
   await checkEnv();
   dbg(`Server listening on port: ${PORT}`);
 });

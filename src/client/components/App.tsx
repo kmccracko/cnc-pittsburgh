@@ -9,8 +9,10 @@ import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
-import Modal from './Modal';
+import ModalAlert from './ModalAlert';
+import ModalSpecies from './ModalSpecies';
 import FourOFour from './FourOFour';
+import Examples from './Examples';
 
 type Object = {
   [key: string]: any;
@@ -33,7 +35,8 @@ const App = () => {
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
   const [modal, setModal] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<Object>({});
+  const [modalType, setModalType] = useState<string>('');
+  const [modalContent, setModalContent] = useState<any>({});
 
   // Avoid unnecessary fetches
   const location = useLocation();
@@ -41,8 +44,19 @@ const App = () => {
 
   // make big fetch
   useEffect(() => {
-    if (!pathsRequiringData.includes(location.pathname)) return;
+    // Get queryinfo
+    axios.get('/getInfo').then((res) => {
+      if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data);
+    });
 
+    // Stop if no fetch needed
+    if (
+      !pathsRequiringData.includes(location.pathname) ||
+      location.pathname.includes('/examples')
+    )
+      return;
+
+    // Make big data fetch
     axios.get('/getObs').then((res) => {
       const current: Object[] = res.data.current;
       const baseline: Object[] = res.data.baseline;
@@ -72,27 +86,40 @@ const App = () => {
         setPrevArr(prevMissingSpecies);
       }
 
-      // Only update queryInfo if it had no data (query doesn't change)
-      if (Object.keys(queryInfo).length === 0) setQueryInfo(res.data.queryInfo);
-
-      setRefreshTime(+new Date() + res.data.timeRemaining * 1000);
+      setRefreshTime(
+        !res.data.timeRemaining
+          ? 0
+          : +new Date() + res.data.timeRemaining * 1000
+      );
       setIsLoading(false);
     });
   }, [location.pathname]);
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
-    // Show modal if before challenge start
+    if (location.pathname.includes('/examples')) return;
     if (+new Date() <= +new Date(queryInfo.curD1)) {
+      // Show modal if before challenge start
+      setModalType('alert');
       setModal(true);
       setModalContent({
-        alert: true,
         title: `
-        You're early!
-  `,
-        body: `until the challenge starts.
+        You're early!`,
+        body: `
 
         You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
+        countdownto: queryInfo.curEndDate,
+      });
+      // Show modal if after challenge end
+    } else if (+new Date() > +new Date(queryInfo.curEndDate)) {
+      setModalType('alert');
+      setModal(true);
+      setModalContent({
+        title: `
+        PGH Targets is currently not in season.
+    `,
+        body: `
+        You're welcome to look around - just know that this data is no longer "live", and instead reflects the data at the end of the most recent City Nature Challenge.`,
       });
     }
   }, [queryInfo]);
@@ -142,8 +169,9 @@ const App = () => {
   }
 
   // show modal
-  const showModal = (data: any) => {
+  const showModal = (type: string, data: any) => {
     setModal(true);
+    setModalType(type);
     setModalContent(data);
   };
 
@@ -155,14 +183,16 @@ const App = () => {
 
   return (
     <div id='Main'>
-      {modal && (
-        <Modal
-          activeInd={activeInd}
-          modalContent={modalContent}
-          closeModal={closeModal}
-          queryInfo={queryInfo}
-        />
-      )}
+      {modal &&
+        (modalType === 'alert' ? (
+          <ModalAlert modalContent={modalContent} closeModal={closeModal} />
+        ) : (
+          <ModalSpecies
+            activeInd={activeInd}
+            modalContent={modalContent}
+            closeModal={closeModal}
+          />
+        ))}
       <Navbar />
       <Routes>
         <Route
@@ -176,10 +206,13 @@ const App = () => {
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={
-                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
+                !isLoading && refreshTime ? (
+                  <Countdown refreshTime={refreshTime} />
+                ) : (
+                  <></>
+                )
               }
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
         />
@@ -193,10 +226,13 @@ const App = () => {
               isLoading={isLoading}
               queryInfo={queryInfo}
               countdownComponent={
-                !isLoading ? <Countdown refreshTime={refreshTime} /> : <></>
+                !isLoading && refreshTime ? (
+                  <Countdown refreshTime={refreshTime} />
+                ) : (
+                  <></>
+                )
               }
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
         />
@@ -208,9 +244,12 @@ const App = () => {
               allArr={[...missingArr, ...foundArr]}
               queryInfo={queryInfo}
               showModal={showModal}
-              closeModal={closeModal}
             />
           }
+        />
+        <Route
+          path='/examples/*'
+          element={<Examples queryInfo={queryInfo} />}
         />
         <Route path='/*' element={<FourOFour />} />
       </Routes>

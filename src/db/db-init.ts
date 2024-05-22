@@ -65,11 +65,13 @@ const initializeDataTable = async (tableName: string) => {
   await db.query(fillTable).catch((err: Error) => {
     console.error('Failed during table fill: ', err);
   });
+
+  dbg('Table init done for ', tableName);
 };
 
 const checkEnv = async (cmd: string) => {
   // Pre-check required environment variables
-  const requiredEnv = ['BASELINE_MONTH', 'PREVIOUS_D1', 'PREVIOUS_D2'];
+  const requiredEnv = ['BASELINE_MONTH', 'PREVIOUS_PROJECT_ID', 'PROJECT_ID'];
   let prevFlag = false;
   for (const envName of requiredEnv) {
     if (!process.env[envName]) {
@@ -77,16 +79,17 @@ const checkEnv = async (cmd: string) => {
     }
   }
 
+  // Option force overwrite current DB tables
   if (cmd === 'force') {
     await initializeDataTable('baseline');
     await initializeDataTable('previous');
+    await initializeDataTable('current');
   }
 
   // Pull saved env info
   const getInfo: string = `
   SELECT * 
   FROM info;`;
-
   const result = await db.query(getInfo).catch((err: Error) => {
     console.error('Failed while retrieving ENV info: ', err);
   });
@@ -97,17 +100,27 @@ const checkEnv = async (cmd: string) => {
       (r: any) => r.label === envName.toLowerCase()
     );
 
+    // If DB value of env is different from current env,
     if (!record || record.value !== process.env[envName]) {
+      // Update/insert it into info table
       await updateInfo(envName.toLowerCase(), process.env[envName], !!record);
 
-      if (envName.toLowerCase() === 'baseline_month') {
+      // If baseline is different, update its table
+      if (envName.toLowerCase() === 'baseline_month')
         await initializeDataTable('baseline');
-      } else prevFlag = true;
+      // If previous is different, update its table
+      else if (envName.toLowerCase() === 'previous_project_id')
+        await initializeDataTable('previous');
+      // If current_end is different,
+      else if (envName.toLowerCase() === 'current_end') {
+        // If we are past the current_end specified in ENV, we can update the DB
+        if (+new Date(process.env[envName]) < +new Date()) {
+          await initializeDataTable('current');
+        }
+        // Otherwise, we're in season and will be querying iNat for new data, so updating DB doesn't help us
+      }
     }
   }
-
-  // If any prev dates are missing or changed, update table
-  if (prevFlag) await initializeDataTable('previous');
 };
 
 module.exports = { checkEnv, initializeDataTable };

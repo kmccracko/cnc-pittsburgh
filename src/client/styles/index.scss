@@ -1,3 +1,16 @@
+:-webkit-any-link {
+  color: unset;
+  text-decoration: none;
+}
+:-moz-any-link {
+  color: unset;
+  text-decoration: none;
+}
+:any-link {
+  color: unset;
+  text-decoration: none;
+}
+
 html,
 body {
   background-color: rgb(31, 31, 35);
@@ -54,12 +67,14 @@ body {
 }
 
 #navbar {
+  position: fixed;
   width: 100vw;
   display: flex;
   justify-content: space-between;
   background-color: black;
   align-items: center;
   height: 70px;
+  z-index: 3;
   #home-link {
     all: unset;
     padding-left: 4%;
@@ -93,12 +108,34 @@ body {
   }
   #nav-right {
     padding: 0px 4% 0px 0px;
+    &.mobile {
+      padding: 0px 0px 5px 0px;
+      margin: 0px 4% 0px 0px;
+      width: 8%;
+      font-size: xx-large;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      &.open {
+        background-color: #202020;
+        border: 1px solid rgb(104, 104, 104);
+      }
+      .hamburger-button {
+      }
+    }
     font-size: large;
     a {
       margin: 20px;
       cursor: pointer;
-      color: white;
+      color: #ddd;
     }
+  }
+}
+#nav-buffer {
+  height: 70px;
+  transition: height 0.4s;
+  &.hamburger-active {
+    height: 214px;
   }
 }
 
@@ -318,7 +355,7 @@ body {
       position: absolute;
       bottom: 0px;
       padding: 5px 0px 5px 3px;
-      color: white;
+      color: #ddd;
       background-color: rgba(0, 0, 0, 0.5);
     }
   }
@@ -373,7 +410,7 @@ body {
 }
 
 .modal-background ~ div {
-  filter: blur(7px);
+  filter: blur(3px);
 }
 
 @keyframes radial-circlepath {
@@ -446,7 +483,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 99;
   width: 100%;
   height: 100%;
   background-color: rgb(0, 0, 0, 0.5);
@@ -459,10 +496,10 @@ body {
     // border: 1px solid red;
     box-sizing: border-box;
     background: radial-gradient(
-      rgb(145, 145, 145),
+      rgb(90, 90, 90),
       rgb(0, 0, 0, 0.3),
       rgb(0, 0, 0, 0.3),
-      rgb(163, 163, 163)
+      rgb(90, 90, 90)
     );
     background-size: 200% 200%;
     background-position: 100% 100%;
@@ -475,11 +512,11 @@ body {
     .modal-card {
       min-height: 50px;
       max-height: 100vh;
-      box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
+      // box-shadow: rgba(0, 0, 0, 0.7) 0px 120px 120px 4px;
       display: flex;
       // display: none;
       flex-direction: column;
-      z-index: 3;
+      z-index: 100;
       align-items: center;
       border-radius: 15px;
       // margin: 20px;
@@ -500,12 +537,13 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        align-self: flex-start;
         font-size: x-large;
         margin: 5px 0px;
+        font-weight: 700;
         .modal-common-name {
           text-wrap: balance;
           text-align: center;
-          font-weight: 700;
           text-transform: capitalize;
           a {
             all: unset;
@@ -515,10 +553,30 @@ body {
         .empty {
           width: 50px;
         }
+        &.alert {
+          margin: 10px 0px;
+        }
+      }
+      .line-horz {
+        margin-top: 7px;
+        margin-bottom: 10px;
+        justify-self: center;
+        align-self: center;
+        width: 100%;
+        height: 1.5px;
+        background: linear-gradient(
+          to right,
+          transparent 0%,
+          rgb(62, 62, 62) 5%,
+          rgb(62, 62, 62) 95%,
+          transparent 100%
+        ); /* Linear gradient with delayed fade */
       }
       .modal-body {
         &.alert {
-          margin: 20px 20px 40px 20px;
+          display: flex;
+          flex-direction: column;
+          margin: 0px 20px 20px 20px;
           // min-width: 300px;
           max-width: 360px;
         }
@@ -561,12 +619,43 @@ body {
             }
           }
           .modal-count {
+            display: flex;
+            flex-direction: column;
           }
           .modal-scientific-name {
             font-weight: 400;
             font-style: italic;
             margin-bottom: 7px;
           }
+        }
+      }
+      .modal-okay {
+        font-size: larger;
+        padding: 7px 30px;
+        cursor: pointer;
+        color: rgb(203, 203, 203);
+        background-color: #2d312d;
+        color: #77b977;
+        margin: 20px;
+        border-radius: 5px;
+        border: 2px solid #77b977;
+        box-shadow: none;
+        opacity: 0.8;
+        // align-self: flex-end;
+        &:hover {
+          box-sizing: border-box;
+          background: radial-gradient(
+            rgb(94, 94, 94),
+            rgb(0, 0, 0, 0.3),
+            rgb(0, 0, 0, 0.3),
+            rgb(0, 0, 0, 0.3),
+            rgb(105, 105, 105)
+          );
+          background-size: 200% 200%;
+          animation: radial-button 3s ease-in-out infinite;
+        }
+        &:active {
+          transform: scale(0.95, 0.95);
         }
       }
     }
@@ -595,7 +684,7 @@ body {
     #searchbar {
       background-color: rgb(22, 22, 22);
       font-size: larger;
-      color: white;
+      color: #ddd;
       margin-top: 40px;
       padding: 10px;
       border-color: gray;
@@ -671,6 +760,20 @@ body {
   }
 }
 
+.countdown-pretty {
+  align-self: center;
+  display: flex;
+  width: 250px;
+  justify-content: space-between;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: xx-large;
+  background-color: #151515;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
 #FourOFour {
   display: flex;
   flex-direction: column;
@@ -683,38 +786,66 @@ body {
   }
 }
 
-// @keyframes dots {
-//   from {
-//     opacity: 1;
-//     font-size: xx-large;
-//   }
-//   50% {
-//     opacity: 0;
-//     font-size: large;
-//   }
-//   to {
-//     opacity: 1;
-//     font-size: xx-large;
-//   }
-// }
+.hamburger-container {
+  z-index: 3;
+  margin-top: 70px;
+  position: fixed;
+  // position: relative;
+  color: #ccc;
+  width: 100%;
+  font-size: 18px;
+  .hamburger-background {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(218, 45, 45, 0);
+  }
+  .hamburger-menu {
+    transition: all 0.4s;
+    margin: 0px;
+    padding: 0px;
+    overflow-y: hidden;
+    .hamburger-item {
+      background-color: black;
+      text-align: center;
+      margin: 0px;
+      // border-bottom: 3px solid #333;
+      transition: background-color 0.2s;
+      .link-wide {
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 12px 0px;
+        &:hover {
+          background-color: rgb(22, 22, 22);
+          // text-decoration: underline;
+        }
+      }
+    }
+  }
 
-// .dots {
-//   font-size: large;
-//   animation: dots 1.5s ease-in-out infinite;
-// }
-// .dot1 {
-//   animation-delay: 0s;
-// }
-// .dot2 {
-//   animation-delay: 500ms;
-// }
-// .dot3 {
-//   animation-delay: 1000ms;
-// }
-// .dot4 {
-//   visibility: hidden;
-//   font-size: xx-large;
-// }
+  &.open {
+    .hamburger-menu {
+      height: 144px;
+    }
+    .hamburger-background {
+      display: flex;
+    }
+  }
+  &.closed {
+    .hamburger-menu {
+      height: 0px;
+    }
+    .hamburger-background {
+      display: none;
+    }
+  }
+}
 
 @media only screen and (max-width: 1200px) {
   #filters-band {
@@ -786,6 +917,10 @@ body {
       grid-template-columns: repeat(2, 150px);
     }
   }
+  .modal-body.alert {
+    // Don't feel like repeating the whole class chain for specifictiy, so using important instead
+    margin: 10px 0px !important;
+  }
 }
 
 @media only screen and (max-width: 380px) {
@@ -827,6 +962,10 @@ body {
       }
     }
   }
+  .countdown-pretty {
+    width: 200px;
+    font-size: x-large;
+  }
 }
 
 @media only screen and (max-width: 325px) {
@@ -846,6 +985,13 @@ body {
   }
   #navbar #nav-right a {
     margin: 20px 10px;
+  }
+  .countdown-pretty {
+    width: 160px;
+    font-size: larger;
+    padding: 10px 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
   }
 }
 

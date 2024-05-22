@@ -42,7 +42,6 @@ interface IfeedProps {
   queryInfo: queryParams;
   toggleMissingVsFound?: any;
   showModal: Function;
-  closeModal: Function;
 }
 
 const Feed = (props: IfeedProps) => {
