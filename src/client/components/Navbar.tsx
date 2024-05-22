@@ -1,36 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Hamburger from './Hamburger';
+import HamburgerMenu from './HamburgerMenu';
 
 const Navbar = () => {
-  let navLinks;
-  const wideEnough = useMediaQuery('(min-width:601px)');
-  const links = [
-    <Link to='/search'>Search</Link>,
-    <Link to='/previous'>Previous</Link>,
-    <Link to='/about'>About</Link>,
-  ];
-  if (wideEnough) {
-    navLinks = <>{links}</>;
-  } else {
-    navLinks = <Hamburger listitems={links} />;
-  }
+  const [navHamburgerOpen, setNavHamburgerOpen] = useState<boolean>(false);
 
-  console.log({ wideEnough });
+  const handleBurgerClick = (e: any) => {
+    setNavHamburgerOpen(!navHamburgerOpen);
+  };
+
+  const wideEnough = useMediaQuery('(min-width:601px)');
+  const linkClass = !wideEnough ? 'link-wide' : '';
+  const links = [
+    <Link className={linkClass} to='/search'>
+      Search
+    </Link>,
+    <Link className={linkClass} to='/previous'>
+      Previous
+    </Link>,
+    <Link className={linkClass} to='/about'>
+      About
+    </Link>,
+  ];
 
   return (
-    <div id='navbar'>
-      <Link to='/' id='home-link'>
-        <div id='nav-left'>
-          <span id='pgh'>Pittsburgh</span>
-          <span id='cnc'>CNC</span>
+    <>
+      <div id='navbar'>
+        <Link to='/' id='home-link'>
+          <div id='nav-left'>
+            <span id='pgh'>Pittsburgh</span>
+            <span id='cnc'>CNC</span>
+          </div>
+        </Link>
+        <div
+          id='nav-right'
+          className={`${!wideEnough ? 'mobile' : ''} ${
+            navHamburgerOpen ? 'open' : 'closed'
+          }`}
+        >
+          {wideEnough ? (
+            links
+          ) : (
+            <div className='hamburger-button' onClick={handleBurgerClick}>
+              ≡
+            </div>
+          )}
         </div>
-      </Link>
-      <div id='nav-right' className={`${!wideEnough ? 'mobile' : ''}`}>
-        {navLinks}
       </div>
-    </div>
+      <div
+        id='nav-buffer'
+        className={navHamburgerOpen ? 'hamburger-active' : ''}
+      ></div>
+      <HamburgerMenu
+        listItems={links}
+        hamburgerIsOpen={navHamburgerOpen}
+        hamburgerToggle={handleBurgerClick}
+      />
+    </>
   );
 };
 

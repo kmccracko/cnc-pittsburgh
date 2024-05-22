@@ -82,9 +82,10 @@ const Filter = (props: IfilterProps) => {
   );
 
   const wideEnough = useMediaQuery('(min-width:601px)');
+  const tallEnough = useMediaQuery('(min-height:851px)');
   let filterContainer;
   // without accordion
-  if (wideEnough) {
+  if (wideEnough && tallEnough) {
     filterContainer = (
       <div id='filters-band' className='hotdog'>
         {filterForm}

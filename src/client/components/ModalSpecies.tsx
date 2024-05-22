@@ -8,21 +8,21 @@ interface ImodalProps {
 }
 
 interface iSpeciesModalContent {
-  found: boolean,
-  count: number,
-  taxon: string,
-  pictureUrl: string,
-  name: string,
-  scientificName: string,
-  taxaId: number,
+  found: boolean;
+  count: number;
+  taxon: string;
+  pictureUrl: string;
+  name: string;
+  scientificName: string;
+  taxaId: number;
   queryInfo: {
-    curD1: string,
-    curD2: string,
-    prevD1: string,
-    prevD2: string,
-    projectId: string,
-    baselineMonth: string
-  }
+    curD1: string;
+    curD2: string;
+    prevD1: string;
+    prevD2: string;
+    projectId: string;
+    baselineMonth: string;
+  };
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -101,9 +101,9 @@ const ModalSpecies = (props: ImodalProps) => {
                     <a href={pastUrl} target='_blank'>
                       View {props.modalContent.count} Past Obs. on iNaturalist ↪
                     </a>
-                    <a href={currentUrl} target='_blank'>
+                    {/* <a href={currentUrl} target='_blank'>
                       Is it still missing? ↪
-                    </a>
+                    </a> */}
                   </>
                 )}
               </div>

@@ -52,7 +52,7 @@ const App = () => {
     // Stop if no fetch needed
     if (
       !pathsRequiringData.includes(location.pathname) ||
-      location.pathname.includes('/examples/')
+      location.pathname.includes('/examples')
     )
       return;
 
@@ -97,7 +97,7 @@ const App = () => {
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
-    if (location.pathname.includes('/examples/')) return;
+    if (location.pathname.includes('/examples')) return;
     if (+new Date() <= +new Date(queryInfo.curD1)) {
       // Show modal if before challenge start
       setModalType('alert');

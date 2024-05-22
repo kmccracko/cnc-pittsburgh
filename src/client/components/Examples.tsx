@@ -5,7 +5,7 @@ import LoadingGif from './LoadingGif';
 import Modal from './Modal';
 import ModalAlert from './ModalAlert';
 import ModalSpecies from './ModalSpecies';
-import Hamburger from './Hamburger';
+import HamburgerMenu from './HamburgerMenu';
 
 const Examples = (props: any) => {
   const location = '/#/examples/';
@@ -84,10 +84,12 @@ const Examples = (props: any) => {
       path: 'hamburger',
       element: (
         <>
-          <Hamburger
-            listitems={['about', 'previous', 'search'].map((el) => (
+          <HamburgerMenu
+            listItems={['about', 'previous', 'search'].map((el) => (
               <Link to={`/#/${el}`}>{el}</Link>
             ))}
+            hamburgerIsOpen={true}
+            hamburgerToggle={() => {}}
           />
         </>
       ),
@@ -122,6 +124,9 @@ const Examples = (props: any) => {
               a {
                 color: yellow;
                 font-size: 20px;
+              }
+              a:hover {
+                text-decoration: underline;
               }
               li {
                 margin: 10px;
