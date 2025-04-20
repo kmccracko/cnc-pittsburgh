@@ -108,7 +108,7 @@ const App = () => {
         body: `
 
         You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
-        countdownto: queryInfo.curEndDate,
+        countdownto: queryInfo.curD1,
       });
       // Show modal if after challenge end
     } else if (+new Date() > +new Date(queryInfo.curEndDate)) {
