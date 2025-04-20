@@ -107,7 +107,7 @@ const App = () => {
         You're early!`,
         body: `
 
-        You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge!`,
+        You're welcome to look around, but the data won't be very useful until we start getting observations for this challenge.`,
         countdownto: queryInfo.curD1,
       });
       // Show modal if after challenge end
