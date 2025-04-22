@@ -101,9 +101,9 @@ const ModalSpecies = (props: ImodalProps) => {
                     <a href={pastUrl} target='_blank'>
                       View {props.modalContent.count} Past Obs. on iNaturalist ↪
                     </a>
-                    {/* <a href={currentUrl} target='_blank'>
+                    <a href={currentUrl} target='_blank'>
                       Is it still missing? ↪
-                    </a> */}
+                    </a>
                   </>
                 )}
               </div>
