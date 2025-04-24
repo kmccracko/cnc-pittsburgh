@@ -66,6 +66,12 @@ const About = (props: IaboutProps) => {
         that also have not yet been observed during this challenge. Basically,
         you can try to get what we couldn't last year!
       </p>
+      <h2>Why can't I find this species? It's towards the top in observations!</h2>
+      <p>
+        Some species will have a high number of observations, but be difficult to find during the City Nature Challenge. This is often due to seasonality coupled with the fact that our historical data casts a relatively wide net. Our data is for species that are observed in the months of April and May, but a species may be ending its activity in early April, or just starting in mid or late May.
+        <br></br>
+        <br></br>To get a better sense of this seasonality, we've added a histogram to the details popup for each species. This may help get an idea of why something is so hard to find!
+      </p>
       <h2>My new observation isn't showing up. What gives?</h2>
       <p>
         The network of hamster wheels that keeps this site running is able to

@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Modal from './Modal';
+import HistogramGraph from './HistogramGraphWeek';
 
 interface ImodalProps {
   activeInd: boolean;
   modalContent: iSpeciesModalContent;
   closeModal: any;
+}
+
+interface histogram {
+  [key: number]: number;
 }
 
 interface iSpeciesModalContent {
@@ -23,9 +29,30 @@ interface iSpeciesModalContent {
     projectId: string;
     baselineMonth: string;
   };
+  histogram: histogram;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
+  const [imgFail, setImgFail] = useState(false);
+  const [histogram, setHistogram] = useState<histogram>({});
+
+  useEffect(() => {
+    // If example code, histogram will be in props
+    if (props.modalContent.histogram) {
+      setHistogram(props.modalContent.histogram);
+    } else if (props.modalContent?.taxaId) {
+      try {
+        axios.get(`/histogram/${props.modalContent.taxaId}`).then((res) => {
+          setHistogram(res.data.histogram);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      setHistogram({});
+    }
+  }, [props.modalContent.taxaId]);
+
   const queryDays =
     props.activeInd !== undefined
       ? {
@@ -36,7 +63,6 @@ const ModalSpecies = (props: ImodalProps) => {
           D1: props.modalContent.queryInfo.prevD1,
           D2: props.modalContent.queryInfo.prevD2,
         };
-  const [imgFail, setImgFail] = useState(false);
 
   const projectIdExists = props.modalContent.queryInfo.projectId;
   const challenge = projectIdExists
@@ -79,6 +105,9 @@ const ModalSpecies = (props: ImodalProps) => {
             <div className='modal-summary-label'>
               <div className='modal-scientific-name'>
                 ({props.modalContent.scientificName})
+              </div>
+              <div className='modal-histogram-container'>
+                <HistogramGraph histogram={histogram} width={350} height={100} />
               </div>
               <div>
                 <a

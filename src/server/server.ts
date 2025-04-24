@@ -59,6 +59,12 @@ app.use(
   }
 );
 
+app.get('/histogram/:taxonId', inatController.getHistogram, (req, res) => {
+  return res.status(200).json({
+    histogram: res.locals.histogram,
+  });
+});
+
 app.get('/getInfo', (req, res) => {
   return res.status(200).json({
     baselineMonth: process.env.BASELINE_MONTH,
