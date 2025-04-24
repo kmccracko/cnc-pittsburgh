@@ -107,7 +107,7 @@ const HistogramGraph: React.FC<HistogramGraphProps> = ({
     // Add month labels
     monthPositions.forEach((pos, i) => {
       xAxis.append('text')
-        .attr('x', xScale(Math.max(0, pos))) // Ensure we don't go below 0
+        .attr('x', xScale(Math.max(0, pos))+12) // Add 12 to center the text between the grid lines that represent the month starts
         .attr('y', 15)
         .attr('text-anchor', 'middle')
         .attr('fill', '#aaa')
