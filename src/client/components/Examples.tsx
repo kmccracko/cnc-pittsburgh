@@ -37,6 +37,8 @@ const Examples = (props: any) => {
               projectId: props.queryInfo.projectId,
               baselineMonth: props.queryInfo.baselineMonth,
             },
+            // Generate a 52-length array of a histogram for a taxon
+            histogram: [...Array(52)].map((_, i) => Math.floor(Math.random() * 100)),
           }}
           closeModal={emptyfunc}
         />
