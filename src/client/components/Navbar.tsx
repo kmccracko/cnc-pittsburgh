@@ -3,26 +3,41 @@ import { Link } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import HamburgerMenu from './HamburgerMenu';
 
-const Navbar = () => {
+interface INavbarProps {
+  onUserSearch?: () => void;
+}
+
+const Navbar: React.FC<INavbarProps> = ({ onUserSearch }) => {
   const [navHamburgerOpen, setNavHamburgerOpen] = useState<boolean>(false);
 
   const handleBurgerClick = (e: any) => {
     setNavHamburgerOpen(!navHamburgerOpen);
   };
 
-  const wideEnough = useMediaQuery('(min-width:601px)');
+  const wideEnough = useMediaQuery('(min-width:670px)');
   const linkClass = !wideEnough ? 'link-wide' : '';
   const links = [
-    <Link className={linkClass} to='/search'>
+    <Link className={linkClass} to='/search' onClick={() => setNavHamburgerOpen(false)}>
       Search
     </Link>,
-    <Link className={linkClass} to='/previous'>
+    <Link className={linkClass} to='/previous' onClick={() => setNavHamburgerOpen(false)}>
       Previous
     </Link>,
-    <Link className={linkClass} to='/about'>
+    onUserSearch && (
+      <a 
+        className={linkClass} 
+        onClick={() => {
+          setNavHamburgerOpen(false);
+          onUserSearch();
+        }}
+      >
+        Set User
+      </a>
+    ),
+    <Link className={linkClass} to='/about' onClick={() => setNavHamburgerOpen(false)}>
       About
     </Link>,
-  ];
+  ].filter(Boolean);
 
   return (
     <>

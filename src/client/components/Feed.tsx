@@ -42,6 +42,8 @@ interface IfeedProps {
   queryInfo: queryParams;
   toggleMissingVsFound?: any;
   showModal: Function;
+  setUserName?: Function;
+  userName?: string;
 }
 
 const Feed = (props: IfeedProps) => {
@@ -123,6 +125,7 @@ const Feed = (props: IfeedProps) => {
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
     return (
       <BirdCard
+        userName={props.userName}
         key={el.taxaId}
         taxaId={el.taxaId}
         name={el.name}
@@ -152,8 +155,33 @@ const Feed = (props: IfeedProps) => {
     </InfiniteScroll>
   );
 
-  const missingFoundContainer =
-    props.activeInd !== undefined ? (
+  let warningText: JSX.Element;
+
+  // If previous, show warning
+  if (props.activeInd === undefined) {
+    warningText = (
+      <div id='warning-container'>
+        <span className='warn'>Warning!&nbsp;</span>
+        <a href='#/'>
+          This is <b>last year's</b> challenge data. Click this text to return to the current year's view instead.
+        </a>
+      </div>
+    );
+  } else if (props.userName) {
+    // If user query, show warning
+    warningText = (
+      <div id='warning-container'>
+        <span className='warn'>Warning!&nbsp;</span>
+        <a href='#/'>
+          <span onClick={() => (props.setUserName(''))}>
+            Showing missing species for <b>{props.userName}</b>. Click this text to clear the username filter.
+          </span>
+        </a>
+      </div>
+    );
+  }
+
+  const missingFoundContainer = props.activeInd !== undefined && (
       <div id='toggle-missing-container'>
         <input
           id='toggle-missing'
@@ -180,16 +208,6 @@ const Feed = (props: IfeedProps) => {
           Found
         </label>
       </div>
-    ) : (
-      <div id='previous-warning-container'>
-        <span className='warn'>Warning!&nbsp;</span>
-        <a href='#/'>
-          <span>
-            This is last year's challenge data. Click this text to return to the
-            current year's view instead.
-          </span>
-        </a>
-      </div>
     );
 
   const queryDays =
@@ -200,6 +218,7 @@ const Feed = (props: IfeedProps) => {
   return (
     <div id='Main'>
       <div id='filters-band' className='hamburger'>
+        {warningText}
         {missingFoundContainer}
         <Filter
           activeFilters={activeFilters}
