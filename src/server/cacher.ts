@@ -47,21 +47,26 @@ const makeQuery = async (type: string, params?: any) => {
       if (type === 'histogram') {
         fullResult = result.data.results.week_of_year;
       } else {
+        const pageTaxaArr: Object[] = [];
+        result.data.results.forEach((el: Object) => {
+
+          // Skip human, dog, and cat
+          if (['Homo sapiens', 'Canis familiaris', 'Felis catus'].includes(el.taxon.name)) return;
+
+          pageTaxaArr.push(
+          {
+            name: el.taxon.preferred_common_name || el.taxon.name,
+            scientificname: el.taxon.name,
+            count: el.count,
+            taxaId: String(el.taxon.id),
+            pictureurl: el.taxon.default_photo
+              ? el.taxon.default_photo.medium_url
+              : null,
+            taxon: el.taxon.iconic_taxon_name,
+          });
+        });
         // update array
-        fullResult.push(
-          ...result.data.results.map((el: Object) => {
-            return {
-              name: el.taxon.preferred_common_name || el.taxon.name,
-              scientificname: el.taxon.name,
-              count: el.count,
-              taxaId: String(el.taxon.id),
-              pictureurl: el.taxon.default_photo
-                ? el.taxon.default_photo.medium_url
-                : null,
-              taxon: el.taxon.iconic_taxon_name,
-            };
-          })
-        );
+        fullResult.push(...pageTaxaArr);
       }
 
       // recurse if there's more, else return array
@@ -199,4 +204,24 @@ myCache.on('expired', (key: string, value: any) => {
   dbg(`${key} expired! ${new Date().toLocaleString()}`);
 });
 
-module.exports = { checkCache, makeQuery };
+const clearCache = (cacheType: string) => {
+  dbg(`Clearing cache for: ${cacheType}`);
+
+  if (!cacheType) return "Options: 'all', 'baseline', 'previous', 'current', 'histogram'";
+
+  try {
+    if (cacheType === 'all') {
+      myCache.del('baseline');
+      myCache.del('previous');
+      myCache.del('current');
+      myCache.del('histogram');
+    } else {
+      myCache.del(cacheType);
+    }
+    return `Cache cleared for: ${cacheType}`;
+  } catch (error) {
+    return `Error clearing cache for: ${cacheType}`;
+  }
+};
+
+module.exports = { checkCache, makeQuery, clearCache };

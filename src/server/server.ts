@@ -9,6 +9,7 @@ const dbg = debug(`cncpgh:server`);
 const path = require('path');
 const cors = require('cors');
 const { checkEnv } = require('../db/db-init.ts');
+const { clearCache } = require('./cacher');
 
 // TYPES
 type ServerError = {};
@@ -33,10 +34,20 @@ app.use('/db/fillDB/:id', (req: Request, res: Response) => {
   if (req.params.id === process.env.DEV_KEY) {
     dbg('ACCESS GRANTED TO: ', req.params.id);
     checkEnv('force');
-    return res.status(201).send('ACCESS GRANTED');
+    clearCache('all');
+    return res.status(201).send('ACCESS GRANTED & cache cleared');
   } else {
     dbg('Bad dev key: ', req.params.id);
     return res.status(200).send('Bad dev key.');
+  }
+});
+
+app.get('/db/clearcache/:cachetype', (req: Request, res: Response) => {
+  try {
+    const msg = clearCache(req.params.cachetype);
+    return res.status(200).send(msg);
+  } catch (error) {
+    return res.status(400).send(`Error clearing cache for: ${req.params.cachetype}`);
   }
 });
 
