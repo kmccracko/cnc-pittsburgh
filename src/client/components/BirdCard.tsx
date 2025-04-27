@@ -10,6 +10,7 @@ interface IbirdCardProps {
   taxaId: number;
   queryInfo: queryParams;
   found: boolean;
+  userName: string;
   showModal: Function;
 }
 

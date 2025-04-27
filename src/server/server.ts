@@ -55,6 +55,22 @@ app.use('/assets', express.static('src/client/assets'));
 app.use('/styles', express.static('src/client/styles'));
 
 app.use(
+  '/getObs/:userName',
+  inatController.getBaseline,
+  inatController.getUserCurrent,
+  inatController.getPrevious,
+  async (req: Request, res: Response) => {
+    dbg(Object.keys(res.locals));
+    return res.status(200).json({
+      current: res.locals.current,
+      baseline: res.locals.baseline,
+      previous: res.locals.previous,
+      timeRemaining: res.locals.timeRemaining,
+    });
+  }
+);
+
+app.use(
   '/getObs',
   inatController.getBaseline,
   inatController.getCurrent,

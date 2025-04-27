@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import '../styles/index.scss';
@@ -11,6 +11,7 @@ import { queryParams } from '../../types';
 import Search from './Search';
 import ModalAlert from './ModalAlert';
 import ModalSpecies from './ModalSpecies';
+import ModalPrompt from './ModalPrompt';
 import FourOFour from './FourOFour';
 import Examples from './Examples';
 
@@ -37,10 +38,49 @@ const App = () => {
   const [modal, setModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>('');
   const [modalContent, setModalContent] = useState<any>({});
+  const [userName, setUserName] = useState<string>('');
+  const navigate = useNavigate();
 
   // Avoid unnecessary fetches
   const location = useLocation();
   const pathsRequiringData = ['/', '/previous', '/search'];
+
+  const handleObsFetch = (res: any) => {
+    const current: Object[] = res.data.current;
+    const baseline: Object[] = res.data.baseline;
+    const previous: Object[] = res.data.previous;
+
+    let missingSpecies: any,
+      foundSpecies: any,
+      missingTaxa: Object,
+      foundTaxa: Object;
+    [missingSpecies, foundSpecies, missingTaxa, foundTaxa] =
+      getMissingVsFound(baseline, current);
+
+    setTaxaObj(missingTaxa);
+    setMissingTaxaObj(missingTaxa);
+    setFoundTaxaObj(foundTaxa);
+    setFullArr(missingSpecies);
+    setMissingArr(missingSpecies);
+    setFoundArr(foundSpecies);
+
+    // Only update prev if it had no data (prev doesn't change)
+    let prevMissingSpecies: any, prevMissingTaxa: Object;
+    if (prevArr.length === 0) {
+      const arr = getMissingVsFound(baseline, [...previous, ...current]);
+      prevMissingSpecies = arr[0];
+      prevMissingTaxa = arr[2];
+      setPrevTaxaObj(prevMissingTaxa);
+      setPrevArr(prevMissingSpecies);
+    }
+
+    setRefreshTime(
+      !res.data.timeRemaining
+        ? 0
+        : +new Date() + res.data.timeRemaining * 1000
+    );
+    setIsLoading(false);
+  }
 
   // make big fetch
   useEffect(() => {
@@ -56,44 +96,25 @@ const App = () => {
     )
       return;
 
+    // Don't fetch if we already have data and a username
+    if (fullArr.length > 0 && userName) return;
+
     // Make big data fetch
-    axios.get('/getObs').then((res) => {
-      const current: Object[] = res.data.current;
-      const baseline: Object[] = res.data.baseline;
-      const previous: Object[] = res.data.previous;
-
-      let missingSpecies: any,
-        foundSpecies: any,
-        missingTaxa: Object,
-        foundTaxa: Object;
-      [missingSpecies, foundSpecies, missingTaxa, foundTaxa] =
-        getMissingVsFound(baseline, current);
-
-      setTaxaObj(missingTaxa);
-      setMissingTaxaObj(missingTaxa);
-      setFoundTaxaObj(foundTaxa);
-      setFullArr(missingSpecies);
-      setMissingArr(missingSpecies);
-      setFoundArr(foundSpecies);
-
-      // Only update prev if it had no data (prev doesn't change)
-      let prevMissingSpecies: any, prevMissingTaxa: Object;
-      if (prevArr.length === 0) {
-        const arr = getMissingVsFound(baseline, [...previous, ...current]);
-        prevMissingSpecies = arr[0];
-        prevMissingTaxa = arr[2];
-        setPrevTaxaObj(prevMissingTaxa);
-        setPrevArr(prevMissingSpecies);
-      }
-
-      setRefreshTime(
-        !res.data.timeRemaining
-          ? 0
-          : +new Date() + res.data.timeRemaining * 1000
-      );
-      setIsLoading(false);
+    const url = userName ? `/getObs/${userName}` : '/getObs';
+    axios.get(url).then((res) => {
+      handleObsFetch(res);
     });
-  }, [location.pathname]);
+  }, [location.pathname, userName]);
+
+  useEffect(() => {
+    // If we're clearing the username, fetch the data again
+    if (!userName && fullArr.length > 0) {
+      setIsLoading(true);
+      axios.get('/getObs').then((res) => {
+        handleObsFetch(res);
+      });
+    }
+  }, [userName]);
 
   useEffect(() => {
     if (Object.keys(queryInfo).length === 0) return;
@@ -181,11 +202,29 @@ const App = () => {
     setModalContent({});
   };
 
+  // Handle user input for username
+  const handleUserInput = (username: string) => {
+    setIsLoading(true);  // Set loading state BEFORE the API call
+    navigate('/');
+    axios.get(`/getObs/${username}`).then((res) => {
+      handleObsFetch(res);
+      setUserName(username);
+    });
+  };
+
   return (
     <div id='Main'>
       {modal &&
         (modalType === 'alert' ? (
           <ModalAlert modalContent={modalContent} closeModal={closeModal} />
+        ) : modalType === 'prompt' ? (
+          <ModalPrompt
+            title={modalContent.title}
+            placeholder={modalContent.placeholder}
+            buttonText={modalContent.buttonText}
+            onConfirm={modalContent.onConfirm}
+            closeModal={closeModal}
+          />
         ) : (
           <ModalSpecies
             activeInd={activeInd}
@@ -193,12 +232,23 @@ const App = () => {
             closeModal={closeModal}
           />
         ))}
-      <Navbar />
+      <Navbar 
+        onUserSearch={() => {
+          showModal('prompt', {
+            title: 'Enter iNaturalist Username',
+            placeholder: 'Username',
+            buttonText: 'Search',
+            onConfirm: handleUserInput
+          });
+        }}
+      />
       <Routes>
         <Route
           path='/'
           element={
             <Feed
+              userName={userName}
+              setUserName={setUserName}
               toggleMissingVsFound={toggleMissingVsFound}
               activeInd={activeInd}
               fullArray={fullArr}
