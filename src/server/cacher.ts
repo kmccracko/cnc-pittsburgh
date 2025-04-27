@@ -204,4 +204,24 @@ myCache.on('expired', (key: string, value: any) => {
   dbg(`${key} expired! ${new Date().toLocaleString()}`);
 });
 
-module.exports = { checkCache, makeQuery };
+const clearCache = (cacheType: string) => {
+  dbg(`Clearing cache for: ${cacheType}`);
+
+  if (!cacheType) return "Options: 'all', 'baseline', 'previous', 'current', 'histogram'";
+
+  try {
+    if (cacheType === 'all') {
+      myCache.del('baseline');
+      myCache.del('previous');
+      myCache.del('current');
+      myCache.del('histogram');
+    } else {
+      myCache.del(cacheType);
+    }
+    return `Cache cleared for: ${cacheType}`;
+  } catch (error) {
+    return `Error clearing cache for: ${cacheType}`;
+  }
+};
+
+module.exports = { checkCache, makeQuery, clearCache };
