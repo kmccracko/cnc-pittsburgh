@@ -57,8 +57,8 @@ app.use('/styles', express.static('src/client/styles'));
 app.use(
   '/getObs/:userName',
   inatController.getBaseline,
-  inatController.getUserCurrent,
   inatController.getPrevious,
+  inatController.getUserCurrent,
   async (req: Request, res: Response) => {
     dbg(Object.keys(res.locals));
     return res.status(200).json({
@@ -73,8 +73,8 @@ app.use(
 app.use(
   '/getObs',
   inatController.getBaseline,
-  inatController.getCurrent,
   inatController.getPrevious,
+  inatController.getCurrent,
   async (req: Request, res: Response) => {
     dbg(Object.keys(res.locals));
     return res.status(200).json({
