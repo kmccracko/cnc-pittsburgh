@@ -59,4 +59,19 @@ inat.getHistogram = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+inat.getUserCurrent = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userName = req.params.userName;
+    
+    // check cache or update cache, then return value
+    const { returnVal, timeRemaining } = await checkCache('user', { userName });
+    
+    res.locals.current = returnVal;
+    res.locals.timeRemaining = timeRemaining;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = inat;

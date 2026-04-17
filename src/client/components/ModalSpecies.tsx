@@ -30,6 +30,7 @@ interface iSpeciesModalContent {
     baselineMonth: string;
   };
   histogram: histogram;
+  userName: string;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -74,7 +75,7 @@ const ModalSpecies = (props: ImodalProps) => {
     projectIdExists ? challenge : challenge + days
   }&taxon_id=${
     props.modalContent.taxaId
-  }&hrank=species&lrank=species&verifiable=any`;
+  }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&hrank=species&lrank=species&verifiable=any`;
 
   const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
 

@@ -87,6 +87,7 @@ const Search = (props: IsearchProps) => {
       <div id='search-top'>
         <input
           id='searchbar'
+          autoFocus
           value={searchTerm}
           onChange={handleSearchUpdate}
           placeholder='Search...'

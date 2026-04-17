@@ -8,28 +8,41 @@ const Countdown = (props: IcountdownProps) => {
   const [timeRemaining, setTimeRemaining] = useState(
     props.refreshTime - +new Date()
   ); // timer in ms
-  const [intervalId, setIntervalId] = useState(undefined);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | undefined>(undefined);
 
+  // Single useEffect to handle all timer logic
   useEffect(() => {
-    // start interval
-    let timerInterval: any;
-    if (timeRemaining >= 1) {
-      timerInterval = setInterval(() => {
-        setTimeRemaining(props.refreshTime - +new Date());
-      }, 1000);
-      setIntervalId(timerInterval);
+    // Clear any existing interval
+    if (intervalId) {
+      clearInterval(intervalId);
     }
-    // clear interval
+    
+    // Calculate initial time remaining
+    const initialTimeRemaining = props.refreshTime - +new Date();
+    setTimeRemaining(initialTimeRemaining);
+    
+    // Only start a new interval if there's time remaining
+    if (initialTimeRemaining >= 1) {
+      const newIntervalId = setInterval(() => {
+        const updatedTimeRemaining = props.refreshTime - +new Date();
+        setTimeRemaining(updatedTimeRemaining);
+        
+        // Clear interval if time has expired
+        if (updatedTimeRemaining < 1) {
+          clearInterval(newIntervalId);
+        }
+      }, 1000);
+      
+      setIntervalId(newIntervalId);
+    }
+    
+    // Cleanup function
     return function cleanup() {
-      if (timerInterval) clearInterval(timerInterval);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
-  }, []);
-
-  useEffect(() => {
-    // if refreshtime has arrived (browser can freeze page)
-    if (+new Date() > props.refreshTime) setTimeRemaining(0);
-    if (timeRemaining < 1) clearInterval(intervalId);
-  }, [timeRemaining]);
+  }, [props.refreshTime]);
 
   const timerText = (
     <div className='pending'>

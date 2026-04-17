@@ -18,7 +18,7 @@ const curProject = 'project_id=' + process.env.PROJECT_ID;
 const prevProject = 'project_id=' + process.env.PREVIOUS_PROJECT_ID;
 
 // queries
-const queries: Object = {
+const queries: Record<string, string> = {
   baseline: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
   previous: `https://api.inaturalist.org/v1/observations/species_counts?${
     process.env.PREVIOUS_PROJECT_ID ? prevProject : place + prevDates
@@ -28,21 +28,39 @@ const queries: Object = {
   }&lrank=species&hrank=species&per_page=500`,
 };
 
-const genHistogramQuery = (taxonId: string) => {
+const genHistogramQuery = (taxonId: string): string => {
   return `https://api.inaturalist.org/v1/observations/histogram?verifiable=true&${place}&taxon_id=${taxonId}&quality_grade=research&date_field=observed&interval=week_of_year`;
 };
 
-// make query function
-const makeQuery = async (type: string, params?: any) => {
+const genUserQuery = (userName: string): string => {
+  return `https://api.inaturalist.org/v1/observations/species_counts?${place}&${curProject}&user_id=${userName}&${curDates}&lrank=species&hrank=species&per_page=500`;
+};
+
+// Define valid query types
+type QueryType = 'baseline' | 'previous' | 'current' | 'histogram' | 'user';
+
+const makeQuery = async (type: QueryType, params?: any) => {
   const dbg = debug(`cncpgh:makeQuery`);
   dbg(`entered makequery for ${type} query`);
-  dbg(params ? genHistogramQuery(params.taxonId) : queries[type]);
+  
+  // Determine the query to use
+  let queryToUse: string = '';
+  if (type === 'histogram' && params?.taxonId) {
+    queryToUse = genHistogramQuery(params.taxonId);
+  } else if (type === 'user' && params?.userName) {
+    queryToUse = genUserQuery(params.userName);
+  } else if (type === 'baseline' || type === 'previous' || type === 'current') {
+    queryToUse = queries[type];
+  } else {
+    throw new Error(`Invalid query type: ${type}`);
+  }
+  
+  dbg(queryToUse);
   
   const getNextPage: Function = async (page = 1, fullResult: Object[] = []) => {
     try {
       // make query
-      const query = params ? genHistogramQuery(params.taxonId) : queries[type];
-      const result = await axios.get(`${query}&page=${page}`);
+      const result = await axios.get(`${queryToUse}&page=${page}`);
 
       if (type === 'histogram') {
         fullResult = result.data.results.week_of_year;
@@ -126,7 +144,15 @@ const makeQuery = async (type: string, params?: any) => {
 // check cache function
 const checkCache = async (key: string, params?: any) => {
   // For histogram data, create a unique cache key that includes the taxonId
-  const cacheKey = params?.taxonId ? `histogram_${params.taxonId}` : key;
+  // For user data, create a unique cache key that includes the username
+  let cacheKey;
+  if (params?.taxonId) {
+    cacheKey = `histogram_${params.taxonId}`;
+  } else if (params?.userName) {
+    cacheKey = `user_${params.userName}`;
+  } else {
+    cacheKey = key;
+  }
   
   // check for string in cache
   const keyVal = myCache.get(cacheKey);
@@ -162,6 +188,10 @@ const checkCache = async (key: string, params?: any) => {
         returnVal = await makeQuery('histogram', params);
         // Cache histogram data for 24 hours (86400 seconds)
         lifeTime = 86400;
+      } else if (key === 'user' && params?.userName) {
+        returnVal = await makeQuery('user', { userName: params.userName });
+        // Cache user data for 5 minutes (300 seconds)
+        lifeTime = 300;
       }
       
       if (returnVal) {
@@ -169,6 +199,8 @@ const checkCache = async (key: string, params?: any) => {
           dbg(`Updated "${cacheKey}" in cache with ${returnVal.length} records`);
         } else if (key === 'histogram') {
           dbg(`Updated "${cacheKey}" in cache with histogram for ${params.taxonId}`);
+        } else if (key === 'user') {
+          dbg(`Updated "${cacheKey}" in cache with user data for ${params.userName}`);
         }
         myCache.set(cacheKey, returnVal, lifeTime);
       }
