@@ -9,5 +9,5 @@ export interface queryParams {
   prevD1?: string;
   prevD2?: string;
   projectId?: string;
-  baselineMonth?: number;
+  baselineMonth?: string;
 }

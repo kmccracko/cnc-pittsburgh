@@ -106,20 +106,36 @@ const Feed = (props: IfeedProps) => {
   }
 
   const formatHistoricalText = (dateArr: [string, string]) => {
-    const months: string[] = dateArr.reduce((acc, cur) => {
+    const baselineMonth = props.queryInfo.baselineMonth;
+    let months: string[] = [];
+
+    if (baselineMonth) {
+      months = baselineMonth
+        .split(',')
+        .map((month) => Number(month.trim()))
+        .filter((month) => !Number.isNaN(month) && month >= 1 && month <= 12)
+        .map((month) =>
+          new Date(Date.UTC(2024, month - 1, 1)).toLocaleDateString('en-US', {
+            month: 'long',
+            timeZone: 'UTC',
+          })
+        );
+    } else {
+      months = dateArr.reduce((acc, cur) => {
       const monthStr = new Date(cur).toLocaleDateString('en-US', {
         month: 'long',
       });
       if (monthStr === acc[0]) return acc;
       return [...acc, monthStr];
-    }, []);
+      }, []);
+    }
+
     const formatter = new Intl.ListFormat('en', {
       style: 'long',
       type: 'conjunction',
     });
     const monthsText = formatter.format(months);
-    // return `Comparing to data in ${monthsText}, all years.`;
-    return `Comparing to data in April and May, all years.`;
+    return `Comparing to data in ${monthsText || 'the selected months'} across all years.`;
   };
 
   const allCardElements: JSX.Element[] = viewArr.map((el: Object) => {
