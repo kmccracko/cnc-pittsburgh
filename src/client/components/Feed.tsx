@@ -41,6 +41,8 @@ interface IfeedProps {
   countdownComponent: JSX.Element;
   queryInfo: queryParams;
   toggleMissingVsFound?: any;
+  showBroadSeasonality?: boolean;
+  toggleBroadSeasonality?: Function;
   showModal: Function;
   setUserName?: Function;
   userName?: string;
@@ -107,6 +109,16 @@ const Feed = (props: IfeedProps) => {
 
   const formatHistoricalText = (dateArr: [string, string]) => {
     const baselineMonth = props.queryInfo.baselineMonth;
+    const allPreviousProjects = props.queryInfo.allPreviousProjects || [];
+
+    if (props.showBroadSeasonality) {
+      return 'Comparing to data in April and May, across all years.';
+    }
+
+    if (allPreviousProjects.length > 0) {
+      return `Comparing to data from the last ${allPreviousProjects.length} City Nature Challenge projects.`;
+    }
+
     let months: string[] = [];
 
     if (baselineMonth) {
@@ -226,6 +238,24 @@ const Feed = (props: IfeedProps) => {
       </div>
     );
 
+  const broaderSeasonalityContainer =
+    props.activeInd === false && props.toggleBroadSeasonality ? (
+      <div id='toggle-broad-container'>
+        <input
+          id='toggle-broad-seasonality'
+          type='checkbox'
+          checked={props.showBroadSeasonality}
+          onChange={() => props.toggleBroadSeasonality()}
+        />
+        <label htmlFor='toggle-broad-seasonality'>
+          <span className='toggle-text'>Show broader seasonality</span>
+          <span className='toggle-switch' aria-hidden='true'>
+            <span className='toggle-knob'></span>
+          </span>
+        </label>
+      </div>
+    ) : null;
+
   const queryDays =
     props.activeInd !== undefined
       ? { D1: props.queryInfo.curD1, D2: props.queryInfo.curD2 }
@@ -236,6 +266,7 @@ const Feed = (props: IfeedProps) => {
       <div id='filters-band' className='hamburger'>
         {warningText}
         {missingFoundContainer}
+        {broaderSeasonalityContainer}
         <Filter
           activeFilters={activeFilters}
           toggleFilter={toggleFilter}

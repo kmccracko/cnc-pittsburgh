@@ -12,14 +12,18 @@ const db = require('../db/db-connect');
 const newLifeTime = 60 * 15; // 15 minutes
 
 const place = 'place_id=122840';
+const baselineBroadMonths = '4,5';
 const curDates = `&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}`;
 const prevDates = `&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}`;
 const curProject = 'project_id=' + process.env.PROJECT_ID;
 const prevProject = 'project_id=' + process.env.PREVIOUS_PROJECT_ID;
+const allPreviousProjects = JSON.parse(process.env.ALL_PREVIOUS_PROJECTS || '[]');
+const allPreviousProjectsQuery = allPreviousProjects.map((project: string) => `${project}`).join('%2C');
 
 // queries
 const queries: Record<string, string> = {
-  baseline: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
+  baseline: `https://api.inaturalist.org/v1/observations/species_counts?project_id=${allPreviousProjectsQuery}&lrank=species&hrank=species&per_page=1000`,
+  baseline_broad: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${baselineBroadMonths}&lrank=species&hrank=species&per_page=1000`,
   previous: `https://api.inaturalist.org/v1/observations/species_counts?${
     process.env.PREVIOUS_PROJECT_ID ? prevProject : place + prevDates
   }&lrank=species&hrank=species&per_page=500`,
@@ -37,7 +41,13 @@ const genUserQuery = (userName: string): string => {
 };
 
 // Define valid query types
-type QueryType = 'baseline' | 'previous' | 'current' | 'histogram' | 'user';
+type QueryType =
+  | 'baseline'
+  | 'baseline_broad'
+  | 'previous'
+  | 'current'
+  | 'histogram'
+  | 'user';
 
 const makeQuery = async (type: QueryType, params?: any) => {
   const dbg = debug(`cncpgh:makeQuery`);
@@ -49,7 +59,12 @@ const makeQuery = async (type: QueryType, params?: any) => {
     queryToUse = genHistogramQuery(params.taxonId);
   } else if (type === 'user' && params?.userName) {
     queryToUse = genUserQuery(params.userName);
-  } else if (type === 'baseline' || type === 'previous' || type === 'current') {
+  } else if (
+    type === 'baseline' ||
+    type === 'baseline_broad' ||
+    type === 'previous' ||
+    type === 'current'
+  ) {
     queryToUse = queries[type];
   } else {
     throw new Error(`Invalid query type: ${type}`);
@@ -169,7 +184,7 @@ const checkCache = async (key: string, params?: any) => {
     let lifeTime;
 
     try {
-      if (key === 'baseline' || key === 'previous') {
+      if (key === 'baseline' || key === 'baseline_broad' || key === 'previous') {
         returnVal = await db.query(`SELECT * FROM ${key};`);
         returnVal = returnVal.rows;
       } else if (key === 'current') {
@@ -239,11 +254,13 @@ myCache.on('expired', (key: string, value: any) => {
 const clearCache = (cacheType: string) => {
   dbg(`Clearing cache for: ${cacheType}`);
 
-  if (!cacheType) return "Options: 'all', 'baseline', 'previous', 'current', 'histogram'";
+  if (!cacheType)
+    return "Options: 'all', 'baseline', 'baseline_broad', 'previous', 'current', 'histogram'";
 
   try {
     if (cacheType === 'all') {
       myCache.del('baseline');
+      myCache.del('baseline_broad');
       myCache.del('previous');
       myCache.del('current');
       myCache.del('histogram');

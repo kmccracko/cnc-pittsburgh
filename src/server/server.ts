@@ -57,6 +57,7 @@ app.use('/styles', express.static('src/client/styles'));
 app.use(
   '/getObs/:userName',
   inatController.getBaseline,
+  inatController.getBaselineBroad,
   inatController.getPrevious,
   inatController.getUserCurrent,
   async (req: Request, res: Response) => {
@@ -64,6 +65,7 @@ app.use(
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
+      baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
     });
@@ -73,6 +75,7 @@ app.use(
 app.use(
   '/getObs',
   inatController.getBaseline,
+  inatController.getBaselineBroad,
   inatController.getPrevious,
   inatController.getCurrent,
   async (req: Request, res: Response) => {
@@ -80,6 +83,7 @@ app.use(
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
+      baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
     });
@@ -93,8 +97,14 @@ app.get('/histogram/:taxonId', inatController.getHistogram, (req, res) => {
 });
 
 app.get('/getInfo', (req, res) => {
+  let allPreviousProjects: string[] = [];
+  try {
+    allPreviousProjects = JSON.parse(process.env.ALL_PREVIOUS_PROJECTS || '[]');
+  } catch (error) {
+    allPreviousProjects = [];
+  }
+
   return res.status(200).json({
-    baselineMonth: process.env.BASELINE_MONTH,
     curD1: process.env.CURRENT_D1,
     curD2: process.env.CURRENT_D2,
     curEndDate: process.env.CURRENT_END,
@@ -102,6 +112,8 @@ app.get('/getInfo', (req, res) => {
     prevD2: process.env.PREVIOUS_D2,
     projectId: process.env.PROJECT_ID,
     previousProjectId: process.env.PREVIOUS_PROJECT_ID,
+    allPreviousProjects,
+    baselineBroadMonths: '4,5',
   });
 });
 

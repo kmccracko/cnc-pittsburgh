@@ -27,10 +27,13 @@ interface iSpeciesModalContent {
     prevD1: string;
     prevD2: string;
     projectId: string;
-    baselineMonth: string;
+    baselineMonth?: string;
+    baselineBroadMonths?: string;
+    allPreviousProjects?: string[];
   };
   histogram: histogram;
   userName: string;
+  broaderSeasonality?: boolean;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -77,7 +80,15 @@ const ModalSpecies = (props: ImodalProps) => {
     props.modalContent.taxaId
   }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&hrank=species&lrank=species&verifiable=any`;
 
-  const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+  const allPreviousProjects = props.modalContent.queryInfo.allPreviousProjects || [];
+  const baselineBroadMonths = props.modalContent.queryInfo.baselineBroadMonths || '4,5';
+  const historicalFilter =
+    props.modalContent.broaderSeasonality
+      ? `month=${baselineBroadMonths}&place_id=122840`
+      : allPreviousProjects.length > 0
+      ? `project_id=${allPreviousProjects.join(',')}`
+      : `month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840`;
+  const pastUrl = `https://www.inaturalist.org/observations?${historicalFilter}&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
 
   const modal = (
     <Modal
