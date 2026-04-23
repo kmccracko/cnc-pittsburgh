@@ -93,8 +93,14 @@ app.get('/histogram/:taxonId', inatController.getHistogram, (req, res) => {
 });
 
 app.get('/getInfo', (req, res) => {
+  let allPreviousProjects: string[] = [];
+  try {
+    allPreviousProjects = JSON.parse(process.env.ALL_PREVIOUS_PROJECTS || '[]');
+  } catch (error) {
+    allPreviousProjects = [];
+  }
+
   return res.status(200).json({
-    baselineMonth: process.env.BASELINE_MONTH,
     curD1: process.env.CURRENT_D1,
     curD2: process.env.CURRENT_D2,
     curEndDate: process.env.CURRENT_END,
@@ -102,6 +108,7 @@ app.get('/getInfo', (req, res) => {
     prevD2: process.env.PREVIOUS_D2,
     projectId: process.env.PROJECT_ID,
     previousProjectId: process.env.PREVIOUS_PROJECT_ID,
+    allPreviousProjects,
   });
 });
 

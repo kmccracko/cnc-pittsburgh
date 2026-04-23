@@ -107,6 +107,12 @@ const Feed = (props: IfeedProps) => {
 
   const formatHistoricalText = (dateArr: [string, string]) => {
     const baselineMonth = props.queryInfo.baselineMonth;
+    const allPreviousProjects = props.queryInfo.allPreviousProjects || [];
+
+    if (allPreviousProjects.length > 0) {
+      return `Comparing to data from the last ${allPreviousProjects.length} City Nature Challenge projects.`;
+    }
+
     let months: string[] = [];
 
     if (baselineMonth) {

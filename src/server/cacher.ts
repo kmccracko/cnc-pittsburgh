@@ -16,10 +16,12 @@ const curDates = `&d1=${process.env.CURRENT_D1}&d2=${process.env.CURRENT_D2}`;
 const prevDates = `&d1=${process.env.PREVIOUS_D1}&d2=${process.env.PREVIOUS_D2}`;
 const curProject = 'project_id=' + process.env.PROJECT_ID;
 const prevProject = 'project_id=' + process.env.PREVIOUS_PROJECT_ID;
+const allPreviousProjects = JSON.parse(process.env.ALL_PREVIOUS_PROJECTS || '[]');
+const allPreviousProjectsQuery = allPreviousProjects.map((project: string) => `${project}`).join('%2C');
 
 // queries
 const queries: Record<string, string> = {
-  baseline: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${process.env.BASELINE_MONTH}&lrank=species&hrank=species&per_page=1000`,
+  baseline: `https://api.inaturalist.org/v1/observations/species_counts?project_id=${allPreviousProjectsQuery}&lrank=species&hrank=species&per_page=1000`,
   previous: `https://api.inaturalist.org/v1/observations/species_counts?${
     process.env.PREVIOUS_PROJECT_ID ? prevProject : place + prevDates
   }&lrank=species&hrank=species&per_page=500`,

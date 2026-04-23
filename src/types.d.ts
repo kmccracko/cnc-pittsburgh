@@ -9,5 +9,7 @@ export interface queryParams {
   prevD1?: string;
   prevD2?: string;
   projectId?: string;
+  previousProjectId?: string;
+  allPreviousProjects?: string[];
   baselineMonth?: string;
 }

@@ -27,6 +27,7 @@ const initializeDataTable = async (tableName: string) => {
   dbg(`Initializing ${tableName} table...`);
   // Query iNaturalist for data
   const result = await makeQuery(tableName);
+  const rows = result?.length ? result : [];
 
   //? Table schema for Baseline and Previous
   // CREATE TABLE baseline (
@@ -41,11 +42,8 @@ const initializeDataTable = async (tableName: string) => {
   const truncTable = `
   TRUNCATE TABLE ${tableName};`;
 
-  const fillTable = `
-  INSERT INTO ${tableName} (name, scientificname, count, "taxaId", pictureurl, taxon)
-  VALUES 
-  ${JSON.stringify(
-    result.map((obj: any) => {
+  const fillValues = JSON.stringify(
+    rows.map((obj: any) => {
       return Object.values(obj);
     })
   )
@@ -53,8 +51,7 @@ const initializeDataTable = async (tableName: string) => {
     .replaceAll('"', "'")
     .replaceAll('[', '(')
     .replaceAll(']', ')')
-    .slice(1, -1)}
-  ;`;
+    .slice(1, -1);
 
   // truncate table
   await db.query(truncTable).catch((err: Error) => {
@@ -62,17 +59,30 @@ const initializeDataTable = async (tableName: string) => {
   });
 
   // loop through results and update table
-  await db.query(fillTable).catch((err: Error) => {
-    console.error('Failed during table fill: ', err);
-  });
+  if (!fillValues) {
+    dbg(`No rows returned for ${tableName}; skipping insert.`);
+  } else {
+    const fillTable = `
+    INSERT INTO ${tableName} (name, scientificname, count, "taxaId", pictureurl, taxon)
+    VALUES
+    ${fillValues}
+    ;`;
+
+    await db.query(fillTable).catch((err: Error) => {
+      console.error('Failed during table fill: ', err);
+    });
+  }
 
   dbg('Table init done for ', tableName);
 };
 
 const checkEnv = async (cmd: string) => {
   // Pre-check required environment variables
-  const requiredEnv = ['BASELINE_MONTH', 'PREVIOUS_PROJECT_ID', 'PROJECT_ID'];
-  let prevFlag = false;
+  const requiredEnv = [
+    'ALL_PREVIOUS_PROJECTS',
+    'PREVIOUS_PROJECT_ID',
+    'PROJECT_ID'
+  ];
   for (const envName of requiredEnv) {
     if (!process.env[envName]) {
       throw new Error(`No ${envName} in ENV`);
@@ -93,26 +103,30 @@ const checkEnv = async (cmd: string) => {
   const result = await db.query(getInfo).catch((err: Error) => {
     console.error('Failed while retrieving ENV info: ', err);
   });
+  const infoRows = result?.rows || [];
 
   // Loop through env expectations
   for (const envName of requiredEnv) {
-    const record = result.rows.find(
-      (r: any) => r.label === envName.toLowerCase()
-    );
+    const envLabel = envName.toLowerCase();
+    const record = infoRows.find((r: any) => r.label === envLabel);
 
     // If DB value of env is different from current env,
     if (!record || record.value !== process.env[envName]) {
       // Update/insert it into info table
-      await updateInfo(envName.toLowerCase(), process.env[envName], !!record);
+      await updateInfo(envLabel, process.env[envName], !!record);
 
-      // If baseline is different, update its table
-      if (envName.toLowerCase() === 'baseline_month')
+      // If baseline projects changed, refresh baseline table.
+      if (envLabel === 'all_previous_projects')
         await initializeDataTable('baseline');
-      // If previous is different, update its table
-      else if (envName.toLowerCase() === 'previous_project_id')
+      // If previous is different, refresh previous table
+      else if (envLabel === 'previous_project_id')
         await initializeDataTable('previous');
+      // If project changed, refresh current table.
+      else if (envLabel === 'project_id') {
+        await initializeDataTable('current');
+      }
       // If current_end is different,
-      else if (envName.toLowerCase() === 'current_end') {
+      else if (envLabel === 'current_end') {
         // If we are past the current_end specified in ENV, we can update the DB
         if (+new Date(process.env[envName]) < +new Date()) {
           await initializeDataTable('current');
