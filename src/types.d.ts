@@ -11,5 +11,6 @@ export interface queryParams {
   projectId?: string;
   previousProjectId?: string;
   allPreviousProjects?: string[];
+  baselineBroadMonths?: string;
   baselineMonth?: string;
 }

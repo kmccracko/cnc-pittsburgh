@@ -77,11 +77,13 @@ const initializeDataTable = async (tableName: string) => {
 };
 
 const checkEnv = async (cmd: string) => {
+  const baselineBroadMonths = '4,5';
   // Pre-check required environment variables
   const requiredEnv = [
     'ALL_PREVIOUS_PROJECTS',
     'PREVIOUS_PROJECT_ID',
-    'PROJECT_ID'
+    'PROJECT_ID',
+    'CURRENT_END',
   ];
   for (const envName of requiredEnv) {
     if (!process.env[envName]) {
@@ -92,6 +94,7 @@ const checkEnv = async (cmd: string) => {
   // Option force overwrite current DB tables
   if (cmd === 'force') {
     await initializeDataTable('baseline');
+    await initializeDataTable('baseline_broad');
     await initializeDataTable('previous');
     await initializeDataTable('current');
   }
@@ -105,19 +108,30 @@ const checkEnv = async (cmd: string) => {
   });
   const infoRows = result?.rows || [];
 
+  const trackedValues: Record<string, string> = {
+    ALL_PREVIOUS_PROJECTS: process.env.ALL_PREVIOUS_PROJECTS,
+    PREVIOUS_PROJECT_ID: process.env.PREVIOUS_PROJECT_ID,
+    PROJECT_ID: process.env.PROJECT_ID,
+    CURRENT_END: process.env.CURRENT_END,
+    BASELINE_BROAD_MONTHS: baselineBroadMonths,
+  };
+
   // Loop through env expectations
-  for (const envName of requiredEnv) {
-    const envLabel = envName.toLowerCase();
+  for (const [labelKey, value] of Object.entries(trackedValues)) {
+    const envLabel = labelKey.toLowerCase();
     const record = infoRows.find((r: any) => r.label === envLabel);
 
     // If DB value of env is different from current env,
-    if (!record || record.value !== process.env[envName]) {
+    if (!record || record.value !== value) {
       // Update/insert it into info table
-      await updateInfo(envLabel, process.env[envName], !!record);
+      await updateInfo(envLabel, value, !!record);
 
       // If baseline projects changed, refresh baseline table.
       if (envLabel === 'all_previous_projects')
         await initializeDataTable('baseline');
+      // If broad baseline month window changed, refresh baseline_broad table.
+      else if (envLabel === 'baseline_broad_months')
+        await initializeDataTable('baseline_broad');
       // If previous is different, refresh previous table
       else if (envLabel === 'previous_project_id')
         await initializeDataTable('previous');
@@ -128,7 +142,7 @@ const checkEnv = async (cmd: string) => {
       // If current_end is different,
       else if (envLabel === 'current_end') {
         // If we are past the current_end specified in ENV, we can update the DB
-        if (+new Date(process.env[envName]) < +new Date()) {
+        if (+new Date(value) < +new Date()) {
           await initializeDataTable('current');
         }
         // Otherwise, we're in season and will be querying iNat for new data, so updating DB doesn't help us

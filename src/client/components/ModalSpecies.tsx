@@ -28,10 +28,12 @@ interface iSpeciesModalContent {
     prevD2: string;
     projectId: string;
     baselineMonth?: string;
+    baselineBroadMonths?: string;
     allPreviousProjects?: string[];
   };
   histogram: histogram;
   userName: string;
+  broaderSeasonality?: boolean;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -79,8 +81,11 @@ const ModalSpecies = (props: ImodalProps) => {
   }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&hrank=species&lrank=species&verifiable=any`;
 
   const allPreviousProjects = props.modalContent.queryInfo.allPreviousProjects || [];
+  const baselineBroadMonths = props.modalContent.queryInfo.baselineBroadMonths || '4,5';
   const historicalFilter =
-    allPreviousProjects.length > 0
+    props.modalContent.broaderSeasonality
+      ? `month=${baselineBroadMonths}&place_id=122840`
+      : allPreviousProjects.length > 0
       ? `project_id=${allPreviousProjects.join(',')}`
       : `month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840`;
   const pastUrl = `https://www.inaturalist.org/observations?${historicalFilter}&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;

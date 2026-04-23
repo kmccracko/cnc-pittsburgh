@@ -57,6 +57,7 @@ app.use('/styles', express.static('src/client/styles'));
 app.use(
   '/getObs/:userName',
   inatController.getBaseline,
+  inatController.getBaselineBroad,
   inatController.getPrevious,
   inatController.getUserCurrent,
   async (req: Request, res: Response) => {
@@ -64,6 +65,7 @@ app.use(
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
+      baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
     });
@@ -73,6 +75,7 @@ app.use(
 app.use(
   '/getObs',
   inatController.getBaseline,
+  inatController.getBaselineBroad,
   inatController.getPrevious,
   inatController.getCurrent,
   async (req: Request, res: Response) => {
@@ -80,6 +83,7 @@ app.use(
     return res.status(200).json({
       current: res.locals.current,
       baseline: res.locals.baseline,
+      baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
       timeRemaining: res.locals.timeRemaining,
     });
@@ -109,6 +113,7 @@ app.get('/getInfo', (req, res) => {
     projectId: process.env.PROJECT_ID,
     previousProjectId: process.env.PREVIOUS_PROJECT_ID,
     allPreviousProjects,
+    baselineBroadMonths: '4,5',
   });
 });
 

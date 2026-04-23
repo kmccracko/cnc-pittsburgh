@@ -45,6 +45,17 @@ inat.getBaseline = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+inat.getBaselineBroad = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // check cache or update cache, then return value
+    const { returnVal } = await checkCache('baseline_broad');
+    res.locals.baselineBroad = returnVal;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
 inat.getHistogram = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const taxonId = req.params.taxonId;
