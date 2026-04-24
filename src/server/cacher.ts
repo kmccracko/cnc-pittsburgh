@@ -21,15 +21,16 @@ const allPreviousProjects = JSON.parse(process.env.ALL_PREVIOUS_PROJECTS || '[]'
 const allPreviousProjectsQuery = allPreviousProjects.map((project: string) => `${project}`).join('%2C');
 
 // queries
+// inat has "verifiable" as a combination of "quality_grade=needs_id,research", but we're going to use quality_grade instead for alignment with the cnc pgh filters
 const queries: Record<string, string> = {
-  baseline: `https://api.inaturalist.org/v1/observations/species_counts?project_id=${allPreviousProjectsQuery}&lrank=species&hrank=species&per_page=1000`,
-  baseline_broad: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${baselineBroadMonths}&lrank=species&hrank=species&per_page=1000`,
+  baseline: `https://api.inaturalist.org/v1/observations/species_counts?project_id=${allPreviousProjectsQuery}&quality_grade=needs_id,research&per_page=1000`,
+  baseline_broad: `https://api.inaturalist.org/v1/observations/species_counts?${place}&month=${baselineBroadMonths}&quality_grade=needs_id,research&per_page=1000`,
   previous: `https://api.inaturalist.org/v1/observations/species_counts?${
     process.env.PREVIOUS_PROJECT_ID ? prevProject : place + prevDates
-  }&lrank=species&hrank=species&per_page=500`,
+  }&quality_grade=needs_id,research&per_page=500`,
   current: `https://api.inaturalist.org/v1/observations/species_counts?${
     process.env.PROJECT_ID ? curProject : place + curDates
-  }&lrank=species&hrank=species&per_page=500`,
+  }&quality_grade=needs_id,research&per_page=500`,
 };
 
 const genHistogramQuery = (taxonId: string): string => {
@@ -37,7 +38,7 @@ const genHistogramQuery = (taxonId: string): string => {
 };
 
 const genUserQuery = (userName: string): string => {
-  return `https://api.inaturalist.org/v1/observations/species_counts?${place}&${curProject}&user_id=${userName}&${curDates}&lrank=species&hrank=species&per_page=500`;
+  return `https://api.inaturalist.org/v1/observations/species_counts?${curProject}&user_id=${userName}&quality_grade=needs_id,research&per_page=500`;
 };
 
 // Define valid query types
@@ -84,7 +85,8 @@ const makeQuery = async (type: QueryType, params?: any) => {
         result.data.results.forEach((el: Object) => {
 
           // Skip human, dog, and cat
-          if (['Homo sapiens', 'Canis familiaris', 'Felis catus'].includes(el.taxon.name)) return;
+          // Don't skip these anymore 04/23/2026
+          // if (['Homo sapiens', 'Canis familiaris', 'Felis catus'].includes(el.taxon.name)) return;
 
           pageTaxaArr.push(
           {

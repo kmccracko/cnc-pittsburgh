@@ -4,7 +4,7 @@ import Modal from './Modal';
 import HistogramGraph from './HistogramGraphWeek';
 
 interface ImodalProps {
-  activeInd: boolean;
+  activeInd?: boolean;
   modalContent: iSpeciesModalContent;
   closeModal: any;
 }
@@ -142,9 +142,11 @@ const ModalSpecies = (props: ImodalProps) => {
                     <a href={pastUrl} target='_blank'>
                       View {props.modalContent.count} Past Obs. on iNaturalist ↪
                     </a>
-                    <a href={currentUrl} target='_blank'>
-                      Is it still missing? ↪
-                    </a>
+                    {props.activeInd !== undefined && (
+                      <a href={currentUrl} target='_blank'>
+                        Is it still missing? ↪
+                      </a>
+                    )}
                   </>
                 )}
               </div>

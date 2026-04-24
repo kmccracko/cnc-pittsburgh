@@ -263,7 +263,7 @@ const App = () => {
           />
         ) : (
           <ModalSpecies
-            activeInd={activeInd}
+            activeInd={location.pathname === '/previous' ? undefined : activeInd}
             modalContent={modalContent}
             closeModal={closeModal}
           />
