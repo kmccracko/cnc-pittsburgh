@@ -75,11 +75,21 @@ const App = () => {
       true
     );
 
-    setTaxaObj(showBroadSeasonality ? broadMissingTaxa : missingTaxa);
+    const initialTaxaObj = activeInd
+      ? foundTaxa
+      : showBroadSeasonality
+      ? broadMissingTaxa
+      : missingTaxa;
+    const initialFullArr = activeInd
+      ? foundSpecies
+      : showBroadSeasonality
+      ? broadMissingSpecies
+      : missingSpecies;
+    setTaxaObj(initialTaxaObj);
     setMissingTaxaObj(missingTaxa);
     setMissingTaxaBroadObj(broadMissingTaxa);
     setFoundTaxaObj(foundTaxa);
-    setFullArr(showBroadSeasonality ? broadMissingSpecies : missingSpecies);
+    setFullArr(initialFullArr);
     setMissingArr(missingSpecies);
     setMissingArrBroad(broadMissingSpecies);
     setFoundArr(foundSpecies);
@@ -276,6 +286,10 @@ const App = () => {
     });
   };
 
+  const clearUserView = () => {
+    setUserName('');
+  };
+
   return (
     <div id='Main'>
       {modal &&
@@ -314,6 +328,7 @@ const App = () => {
             <Feed
               userName={userName}
               setUserName={setUserName}
+              clearUserName={clearUserView}
               toggleMissingVsFound={toggleMissingVsFound}
               activeInd={activeInd}
               fullArray={fullArr}

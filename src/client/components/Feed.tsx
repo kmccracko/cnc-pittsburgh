@@ -45,6 +45,7 @@ interface IfeedProps {
   toggleBroadSeasonality?: Function;
   showModal: Function;
   setUserName?: Function;
+  clearUserName?: Function;
   userName?: string;
   newSpeciesCelebrations?: Object[];
 }
@@ -203,7 +204,7 @@ const Feed = (props: IfeedProps) => {
       <div id='warning-container'>
         <span className='warn'>Warning!&nbsp;</span>
         <a href='#/'>
-          <span onClick={() => (props.setUserName(''))}>
+          <span onClick={() => props.clearUserName ? props.clearUserName() : props.setUserName('')}>
             Showing missing species for <b>{props.userName}</b>. Click this text to clear the username filter.
           </span>
         </a>
