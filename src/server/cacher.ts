@@ -321,16 +321,16 @@ const checkCache = async (key: string, params?: any) => {
         returnVal = returnVal.rows;
       } else if (key === 'current') {
         // If within challenge dates, make current query. Otherwise, pull from DB
-        // if (
-        //   +new Date(process.env.CURRENT_D1) < +new Date() &&
-        //   +new Date() < +new Date(process.env.CURRENT_END)
-        // ) {
-        //   returnVal = await makeQuery(key);
-        //   lifeTime = newLifeTime;
-        // } else {
+        if (
+          +new Date(process.env.CURRENT_D1) < +new Date() &&
+          +new Date() < +new Date(process.env.CURRENT_END)
+        ) {
+          returnVal = await makeQuery(key);
+          lifeTime = newLifeTime;
+        } else {
           returnVal = await db.query(`SELECT * FROM ${key};`);
           returnVal = returnVal.rows;
-        // }
+        }
       } else if (key === 'histogram' && params?.taxonId) {
         returnVal = await makeQuery('histogram', params);
         // Cache histogram data for 24 hours (86400 seconds)
