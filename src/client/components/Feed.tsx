@@ -116,7 +116,7 @@ const Feed = (props: IfeedProps) => {
     }
 
     if (allPreviousProjects.length > 0) {
-      return `Comparing to data from the last ${allPreviousProjects.length} City Nature Challenge projects.`;
+      return `Comparing to data from all previous Pittsburgh CNC projects.`;
     }
 
     let months: string[] = [];
