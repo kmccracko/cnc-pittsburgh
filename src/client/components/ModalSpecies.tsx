@@ -4,7 +4,7 @@ import Modal from './Modal';
 import HistogramGraph from './HistogramGraphWeek';
 
 interface ImodalProps {
-  activeInd: boolean;
+  activeInd?: boolean;
   modalContent: iSpeciesModalContent;
   closeModal: any;
 }
@@ -27,10 +27,13 @@ interface iSpeciesModalContent {
     prevD1: string;
     prevD2: string;
     projectId: string;
-    baselineMonth: string;
+    baselineMonth?: string;
+    baselineBroadMonths?: string;
+    allPreviousProjects?: string[];
   };
   histogram: histogram;
   userName: string;
+  broaderSeasonality?: boolean;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -75,9 +78,17 @@ const ModalSpecies = (props: ImodalProps) => {
     projectIdExists ? challenge : challenge + days
   }&taxon_id=${
     props.modalContent.taxaId
-  }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&hrank=species&lrank=species&verifiable=any`;
+  }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&quality_grade=needs_id,research`;
 
-  const pastUrl = `https://www.inaturalist.org/observations?month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+  const allPreviousProjects = props.modalContent.queryInfo.allPreviousProjects || [];
+  const baselineBroadMonths = props.modalContent.queryInfo.baselineBroadMonths || '4,5';
+  const historicalFilter =
+    props.modalContent.broaderSeasonality
+      ? `month=${baselineBroadMonths}&place_id=122840`
+      : allPreviousProjects.length > 0
+      ? `project_id=${allPreviousProjects.join(',')}`
+      : `month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840`;
+  const pastUrl = `https://www.inaturalist.org/observations?${historicalFilter}&taxon_id=${props.modalContent.taxaId}&quality_grade=needs_id,research`;
 
   const modal = (
     <Modal
@@ -131,9 +142,11 @@ const ModalSpecies = (props: ImodalProps) => {
                     <a href={pastUrl} target='_blank'>
                       View {props.modalContent.count} Past Obs. on iNaturalist ↪
                     </a>
-                    <a href={currentUrl} target='_blank'>
-                      Is it still missing? ↪
-                    </a>
+                    {props.activeInd !== undefined && (
+                      <a href={currentUrl} target='_blank'>
+                        Is it still missing? ↪
+                      </a>
+                    )}
                   </>
                 )}
               </div>

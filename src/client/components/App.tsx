@@ -26,12 +26,16 @@ const App = () => {
   const [activeInd, setActiveInd] = useState<boolean>(false);
   const [fullArr, setFullArr] = useState<Object[]>([]);
   const [missingArr, setMissingArr] = useState<Object[]>([]);
+  const [missingArrBroad, setMissingArrBroad] = useState<Object[]>([]);
   const [foundArr, setFoundArr] = useState<Object[]>([]);
   const [prevArr, setPrevArr] = useState<Object[]>([]);
   const [taxaObj, setTaxaObj] = useState<Object>({});
   const [missingTaxaObj, setMissingTaxaObj] = useState<Object>({});
+  const [missingTaxaBroadObj, setMissingTaxaBroadObj] = useState<Object>({});
   const [foundTaxaObj, setFoundTaxaObj] = useState<Object>({});
   const [prevTaxaObj, setPrevTaxaObj] = useState<Object>({});
+  const [showBroadSeasonality, setShowBroadSeasonality] =
+    useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshTime, setRefreshTime] = useState(0);
   const [queryInfo, setQueryInfo] = useState<queryParams>({});
@@ -48,20 +52,30 @@ const App = () => {
   const handleObsFetch = (res: any) => {
     const current: Object[] = res.data.current;
     const baseline: Object[] = res.data.baseline;
+    const baselineBroad: Object[] = res.data.baselineBroad || baseline;
     const previous: Object[] = res.data.previous;
 
     let missingSpecies: any,
+      broadMissingSpecies: any,
       foundSpecies: any,
       missingTaxa: Object,
+      broadMissingTaxa: Object,
       foundTaxa: Object;
     [missingSpecies, foundSpecies, missingTaxa, foundTaxa] =
       getMissingVsFound(baseline, current);
+    [broadMissingSpecies, , broadMissingTaxa] = getMissingVsFound(
+      baselineBroad,
+      current,
+      true
+    );
 
-    setTaxaObj(missingTaxa);
+    setTaxaObj(showBroadSeasonality ? broadMissingTaxa : missingTaxa);
     setMissingTaxaObj(missingTaxa);
+    setMissingTaxaBroadObj(broadMissingTaxa);
     setFoundTaxaObj(foundTaxa);
-    setFullArr(missingSpecies);
+    setFullArr(showBroadSeasonality ? broadMissingSpecies : missingSpecies);
     setMissingArr(missingSpecies);
+    setMissingArrBroad(broadMissingSpecies);
     setFoundArr(foundSpecies);
 
     // Only update prev if it had no data (prev doesn't change)
@@ -145,7 +159,24 @@ const App = () => {
     }
   }, [queryInfo]);
 
-  function getMissingVsFound(baseline: Object[], current: Object[]) {
+  useEffect(() => {
+    if (activeInd) return;
+    setFullArr(showBroadSeasonality ? missingArrBroad : missingArr);
+    setTaxaObj(showBroadSeasonality ? missingTaxaBroadObj : missingTaxaObj);
+  }, [
+    showBroadSeasonality,
+    activeInd,
+    missingArr,
+    missingArrBroad,
+    missingTaxaObj,
+    missingTaxaBroadObj,
+  ]);
+
+  function getMissingVsFound(
+    baseline: Object[],
+    current: Object[],
+    broaderSeasonality = false
+  ) {
     // get current names only
     const curResNames = new Set([]);
     const missingSpecies: Object[] = [];
@@ -159,7 +190,7 @@ const App = () => {
 
     // get and build missing
     for (let el of baseline) {
-      const elPlusFound = { ...el, found: false };
+      const elPlusFound = { ...el, found: false, broaderSeasonality };
       if (!curResNames.has(el.taxaId)) {
         missingSpecies.push(elPlusFound);
         if (missingTaxaObj[el.taxon])
@@ -183,11 +214,16 @@ const App = () => {
       setFullArr(foundArr);
       setTaxaObj(foundTaxaObj);
     } else {
-      setFullArr(missingArr);
-      setTaxaObj(missingTaxaObj);
+      setFullArr(showBroadSeasonality ? missingArrBroad : missingArr);
+      setTaxaObj(showBroadSeasonality ? missingTaxaBroadObj : missingTaxaObj);
     }
     setActiveInd(!activeInd);
   }
+
+  const toggleBroadSeasonality = () => {
+    if (activeInd) return;
+    setShowBroadSeasonality(!showBroadSeasonality);
+  };
 
   // show modal
   const showModal = (type: string, data: any) => {
@@ -227,7 +263,7 @@ const App = () => {
           />
         ) : (
           <ModalSpecies
-            activeInd={activeInd}
+            activeInd={location.pathname === '/previous' ? undefined : activeInd}
             modalContent={modalContent}
             closeModal={closeModal}
           />
@@ -255,6 +291,8 @@ const App = () => {
               taxaArrays={taxaObj}
               isLoading={isLoading}
               queryInfo={queryInfo}
+              showBroadSeasonality={showBroadSeasonality}
+              toggleBroadSeasonality={toggleBroadSeasonality}
               countdownComponent={
                 !isLoading && refreshTime ? (
                   <Countdown refreshTime={refreshTime} />

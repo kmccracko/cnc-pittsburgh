@@ -36,6 +36,8 @@ const Examples = (props: any) => {
               prevD2: props.queryInfo.prevD2,
               projectId: props.queryInfo.projectId,
               baselineMonth: props.queryInfo.baselineMonth,
+              baselineBroadMonths: props.queryInfo.baselineBroadMonths,
+              allPreviousProjects: props.queryInfo.allPreviousProjects,
             },
             userName: '',
             // Generate a 52-length array of a histogram for a taxon
