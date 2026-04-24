@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-const { checkCache } = require('./cacher');
+const { checkCache, enrichCurrentSpeciesData } = require('./cacher');
+import debug from '../../betterDebug';
+const dbg = debug(`cncpgh:inat-api-controller`);
 
 type controller = {
   [key: string]: RequestHandler;
@@ -15,7 +17,12 @@ inat.getCurrent = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check cache or update cache, then return value
     const { returnVal, timeRemaining } = await checkCache('current');
-    res.locals.current = returnVal;
+    const { verifiedCurrent, visibleCelebrations } = await enrichCurrentSpeciesData(
+      returnVal,
+      res.locals.baseline
+    );
+    res.locals.current = verifiedCurrent;
+    res.locals.newSpeciesCelebrations = visibleCelebrations;
     res.locals.timeRemaining = timeRemaining;
     return next();
   } catch (error) {
@@ -76,8 +83,13 @@ inat.getUserCurrent = async (req: Request, res: Response, next: NextFunction) =>
     
     // check cache or update cache, then return value
     const { returnVal, timeRemaining } = await checkCache('user', { userName });
-    
-    res.locals.current = returnVal;
+
+    const { verifiedCurrent, visibleCelebrations } = await enrichCurrentSpeciesData(
+      returnVal,
+      res.locals.baseline
+    );
+    res.locals.current = verifiedCurrent;
+    res.locals.newSpeciesCelebrations = visibleCelebrations;
     res.locals.timeRemaining = timeRemaining;
     return next();
   } catch (error) {

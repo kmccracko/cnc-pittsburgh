@@ -67,6 +67,7 @@ app.use(
       baseline: res.locals.baseline,
       baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
+      newSpeciesCelebrations: res.locals.newSpeciesCelebrations || [],
       timeRemaining: res.locals.timeRemaining,
     });
   }
@@ -85,6 +86,7 @@ app.use(
       baseline: res.locals.baseline,
       baselineBroad: res.locals.baselineBroad,
       previous: res.locals.previous,
+      newSpeciesCelebrations: res.locals.newSpeciesCelebrations || [],
       timeRemaining: res.locals.timeRemaining,
     });
   }

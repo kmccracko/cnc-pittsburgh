@@ -41,6 +41,11 @@ const genUserQuery = (userName: string): string => {
   return `https://api.inaturalist.org/v1/observations/species_counts?${curProject}&user_id=${userName}&quality_grade=needs_id,research&per_page=500`;
 };
 
+const genBulkFirstObserverQuery = (taxonIds: string[]): string => {
+  const taxonIdsCsv = taxonIds.join(',');
+  return `https://api.inaturalist.org/v1/observations?project_id=${process.env.PROJECT_ID}&taxon_id=${taxonIdsCsv}&quality_grade=research&order=asc&order_by=created_at&per_page=200`;
+};
+
 // Define valid query types
 type QueryType =
   | 'baseline'
@@ -48,7 +53,8 @@ type QueryType =
   | 'previous'
   | 'current'
   | 'histogram'
-  | 'user';
+  | 'user'
+  | 'first_observer_bulk';
 
 const makeQuery = async (type: QueryType, params?: any) => {
   const dbg = debug(`cncpgh:makeQuery`);
@@ -60,6 +66,8 @@ const makeQuery = async (type: QueryType, params?: any) => {
     queryToUse = genHistogramQuery(params.taxonId);
   } else if (type === 'user' && params?.userName) {
     queryToUse = genUserQuery(params.userName);
+  } else if (type === 'first_observer_bulk' && params?.taxonIds?.length) {
+    queryToUse = genBulkFirstObserverQuery(params.taxonIds);
   } else if (
     type === 'baseline' ||
     type === 'baseline_broad' ||
@@ -73,13 +81,45 @@ const makeQuery = async (type: QueryType, params?: any) => {
   
   dbg(queryToUse);
   
-  const getNextPage: Function = async (page = 1, fullResult: Object[] = []) => {
+  const getNextPage: Function = async (page = 1, fullResult: any = []) => {
     try {
       // make query
       const result = await axios.get(`${queryToUse}&page=${page}`);
 
       if (type === 'histogram') {
         fullResult = result.data.results.week_of_year;
+      } else if (type === 'first_observer_bulk') {
+        const observations = result?.data?.results || [];
+        const requestedTaxa = new Set((params?.taxonIds || []).map((id: string) => String(id)));
+        const speciesByTaxa = params?.speciesByTaxa || {};
+        const firstObserverByTaxa: Object = fullResult && !Array.isArray(fullResult) ? fullResult : {};
+
+        for (const observation of observations) {
+          const taxonId = String(observation?.taxon?.id || '');
+          if (!taxonId || !requestedTaxa.has(taxonId)) continue;
+          const createdAt = observation?.created_at;
+          if (!createdAt) continue;
+
+          const prev = firstObserverByTaxa[taxonId];
+          if (!prev || +new Date(createdAt) < +new Date(prev.createdAt)) {
+            firstObserverByTaxa[taxonId] = {
+              taxaId: taxonId,
+              species:
+                observation?.taxon?.preferred_common_name ||
+                observation?.taxon?.name ||
+                speciesByTaxa[taxonId] ||
+                null,
+              author: observation?.user?.login || null,
+              createdAt,
+              hasResearchObservation: true,
+              photoUrl: observation?.taxon?.default_photo?.medium_url || null,
+              observationId: observation?.id || null,
+              scientificname: observation?.taxon?.name || null,
+            };
+          }
+        }
+
+        fullResult = firstObserverByTaxa;
       } else {
         const pageTaxaArr: Object[] = [];
         result.data.results.forEach((el: Object) => {
@@ -98,6 +138,7 @@ const makeQuery = async (type: QueryType, params?: any) => {
               ? el.taxon.default_photo.medium_url
               : null,
             taxon: el.taxon.iconic_taxon_name,
+            rank: el.taxon.rank
           });
         });
         // update array
@@ -146,16 +187,103 @@ const makeQuery = async (type: QueryType, params?: any) => {
   
   try {
     const parsedResults = await getNextPage();
+    if (type === 'first_observer_bulk') {
+      const speciesByTaxa = params?.speciesByTaxa || {};
+      const completedResults: Object = {};
+      for (const taxonId of params?.taxonIds || []) {
+        const normalizedTaxonId = String(taxonId);
+        completedResults[normalizedTaxonId] = parsedResults?.[normalizedTaxonId] || {
+          taxaId: normalizedTaxonId,
+          species: speciesByTaxa[normalizedTaxonId] || null,
+          author: null,
+          createdAt: null,
+          hasResearchObservation: false,
+        };
+      }
+      return completedResults;
+    }
     return parsedResults;
   } catch (error) {
     dbg(`Error in makeQuery: ${error.message}`);
     // Return empty results instead of crashing
     if (type === 'histogram') {
       return {}; // Empty object for histogram
+    } else if (type === 'first_observer_bulk') {
+      return null; // Null indicates lookup failure (unknown), not "no research observations"
     } else {
       return []; // Empty array for other queries
     }
   }
+};
+
+/*
+* Adds the new species flag to the current species
+* Checks for new species observations
+* Removes unverified new species
+* Returns the verified current species and the visible new species celebrations
+*/
+const enrichCurrentSpeciesData = async (
+  current: Object[] = [],
+  baseline: Object[] = []
+): Promise<{ verifiedCurrent: Object[]; visibleCelebrations: Object[] }> => {
+  const baselineTaxa = new Set((baseline || []).map((species: Object) => species.taxaId));
+  const currentWithFlags = (current || []).map((species: Object) => {
+    if (species.rank === 'species' && !baselineTaxa.has(species.taxaId)) {
+      return { ...species, newspecies: true };
+    }
+    return species;
+  });
+
+  const newSpecies = currentWithFlags.filter((species: Object) => species.newspecies);
+  const taxaToCheck = Array.from(
+    new Map(
+      newSpecies.map((species: Object) => [
+        String(species.taxaId),
+        {
+          taxaId: String(species.taxaId),
+          speciesName: species.name || species.scientificname || null,
+        },
+      ])
+    ).values()
+  );
+  const taxonIds = taxaToCheck.map((el: Object) => String(el.taxaId));
+  if (!taxonIds.length) return { verifiedCurrent: currentWithFlags, visibleCelebrations: [] };
+
+  const speciesByTaxa = Object.fromEntries(
+    taxaToCheck.map((el: Object) => [String(el.taxaId), el.speciesName || null])
+  );
+  const { returnVal } = await checkCache('first_observer_bulk', { taxonIds, speciesByTaxa });
+  const firstObserverByTaxa = returnVal;
+  const queryFailed = !firstObserverByTaxa;
+  const celebrations = taxonIds.map((taxaId: string) => {
+    return (
+      firstObserverByTaxa?.[taxaId] || {
+        taxaId,
+        species: speciesByTaxa[taxaId] || null,
+        author: null,
+        createdAt: null,
+        hasResearchObservation: queryFailed ? null : false,
+      }
+    );
+  });
+
+  const noResearchTaxa = new Set(
+    celebrations
+      .filter((entry: Object) => entry?.hasResearchObservation === false)
+      .map((entry: Object) => String(entry.taxaId))
+  );
+  const verifiedCurrent = currentWithFlags.map((species: Object) => {
+    if (species.newspecies && noResearchTaxa.has(String(species.taxaId))) {
+      return { ...species, newspecies: false };
+    }
+    return species;
+  });
+
+  const visibleCelebrations = celebrations.filter(
+    (el: Object) => el && el.author && el.species
+  );
+
+  return { verifiedCurrent, visibleCelebrations };
 };
 
 // check cache function
@@ -165,6 +293,8 @@ const checkCache = async (key: string, params?: any) => {
   let cacheKey;
   if (params?.taxonId) {
     cacheKey = `histogram_${params.taxonId}`;
+  } else if (key === 'first_observer_bulk' && params?.taxonIds?.length) {
+    cacheKey = `first_observer_bulk`;
   } else if (params?.userName) {
     cacheKey = `user_${params.userName}`;
   } else {
@@ -205,6 +335,9 @@ const checkCache = async (key: string, params?: any) => {
         returnVal = await makeQuery('histogram', params);
         // Cache histogram data for 24 hours (86400 seconds)
         lifeTime = 86400;
+      } else if (key === 'first_observer_bulk' && params?.taxonIds?.length) {
+        returnVal = await makeQuery('first_observer_bulk', params);
+        lifeTime = newLifeTime;
       } else if (key === 'user' && params?.userName) {
         returnVal = await makeQuery('user', { userName: params.userName });
         // Cache user data for 5 minutes (300 seconds)
@@ -216,6 +349,8 @@ const checkCache = async (key: string, params?: any) => {
           dbg(`Updated "${cacheKey}" in cache with ${returnVal.length} records`);
         } else if (key === 'histogram') {
           dbg(`Updated "${cacheKey}" in cache with histogram for ${params.taxonId}`);
+        } else if (key === 'first_observer_bulk') {
+          dbg(`Updated "${cacheKey}" in cache with bulk first observer data`);
         } else if (key === 'user') {
           dbg(`Updated "${cacheKey}" in cache with user data for ${params.userName}`);
         }
@@ -234,6 +369,8 @@ const checkCache = async (key: string, params?: any) => {
         // If no cached data available, return empty result
         if (key === 'histogram') {
           returnVal = {}; // Empty object for histogram
+        } else if (key === 'first_observer_bulk') {
+          returnVal = null;
         } else {
           returnVal = []; // Empty array for other queries
         }
@@ -257,7 +394,7 @@ const clearCache = (cacheType: string) => {
   dbg(`Clearing cache for: ${cacheType}`);
 
   if (!cacheType)
-    return "Options: 'all', 'baseline', 'baseline_broad', 'previous', 'current', 'histogram'";
+    return "Options: 'all', 'baseline', 'baseline_broad', 'previous', 'current', 'histogram', 'first_observer_bulk'";
 
   try {
     if (cacheType === 'all') {
@@ -266,6 +403,7 @@ const clearCache = (cacheType: string) => {
       myCache.del('previous');
       myCache.del('current');
       myCache.del('histogram');
+      myCache.del('first_observer_bulk');
     } else {
       myCache.del(cacheType);
     }
@@ -275,4 +413,4 @@ const clearCache = (cacheType: string) => {
   }
 };
 
-module.exports = { checkCache, makeQuery, clearCache };
+module.exports = { checkCache, makeQuery, clearCache, enrichCurrentSpeciesData };
