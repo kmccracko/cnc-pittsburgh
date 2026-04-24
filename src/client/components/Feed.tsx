@@ -46,6 +46,7 @@ interface IfeedProps {
   showModal: Function;
   setUserName?: Function;
   userName?: string;
+  newSpeciesCelebrations?: Object[];
 }
 
 const Feed = (props: IfeedProps) => {
@@ -161,6 +162,7 @@ const Feed = (props: IfeedProps) => {
         count={el.count}
         pictureUrl={el.pictureurl}
         found={el.found}
+        newspecies={el.newspecies}
         taxon={el.taxon}
         queryInfo={props.queryInfo}
         showModal={props.showModal}
@@ -261,6 +263,36 @@ const Feed = (props: IfeedProps) => {
       ? { D1: props.queryInfo.curD1, D2: props.queryInfo.curD2 }
       : { D1: props.queryInfo.prevD1, D2: props.queryInfo.prevD2 };
 
+  const tickerItems = (props.newSpeciesCelebrations || [])
+    .filter((item: Object) => item?.author && item?.species)
+    .map((item: Object) => `@${item.author} • ${item.species}`);
+
+  const tickerContainer =
+    props.activeInd !== undefined && tickerItems.length > 0 ? (
+      <a href='#/firsts' id='new-species-ticker-link' className='feed-only-ticker'>
+        <div id='new-species-ticker' aria-label='new species congratulations'>
+          <div className='ticker-title'>Pittsburgh CNC Firsts!</div>
+          <div
+            className='ticker-window'
+            style={
+              {
+                '--ticker-items': tickerItems.length,
+                '--ticker-duration': `${Math.max(8, tickerItems.length * 2.5)}s`,
+              } as React.CSSProperties
+            }
+          >
+            <div className='ticker-track-vertical'>
+              {[...tickerItems, ...tickerItems].map((item: string, idx: number) => (
+                <div className='ticker-item' key={`${item}-${idx}`}>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </a>
+    ) : null;
+
   return (
     <div id='Main'>
       <div id='filters-band' className='hamburger'>
@@ -276,6 +308,7 @@ const Feed = (props: IfeedProps) => {
             activeArr.length !== props.fullArray.length ? 'active' : 'inactive'
           }
         />
+        {tickerContainer}
       </div>
       {props.countdownComponent}
 

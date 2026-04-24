@@ -5,9 +5,10 @@ import HamburgerMenu from './HamburgerMenu';
 
 interface INavbarProps {
   onUserSearch?: () => void;
+  newSpeciesCelebrations?: any[];
 }
 
-const Navbar: React.FC<INavbarProps> = ({ onUserSearch }) => {
+const Navbar: React.FC<INavbarProps> = ({ onUserSearch, newSpeciesCelebrations }) => {
   const [navHamburgerOpen, setNavHamburgerOpen] = useState<boolean>(false);
 
   const handleBurgerClick = (e: any) => {
@@ -39,6 +40,10 @@ const Navbar: React.FC<INavbarProps> = ({ onUserSearch }) => {
     </Link>,
   ].filter(Boolean);
 
+  const tickerItems = (newSpeciesCelebrations || [])
+    .filter((item: any) => item?.author && item?.species)
+    .map((item: any) => `@${item.author} • ${item.species}`);
+
   return (
     <>
       <div id='navbar'>
@@ -48,6 +53,30 @@ const Navbar: React.FC<INavbarProps> = ({ onUserSearch }) => {
             <span id='cnc'>CNC</span>
           </div>
         </Link>
+        {tickerItems.length > 0 && (
+          <a href='#/firsts' id='nav-center-firsts-link'>
+            <div id='nav-center-firsts' aria-label='firsts ticker in navbar'>
+              <div className='nav-center-title'>Pittsburgh CNC Firsts!</div>
+              <div
+                className='nav-center-window'
+                style={
+                  {
+                    '--ticker-items': tickerItems.length,
+                    '--ticker-duration': `${Math.max(8, tickerItems.length * 2.5)}s`,
+                  } as React.CSSProperties
+                }
+              >
+                <div className='nav-center-track'>
+                  {[...tickerItems, ...tickerItems].map((item: string, idx: number) => (
+                    <div className='nav-center-item' key={`${item}-${idx}`}>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </a>
+        )}
         <div
           id='nav-right'
           className={`${!wideEnough ? 'mobile' : ''} ${

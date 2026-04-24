@@ -9,6 +9,7 @@ import About from './About';
 import Countdown from './Countdown';
 import { queryParams } from '../../types';
 import Search from './Search';
+import Firsts from './Firsts';
 import ModalAlert from './ModalAlert';
 import ModalSpecies from './ModalSpecies';
 import ModalPrompt from './ModalPrompt';
@@ -43,17 +44,22 @@ const App = () => {
   const [modalType, setModalType] = useState<string>('');
   const [modalContent, setModalContent] = useState<any>({});
   const [userName, setUserName] = useState<string>('');
+  const [newSpeciesCelebrations, setNewSpeciesCelebrations] = useState<Object[]>(
+    []
+  );
+  const [firstsArr, setFirstsArr] = useState<Object[]>([]);
   const navigate = useNavigate();
 
   // Avoid unnecessary fetches
   const location = useLocation();
-  const pathsRequiringData = ['/', '/previous', '/search'];
+  const pathsRequiringData = ['/', '/previous', '/search', '/firsts'];
 
   const handleObsFetch = (res: any) => {
     const current: Object[] = res.data.current;
     const baseline: Object[] = res.data.baseline;
     const baselineBroad: Object[] = res.data.baselineBroad || baseline;
     const previous: Object[] = res.data.previous;
+    const celebrations: Object[] = res.data.newSpeciesCelebrations || [];
 
     let missingSpecies: any,
       broadMissingSpecies: any,
@@ -77,6 +83,28 @@ const App = () => {
     setMissingArr(missingSpecies);
     setMissingArrBroad(broadMissingSpecies);
     setFoundArr(foundSpecies);
+    setNewSpeciesCelebrations(celebrations);
+    const currentByTaxa: Object = Object.fromEntries(
+      current.map((species: Object) => [String(species.taxaId), species])
+    );
+    const firsts = celebrations
+      .map((celebration: Object) => {
+        const taxaId = String(celebration.taxaId);
+        const speciesData = currentByTaxa[taxaId];
+        if (!speciesData) return null;
+
+        return {
+          ...speciesData,
+          found: true,
+          observer: celebration.author,
+          newObservationUrl: celebration.observationId
+            ? `https://www.inaturalist.org/observations/${celebration.observationId}`
+            : null,
+          observationCreatedAt: celebration.createdAt,
+        };
+      })
+      .filter(Boolean);
+    setFirstsArr(firsts);
 
     // Only update prev if it had no data (prev doesn't change)
     let prevMissingSpecies: any, prevMissingTaxa: Object;
@@ -269,6 +297,7 @@ const App = () => {
           />
         ))}
       <Navbar 
+        newSpeciesCelebrations={newSpeciesCelebrations}
         onUserSearch={() => {
           showModal('prompt', {
             title: 'Enter iNaturalist Username',
@@ -293,6 +322,7 @@ const App = () => {
               queryInfo={queryInfo}
               showBroadSeasonality={showBroadSeasonality}
               toggleBroadSeasonality={toggleBroadSeasonality}
+              newSpeciesCelebrations={newSpeciesCelebrations}
               countdownComponent={
                 !isLoading && refreshTime ? (
                   <Countdown refreshTime={refreshTime} />
@@ -332,6 +362,17 @@ const App = () => {
               allArr={[...missingArr, ...foundArr]}
               queryInfo={queryInfo}
               showModal={showModal}
+            />
+          }
+        />
+        <Route
+          path='/firsts'
+          element={
+            <Firsts
+              firstsArr={firstsArr}
+              queryInfo={queryInfo}
+              showModal={showModal}
+              isLoading={isLoading}
             />
           }
         />

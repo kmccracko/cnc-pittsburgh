@@ -10,6 +10,7 @@ interface IbirdCardProps {
   taxaId: number;
   queryInfo: queryParams;
   found: boolean;
+  newspecies?: boolean;
   userName: string;
   showModal: Function;
 }
@@ -19,15 +20,15 @@ const BirdCard = (props: IbirdCardProps) => {
   const [imgFail, setImgFail] = useState(false);
 
   return (
-    <div className='card'>
+    <div className={`card ${props.newspecies ? 'newspecies' : ''}`}>
       <div
-        className='card-img'
+        className={`card-img ${imgLoaded ? 'bouncy' : ''}`}
         onClick={() => {
           props.showModal('species', props);
         }}
       >
         <img
-          className={`${imgLoaded ? 'bouncy' : ''} ${imgFail ? 'default' : ''}`}
+          className={`${imgFail ? 'default' : ''}`}
           src={props.pictureUrl}
           // loading='lazy'
           onLoad={(e) => {
@@ -41,10 +42,10 @@ const BirdCard = (props: IbirdCardProps) => {
           }}
         />
 
-        <div className='count'>{props.count} Observations</div>
+        <div className='count'>{props.count} Observation{props.count > 1 ? 's' : ''}</div>
       </div>
       <div className='summary-label'>
-        <div className='common-name'>{props.name || 'No Common Name'}</div>
+        <div className='common-name'>{props.name || 'No Common Name'} {props.newspecies ? <span className='newspecies-tag'>NEW!</span> : ''}</div>
         <div className='scientific-name'>({props.scientificName})</div>
       </div>
     </div>
