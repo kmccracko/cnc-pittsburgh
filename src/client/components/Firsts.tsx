@@ -10,7 +10,14 @@ interface IfirstsProps {
 
 const Firsts = (props: IfirstsProps) => {
   const sortedFirsts = [...props.firstsArr].sort((a, b) => {
-    return +new Date(a.observationCreatedAt || 0) - +new Date(b.observationCreatedAt || 0);
+    const obsA = String(a.observer || '').toLocaleLowerCase();
+    const obsB = String(b.observer || '').toLocaleLowerCase();
+    const byObserver = obsA.localeCompare(obsB, undefined, { sensitivity: 'base' });
+    if (byObserver !== 0) return byObserver;
+    const tA = +new Date(a.observationCreatedAt || 0);
+    const tB = +new Date(b.observationCreatedAt || 0);
+    if (tA !== tB) return tA - tB;
+    return String(a.taxaId || '').localeCompare(String(b.taxaId || ''));
   });
 
   const allRows = sortedFirsts.map((el: any) => (
