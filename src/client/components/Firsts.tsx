@@ -10,7 +10,14 @@ interface IfirstsProps {
 
 const Firsts = (props: IfirstsProps) => {
   const sortedFirsts = [...props.firstsArr].sort((a, b) => {
-    return +new Date(a.observationCreatedAt || 0) - +new Date(b.observationCreatedAt || 0);
+    const obsA = String(a.observer || '').toLocaleLowerCase();
+    const obsB = String(b.observer || '').toLocaleLowerCase();
+    const byObserver = obsA.localeCompare(obsB, undefined, { sensitivity: 'base' });
+    if (byObserver !== 0) return byObserver;
+    const tA = +new Date(a.observationCreatedAt || 0);
+    const tB = +new Date(b.observationCreatedAt || 0);
+    if (tA !== tB) return tA - tB;
+    return String(a.taxaId || '').localeCompare(String(b.taxaId || ''));
   });
 
   const allRows = sortedFirsts.map((el: any) => (
@@ -45,7 +52,7 @@ const FirstsRecord = (props: any) => {
 
   return (
     <div
-      className='record firsts-record'
+      className='record firsts-record newspecies'
       onClick={() => props.showModal('species', modalPayload)}
     >
       <div className='record-left'>
@@ -66,15 +73,6 @@ const FirstsRecord = (props: any) => {
           <div className='scientific-name'>({data.scientificname})</div>
           <div className='firsts-credit'>First observed by @{data.observer}</div>
         </div>
-      </div>
-      <div className='status firsts-status'>
-        <a
-          href={data.newObservationUrl}
-          target='_blank'
-          onClick={(e) => e.stopPropagation()}
-        >
-          View new observation on iNat ↪
-        </a>
       </div>
     </div>
   );

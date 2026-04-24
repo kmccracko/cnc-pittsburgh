@@ -54,6 +54,7 @@ const Search = (props: IsearchProps) => {
         count={el.count}
         pictureUrl={el.pictureurl}
         found={el.found}
+        newspecies={el.newspecies}
         showModal={props.showModal}
         queryInfo={props.queryInfo}
       />
