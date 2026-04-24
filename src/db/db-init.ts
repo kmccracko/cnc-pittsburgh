@@ -38,6 +38,14 @@ const initializeDataTable = async (tableName: string) => {
   // pictureurl varchar,
   // taxon varchar
   // );
+  // add rank to the table schema
+  const updateSchema = `
+  ALTER TABLE ${tableName} ADD COLUMN IF NOT EXISTS rank varchar;
+  -- can add more here if needed
+  `;
+  await db.query(updateSchema).catch((err: Error) => {
+    console.error('Failed during schema update: ', err);
+  });
 
   const truncTable = `
   TRUNCATE TABLE ${tableName};`;
@@ -63,7 +71,7 @@ const initializeDataTable = async (tableName: string) => {
     dbg(`No rows returned for ${tableName}; skipping insert.`);
   } else {
     const fillTable = `
-    INSERT INTO ${tableName} (name, scientificname, count, "taxaId", pictureurl, taxon)
+    INSERT INTO ${tableName} (name, scientificname, count, "taxaId", pictureurl, taxon, rank)
     VALUES
     ${fillValues}
     ;`;

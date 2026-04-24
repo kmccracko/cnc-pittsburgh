@@ -34,6 +34,7 @@ interface iSpeciesModalContent {
   histogram: histogram;
   userName: string;
   broaderSeasonality?: boolean;
+  newObservationUrl?: string;
 }
 
 const ModalSpecies = (props: ImodalProps) => {
@@ -130,7 +131,11 @@ const ModalSpecies = (props: ImodalProps) => {
                 </a>
               </div>
               <div className='modal-count'>
-                {props.modalContent.found ? (
+                {props.modalContent.newObservationUrl ? (
+                  <a href={props.modalContent.newObservationUrl} target='_blank'>
+                    View new observation on iNaturalist ↪
+                  </a>
+                ) : props.modalContent.found ? (
                   <>
                     <a href={currentUrl} target='_blank'>
                       View {props.modalContent.count} Current Obs. on
