@@ -78,7 +78,7 @@ const ModalSpecies = (props: ImodalProps) => {
     projectIdExists ? challenge : challenge + days
   }&taxon_id=${
     props.modalContent.taxaId
-  }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&hrank=species&lrank=species&verifiable=any`;
+  }${props.modalContent.userName ? `&user_id=${props.modalContent.userName}` : ''}&quality_grade=needs_id,research`;
 
   const allPreviousProjects = props.modalContent.queryInfo.allPreviousProjects || [];
   const baselineBroadMonths = props.modalContent.queryInfo.baselineBroadMonths || '4,5';
@@ -88,7 +88,7 @@ const ModalSpecies = (props: ImodalProps) => {
       : allPreviousProjects.length > 0
       ? `project_id=${allPreviousProjects.join(',')}`
       : `month=${props.modalContent.queryInfo.baselineMonth}&place_id=122840`;
-  const pastUrl = `https://www.inaturalist.org/observations?${historicalFilter}&taxon_id=${props.modalContent.taxaId}&hrank=species&lrank=species&verifiable=any`;
+  const pastUrl = `https://www.inaturalist.org/observations?${historicalFilter}&taxon_id=${props.modalContent.taxaId}&quality_grade=needs_id,research`;
 
   const modal = (
     <Modal
