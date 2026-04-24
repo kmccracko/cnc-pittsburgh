@@ -45,7 +45,7 @@ const FirstsRecord = (props: any) => {
 
   return (
     <div
-      className='record firsts-record'
+      className='record firsts-record newspecies'
       onClick={() => props.showModal('species', modalPayload)}
     >
       <div className='record-left'>
@@ -66,15 +66,6 @@ const FirstsRecord = (props: any) => {
           <div className='scientific-name'>({data.scientificname})</div>
           <div className='firsts-credit'>First observed by @{data.observer}</div>
         </div>
-      </div>
-      <div className='status firsts-status'>
-        <a
-          href={data.newObservationUrl}
-          target='_blank'
-          onClick={(e) => e.stopPropagation()}
-        >
-          View new observation on iNat ↪
-        </a>
       </div>
     </div>
   );

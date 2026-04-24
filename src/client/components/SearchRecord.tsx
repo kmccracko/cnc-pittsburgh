@@ -9,6 +9,7 @@ interface IsearchRecordProps {
   pictureUrl: string;
   taxaId: number;
   found: boolean;
+  newspecies?: boolean;
   showModal: any;
   queryInfo: queryParams;
 }
@@ -17,7 +18,10 @@ const SearchRecord = (props: IsearchRecordProps) => {
   const [imgFail, setImgFail] = useState(false);
 
   return (
-    <div className='record' onClick={() => props.showModal('species', props)}>
+    <div
+      className={`record ${props.newspecies ? 'newspecies' : ''}`}
+      onClick={() => props.showModal('species', props)}
+    >
       <div className='record-left'>
         <div className='record-thumb'>
           <img
