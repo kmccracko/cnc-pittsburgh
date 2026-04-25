@@ -1245,6 +1245,36 @@ body {
         margin-bottom: 10px;
         padding: 0px 12px;
       }
+      .firsts-sort-toggle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0 4px;
+        width: 100%;
+        max-width: min(92vw, 520px);
+        margin: 6px auto 14px;
+        font-size: 0.95rem;
+        #firsts-sort-toggle {
+          display: none;
+        }
+        .firsts-sort-spacer {
+          color: gray;
+          margin: 0px 10px;
+          user-select: none;
+        }
+        .firsts-sort-label {
+          cursor: pointer;
+          color: rgb(255, 255, 255, 0.35);
+          transition: text-shadow 0.5s ease, color 0.3s ease;
+          text-align: center;
+          padding: 2px 4px;
+          &.selected {
+            color: rgb(244, 228, 180);
+            text-shadow: 0 0 8px rgb(73, 73, 73), 0 0 10px rgba(202, 169, 90, 0.55);
+          }
+        }
+      }
     }
   }
 }
