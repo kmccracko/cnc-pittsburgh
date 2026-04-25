@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import LoadingGif from './LoadingGif';
+
+type FirstsSortMode = 'alphabetical' | 'recent';
 
 interface IfirstsProps {
   firstsArr: any[];
@@ -9,16 +11,33 @@ interface IfirstsProps {
 }
 
 const Firsts = (props: IfirstsProps) => {
-  const sortedFirsts = [...props.firstsArr].sort((a, b) => {
-    const obsA = String(a.observer || '').toLocaleLowerCase();
-    const obsB = String(b.observer || '').toLocaleLowerCase();
-    const byObserver = obsA.localeCompare(obsB, undefined, { sensitivity: 'base' });
-    if (byObserver !== 0) return byObserver;
-    const tA = +new Date(a.observationCreatedAt || 0);
-    const tB = +new Date(b.observationCreatedAt || 0);
-    if (tA !== tB) return tA - tB;
-    return String(a.taxaId || '').localeCompare(String(b.taxaId || ''));
-  });
+  const [sortMode, setSortMode] = useState<FirstsSortMode>('recent');
+
+  const sortedFirsts = useMemo(() => {
+    const copy = [...props.firstsArr];
+    if (sortMode === 'recent') {
+      copy.sort((a, b) => {
+        const tB = +new Date(b.observationCreatedAt || 0);
+        const tA = +new Date(a.observationCreatedAt || 0);
+        if (tB !== tA) return tB - tA;
+        return String(a.taxaId || '').localeCompare(String(b.taxaId || ''));
+      });
+    } else {
+      copy.sort((a, b) => {
+        const obsA = String(a.observer || '').toLocaleLowerCase();
+        const obsB = String(b.observer || '').toLocaleLowerCase();
+        const byObserver = obsA.localeCompare(obsB, undefined, { sensitivity: 'base' });
+        if (byObserver !== 0) return byObserver;
+        const tA = +new Date(a.observationCreatedAt || 0);
+        const tB = +new Date(b.observationCreatedAt || 0);
+        if (tA !== tB) return tA - tB;
+        return String(a.taxaId || '').localeCompare(String(b.taxaId || ''));
+      });
+    }
+    return copy;
+  }, [props.firstsArr, sortMode]);
+
+  const sortByRecent = sortMode === 'recent';
 
   const allRows = sortedFirsts.map((el: any) => (
     <FirstsRecord key={el.taxaId} data={el} showModal={props.showModal} queryInfo={props.queryInfo} />
@@ -31,6 +50,31 @@ const Firsts = (props: IfirstsProps) => {
         <div className='firsts-subtitle'>
           This is the first time these species have been observed during a Pittsburgh City Nature Challenge!
         </div>
+        {!props.isLoading && props.firstsArr.length > 0 && (
+          <div id='firsts-sort-toggle-container' className='firsts-sort-toggle'>
+            <input
+              id='firsts-sort-toggle'
+              type='checkbox'
+              checked={sortByRecent}
+              onChange={() =>
+                setSortMode((m) => (m === 'recent' ? 'alphabetical' : 'recent'))
+              }
+            />
+            <label
+              className={`firsts-sort-label firsts-sort-recent ${sortByRecent ? 'selected' : 'deselected'}`}
+              htmlFor='firsts-sort-toggle'
+            >
+              Newest first
+            </label>
+            <span className='firsts-sort-spacer'>|</span>
+            <label
+              className={`firsts-sort-label firsts-sort-az ${sortByRecent ? 'deselected' : 'selected'}`}
+              htmlFor='firsts-sort-toggle'
+            >
+              A–Z (by observer)
+            </label>
+          </div>
+        )}
       </div>
       {props.isLoading ? <LoadingGif size='5' /> : <div id='search-results'>{allRows}</div>}
     </div>
